@@ -4,8 +4,8 @@
 
 <div align="right">
   <sup>
-    <a href="##The Challenge">English</a> ·
-    <a href="##お題">日本語</a>
+    <a href="#the-challenge">English</a> ·
+    <a href="#お題">日本語</a>
   </sup>
 </div>
 
