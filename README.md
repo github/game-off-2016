@@ -26,7 +26,7 @@ We'll highlight some of our favorites on the GitHub blog, and the world will get
 ## How to participate
 
 * [Sign up for a free personal account][github-signup] if you don't already have one.
-* Fork the [this repository][game-off-repo] to your personal account (or to a [free organization account][github-signup-org]).
+* Fork [this repository][game-off-repo] to your personal account (or to a [free organization account][github-signup-org]).
 * Clone the repository on your computer and build your game.
 * Push your game source code to your forked repository before Dec 1st.
 * Update the `README.md` file to include a description of your game, how/where to play/download it, how to build/compile it, what dependencies it has, etc.
