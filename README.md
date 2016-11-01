@@ -16,7 +16,7 @@ You have the entire month of November to create a game *loosely* based on the th
 What do we mean by **loosely** based on hacking, modding and/or augmenting? We literally mean, *loosely* based. Some examples might be:
 
 * an endless runner where you *hack* down binary trees in your path with a pixelated axe,
-* a *modern* take on a classic e.g. a rougelike set in a 3D or VR world, or
+* a *modern* take on a classic e.g. a roguelike set in a 3D or VR world, or
 * an *augmented* reality game bringing octopus/cat hybrids into the real world.
 
 Unleash your creativity. You can work alone or with a team and build for any platform or device. The use of open source game engines and libraries is encouraged but not required.
