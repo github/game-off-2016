@@ -69,22 +69,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
+    <IntDir>log\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)\include;$(ProjectDir)\lib\devil\include;$(ProjectDir)\lib\glew\include;$(ProjectDir)\lib\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\lib\devil\lib;$(ProjectDir)\lib\glfw\lib;$(ProjectDir)\lib\glew\lib\Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir)\src;$(SourcePath)</SourcePath>
+    <ReferencePath>$(ProjectDir)\res;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
+    <IntDir>log\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)\include;$(ProjectDir)\lib\devil\include;$(ProjectDir)\lib\glew\include;$(ProjectDir)\lib\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\lib\devil\lib;$(ProjectDir)\lib\glfw\lib;$(ProjectDir)\lib\glew\lib\Release;$(LibraryPath)</LibraryPath>
+    <ReferencePath>$(ProjectDir)\res;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <BuildLog>
-      <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
+      <Path>$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -100,13 +111,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <BuildLog>
-      <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
+      <Path>$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,6 +136,84 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lib\glfw\include\getopt.c" />
+    <ClCompile Include="lib\glfw\include\glad.c" />
+    <ClCompile Include="lib\glfw\include\tinycthread.c" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\engine\game\Game.cpp" />
+    <ClCompile Include="src\engine\game\world\map\ZoneMap.cpp" />
+    <ClCompile Include="src\engine\gfx\font\Font.cpp" />
+    <ClCompile Include="src\engine\gfx\gui\base\Component.cpp" />
+    <ClCompile Include="src\engine\gfx\gui\console\Console.cpp" />
+    <ClCompile Include="src\engine\gfx\LTexture.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Application.h" />
+    <ClInclude Include="include\engine\game\Game.h" />
+    <ClInclude Include="include\engine\game\world\map\ZoneMap.h" />
+    <ClInclude Include="include\engine\gfx\font\Font.h" />
+    <ClInclude Include="include\engine\gfx\gui\base\Component.h" />
+    <ClInclude Include="include\engine\gfx\gui\button\Button.h" />
+    <ClInclude Include="include\engine\gfx\gui\console\Console.h" />
+    <ClInclude Include="include\engine\gfx\gui\container\Container.h" />
+    <ClInclude Include="include\engine\gfx\gui\container\ContainerPanel.h" />
+    <ClInclude Include="include\engine\gfx\gui\counter\Counter.h" />
+    <ClInclude Include="include\engine\gfx\gui\dropdown\DropDown.h" />
+    <ClInclude Include="include\engine\gfx\gui\list\List.h" />
+    <ClInclude Include="include\engine\gfx\gui\panel\Panel.h" />
+    <ClInclude Include="include\engine\gfx\gui\slider\Slider.h" />
+    <ClInclude Include="include\engine\gfx\gui\tabbar\TabBar.h" />
+    <ClInclude Include="include\engine\gfx\gui\text\Text.h" />
+    <ClInclude Include="include\engine\gfx\gui\text\TextField.h" />
+    <ClInclude Include="include\engine\gfx\gui\tileset\Tileset.h" />
+    <ClInclude Include="include\engine\gfx\gui\toolbar\Toolbar.h" />
+    <ClInclude Include="include\engine\gfx\LTexture.h" />
+    <ClInclude Include="include\engine\utils\collision\aabb.h" />
+    <ClInclude Include="include\engine\utils\Globals.h" />
+    <ClInclude Include="include\engine\utils\OpenGL.h" />
+    <ClInclude Include="include\engine\utils\Singleton.h" />
+    <ClInclude Include="include\engine\utils\Utilities.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Color.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Macros.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Rectangle.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Texture.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Tile.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Vector2.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Vector3.h" />
+    <ClInclude Include="include\engine\utils\variable\datatype\Vector4.h" />
+    <ClInclude Include="include\engine\utils\variable\manager\ColorManager.h" />
+    <ClInclude Include="include\engine\utils\variable\manager\Manager.h" />
+    <ClInclude Include="include\engine\utils\variable\manager\TextureManager.h" />
+    <ClInclude Include="include\engine\utils\variable\manager\TileManager.h" />
+    <ClInclude Include="lib\devil\include\IL\config.h" />
+    <ClInclude Include="lib\devil\include\IL\devil_internal_exports.h" />
+    <ClInclude Include="lib\devil\include\IL\il.h" />
+    <ClInclude Include="lib\devil\include\IL\ilu.h" />
+    <ClInclude Include="lib\devil\include\IL\ilut.h" />
+    <ClInclude Include="lib\devil\include\IL\ilut_config.h" />
+    <ClInclude Include="lib\devil\include\IL\ilu_region.h" />
+    <ClInclude Include="lib\devil\include\IL\il_wrap.h" />
+    <ClInclude Include="lib\glew\include\GL\glew.h" />
+    <ClInclude Include="lib\glew\include\GL\glxew.h" />
+    <ClInclude Include="lib\glew\include\GL\wglew.h" />
+    <ClInclude Include="lib\glfw\include\EGL\eglext.h" />
+    <ClInclude Include="lib\glfw\include\getopt.h" />
+    <ClInclude Include="lib\glfw\include\glad\glad.h" />
+    <ClInclude Include="lib\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="lib\glfw\include\GLFW\glfw3native.h" />
+    <ClInclude Include="lib\glfw\include\GL\glext.h" />
+    <ClInclude Include="lib\glfw\include\GL\glxext.h" />
+    <ClInclude Include="lib\glfw\include\GL\wglext.h" />
+    <ClInclude Include="lib\glfw\include\KHR\khrplatform.h" />
+    <ClInclude Include="lib\glfw\include\tinycthread.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DevIL.dll" />
+    <None Include="glew32.dll" />
+    <None Include="glfw3.dll" />
+    <None Include="ILU.dll" />
+    <None Include="ILUT.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
