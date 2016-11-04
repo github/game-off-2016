@@ -354,7 +354,7 @@ void Game::input()
 			switch(m_selectLayer->getSelectedButton())
 			{
 			case 0:
-				m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Stone.png")));
+				m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("SlantBrick.png")));
 				break;
 			case 1:
 				m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("BinaryBrick.png")));
