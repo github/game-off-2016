@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
-let borderSize = 15;
-let size = 50 + borderSize;
+let borderSize = 5;
+let size = 35 + borderSize;
 export default class extends Phaser.Graphics {
 
   constructor ({ game, x, y, logic, clickSignal  }) {
@@ -45,7 +45,7 @@ export default class extends Phaser.Graphics {
     this.drawCircle(0, 0, size - borderSize);
     this.endFill();
   }
-  
+
   canSendPacket() {
     return this.logic.canSendPacket();
   }
