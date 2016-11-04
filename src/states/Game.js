@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
 import Server from '../sprites/Server'
-import {default as ServerLogic, BASE, NEUTRAL} from '../logic/Server'
+import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import times from 'times-loop'
 
 let serverPadding = 20;
@@ -30,18 +30,15 @@ export default class extends Phaser.State {
       }
     });
 
-    let serverB = new ServerLogic(BASE);
-    this.baseServer = new Server({
-      game: this.game,
-      logic: serverB,
-      clickSignal,
-      ...this.randomLocation()
-    });
-    this.game.add.existing(this.baseServer);
+    this.createServers(1, BASE, clickSignal);
+    this.createServers(8, NEUTRAL, clickSignal);
+    this.createServers(2, ENEMY, clickSignal);
 
+  }
 
-    times(8, () => {
-      let serverN = new ServerLogic(NEUTRAL);
+  createServers(count, type, clickSignal) {
+    times(count, () => {
+      let serverN = new ServerLogic(type);
       let s = new Server({
         game: this.game,
         logic: serverN,
@@ -50,7 +47,6 @@ export default class extends Phaser.State {
       });
       this.game.add.existing(s);
     });
-
   }
 
   render () {

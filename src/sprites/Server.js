@@ -17,6 +17,7 @@ export default class extends Phaser.Graphics {
     this.color();
     this.inputEnabled = true;
     this.input.useHandCursor = true;
+
     this.events.onInputOver.add((game, pointer) => {
       this.tint = 0xCCCCCC;
     });
