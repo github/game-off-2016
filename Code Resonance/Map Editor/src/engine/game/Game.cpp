@@ -10,11 +10,12 @@ bool Game::init()
 	m_cPauseScreen = -1;
 
 	Font::getInstance().setFont("Fontsheet.png");
+	Globals::getInstance().m_zoom = 1;
 
 	m_zoneMap = new ZoneMap();
 
 	m_zoom = 1;
-	m_camPos = Vector2<Sint32>(Sint32(m_zoneMap->getSize().x / 2 * TILE_SIZE), Sint32(m_zoneMap->getSize().y / 2 * TILE_SIZE));
+	m_camPos = Vector2<Sint32>(0, 0);
 
 	m_backTexId = MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Background.png"));
 
@@ -87,18 +88,16 @@ bool Game::init()
 	m_selectLayer = new CButtonRadio("RADIO_LAYER", "Layer", {0, 24}, {264, 200}, 1);
 	m_selectLayer->addButton(new CButtonToggle("RBUTTON_GROUND", "Ground", {0, 0}, {264, 24}, 16, 1));
 	m_selectLayer->addButton(new CButtonToggle("RBUTTON_WORLD", "World", {0, 25}, {264, 24}, 16, 1));
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_SKY", "Sky", {0, 75}, {264, 24}, 16, 1));
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_STAMPS", "Stamps", {0, 100}, {264, 24}, 16, 1));
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_SKY", "Sky", {0, 50}, {264, 24}, 16, 1));
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_STAMPS", "Stamps", {0, 75}, {264, 24}, 16, 1));
 	m_guiLeft->addComponent(m_selectLayer, PANEL_ALIGN_TOP);
 
 	m_guiLeft->addComponent(new CButtonToggle("BUTTON_GROUND_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
 		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 24}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
 	m_guiLeft->addComponent(new CButtonToggle("BUTTON_WORLD_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
 		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 49}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
-	m_guiLeft->addComponent(new CButtonToggle("BUTTON_ENTITY_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
-		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 74}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
 	m_guiLeft->addComponent(new CButtonToggle("BUTTON_SKY_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
-		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 99}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
+		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 74}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
 
 
 
@@ -256,7 +255,7 @@ bool Game::init()
 	m_tileSetStamps = new CTileSet("TILESET_WORLD", "TODO: Preview", {0, 88}, {256, 256}, 32, Texture(), 1);
 	m_guiRightStamp->addComponent(m_tileSetStamps, PANEL_ALIGN_TOP);
 
-	//m_guiTop->addComponent(new CText("TEXT_POS", "1", {0, 0}, {100, 100}, 16, ALIGN_LEFT, Color(255, 255, 255, 255)));
+	m_guiTop->addComponent(new CText("TEXT_POS", "1", {0, 0}, {100, 100}, 16, ALIGN_LEFT, Color(255, 255, 255, 255)));
 
 	m_selectStart = {-1, -1};
 
@@ -312,6 +311,15 @@ void Game::input()
 	Sint8 _rValue = 0;
 	m_guiAll->input(_rValue, Globals::getInstance().m_keyStates, Globals::getInstance().m_mouseStates, _mousePos);
 
+	if(Globals::getInstance().m_keyStates[GLFW_KEY_ENTER] == 1)
+	{
+		m_zoneMap->deselect();
+	}
+	if(Globals::getInstance().m_keyStates[GLFW_KEY_BACKSPACE] == 1)
+	{
+		m_zoneMap->deleteVertex();
+	}
+
 	if((_rValue & 2) != 2 && Globals::getInstance().m_keyStates[GLFW_KEY_G] == 1)
 		m_showGrid = !m_showGrid;
 
@@ -321,7 +329,7 @@ void Game::input()
 		{
 			m_lmbDown = true;
 			if(m_selectLayer->getSelectedButton() == 4)
-				m_selectStart = {Sint32(floor((m_mouseBuffer.x + m_camPos.x) / TILE_SIZE) - 1), Sint32(floor((m_mouseBuffer.y + m_camPos.y) / TILE_SIZE) - 1)};
+				m_selectStart = {Sint32(floor((m_mouseBuffer.x + m_camPos.x)) - 1), Sint32(floor((m_mouseBuffer.y + m_camPos.y)) - 1)};
 		}
 	}
 	if(Globals::getInstance().m_mouseStates[1] == 1)
@@ -341,47 +349,42 @@ void Game::input()
 	}
 	if((_rValue & 1) == 0 && m_lmbDown && !m_rmbDown && m_mouseInArea)
 	{
-		switch(m_selectLayer->getSelectedButton())
+		if(!m_zoneMap->objectIsSelected())
 		{
-		case 0:
-			// Add vertex
-			break;
-		case 1:
-			// Add vertex
-			break;
-		case 2:
-			// Add vertex
-			break;
-		case 3:
-			// Do stampy things
-			break;
+			switch(m_selectLayer->getSelectedButton())
+			{
+			case 0:
+				m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Stone.png")));
+				break;
+			case 1:
+				m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("BinaryBrick.png")));
+				break;
+			case 2:
+				m_zoneMap->addWorldObject(2, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("GlitchBrick.png")));
+				break;
+			case 3:
+				// Do stampy things
+				break;
+			}
 		}
+		m_zoneMap->addVertex((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos));
+		m_lmbDown = false;
 	}
 	else if(m_rmbDown && (_rValue & 1) == 0)
-	{
-		m_camPos = m_camPos + (m_mouseBuffer - _mousePos);
-		if(m_camPos.x < TILE_SIZE)
-			m_camPos.x = TILE_SIZE;
-		if(m_camPos.y < TILE_SIZE)
-			m_camPos.y = TILE_SIZE;
-
-		if(m_camPos.x > m_zoneMap->getSize().x * TILE_SIZE + TILE_SIZE)
-			m_camPos.x = GLfloat(m_zoneMap->getSize().x * TILE_SIZE + TILE_SIZE);
-
-		if(m_camPos.y > m_zoneMap->getSize().y * TILE_SIZE + TILE_SIZE)
-			m_camPos.y = GLfloat(m_zoneMap->getSize().y * TILE_SIZE + TILE_SIZE);
-	}
+		m_camPos = m_camPos + (Vector2<GLfloat>(m_mouseBuffer) - Vector2<GLfloat>(_mousePos)) / Globals::getInstance().m_zoom;
 
 	m_mouseBuffer = _mousePos;
 	m_mouseInArea = ((_rValue & 1) == 0
-		&& m_tileMapArea.checkPoint(GLfloat(m_mouseBuffer.x), GLfloat(m_mouseBuffer.y))
-		&& (m_mouseBuffer.x + m_camPos.x >= TILE_SIZE) && (m_mouseBuffer.y + m_camPos.y >= TILE_SIZE)
-		&& (m_mouseBuffer.x + m_camPos.x < TILE_SIZE * (m_zoneMap->getSize().x + 1)) && (m_mouseBuffer.y + m_camPos.y < TILE_SIZE * (m_zoneMap->getSize().y + 1)));
+		&& m_tileMapArea.checkPoint(GLfloat(m_mouseBuffer.x), GLfloat(m_mouseBuffer.y)));
+
+	if(Globals::getInstance().m_mouseScroll > 0)
+		Globals::getInstance().m_zoom *= powf(1.01f, GLfloat(Globals::getInstance().m_mouseScroll));
+	else if(Globals::getInstance().m_mouseScroll < 0)
+		Globals::getInstance().m_zoom /= powf(1.01f, -GLfloat(Globals::getInstance().m_mouseScroll));
 
 	m_zoneMap->setLayerVisible(0, m_guiLeft->findComponent("BUTTON_GROUND_VISIBLE")->isSelected() != 0);
 	m_zoneMap->setLayerVisible(1, m_guiLeft->findComponent("BUTTON_WORLD_VISIBLE")->isSelected() != 0);
-	m_zoneMap->setLayerVisible(2, m_guiLeft->findComponent("BUTTON_ENTITY_VISIBLE")->isSelected() != 0);
-	m_zoneMap->setLayerVisible(3, m_guiLeft->findComponent("BUTTON_SKY_VISIBLE")->isSelected() != 0);
+	m_zoneMap->setLayerVisible(2, m_guiLeft->findComponent("BUTTON_SKY_VISIBLE")->isSelected() != 0);
 }
 
 void Game::update()
@@ -450,11 +453,10 @@ void Game::update()
 		}
 	}
 
-	/*if(m_mouseInArea)
-		m_guiTop->findComponent("TEXT_POS")->setTitle("Select Pos\nX:" + Util::numToString(Sint32(floor((m_mouseBuffer.x + m_camPos.x) / TILE_SIZE) - 1)) + "\nY:" + Util::numToString(Sint32(floor((m_mouseBuffer.y + m_camPos.y) / TILE_SIZE) - 1)));
+	if(m_mouseInArea)
+		m_guiTop->findComponent("TEXT_POS")->setTitle("Select Pos\nX:" + Util::numToString(Sint32((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos).x)) + "\nY:" + Util::numToString(Sint32((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos).y)));
 	else
 		m_guiTop->findComponent("TEXT_POS")->setTitle("Select Pos\nX:NA\nY:NA");
-	*/
 
 	m_zoneMap->setViewSize(m_tileMapArea);
 	m_zoneMap->setGridVisible(m_showGrid);
@@ -483,8 +485,8 @@ void Game::render()
 
 
 		Vector2<Sint32> _topLeft, _botRight;
-		_topLeft = Vector2<Sint32>(min(m_selectStart.x * TILE_SIZE, m_selectEnd.x * TILE_SIZE), min(m_selectStart.y * TILE_SIZE, m_selectEnd.y * TILE_SIZE));
-		_botRight = Vector2<Sint32>(max(m_selectStart.x * TILE_SIZE, m_selectEnd.x * TILE_SIZE), max(m_selectStart.y * TILE_SIZE, m_selectEnd.y * TILE_SIZE)) + TILE_SIZE;
+		_topLeft = Vector2<Sint32>(min(m_selectStart.x, m_selectEnd.x), min(m_selectStart.y, m_selectEnd.y));
+		_botRight = Vector2<Sint32>(max(m_selectStart.x, m_selectEnd.x), max(m_selectStart.y, m_selectEnd.y));
 
 		//Selection view
 		if(m_selectLayer->getSelectedButton() == 4)
@@ -493,7 +495,7 @@ void Game::render()
 			{
 				if(m_listStamps->getSelectedItem() == 0 && m_selectStart.x != -1)
 				{
-					glTranslatef(-m_camPos.x + TILE_SIZE, -m_camPos.y + TILE_SIZE, 0);
+					glTranslatef(-m_camPos.x, -m_camPos.y, 0);
 					glColor4f(0.2f, 0.6f, 1.f, 1.f);
 					glBegin(GL_LINES);
 					{
@@ -522,10 +524,10 @@ void Game::render()
 				}
 				else
 				{
-					Vector2<Sint32> _size = m_stamps[m_listStamps->getSelectedItem()].m_size * TILE_SIZE;
+					Vector2<Sint32> _size = m_stamps[m_listStamps->getSelectedItem()].m_size;
 					glColor4f(1, 1, 1, 0.2f);
-					glTranslatef(-GLfloat(floor(GLfloat(_size.x / TILE_SIZE) / 2)) * TILE_SIZE, -GLfloat(floor(GLfloat(_size.y / TILE_SIZE) / 2)) * TILE_SIZE, 0);
-					glTranslatef(-GLfloat(fmod((m_mouseBuffer.x + m_camPos.x), TILE_SIZE) - ((m_mouseBuffer.x + m_camPos.x) < 0 ? TILE_SIZE : 0) - m_mouseBuffer.x), -GLfloat(fmod((m_mouseBuffer.y + m_camPos.y), TILE_SIZE) - ((m_mouseBuffer.y + m_camPos.y) < 0 ? TILE_SIZE : 0) - m_mouseBuffer.y), 0);
+					glTranslatef(-GLfloat(floor(GLfloat(_size.x) / 2)), -GLfloat(floor(GLfloat(_size.y) / 2)), 0);
+					glTranslatef(-GLfloat(fmod((m_mouseBuffer.x + m_camPos.x), 1) - ((m_mouseBuffer.x + m_camPos.x) < 0 ? 1 : 0) - m_mouseBuffer.x), -GLfloat(fmod((m_mouseBuffer.y + m_camPos.y), 1) - ((m_mouseBuffer.y + m_camPos.y) < 0 ? 1 : 0) - m_mouseBuffer.y), 0);
 					glBegin(GL_QUADS);
 					{
 						glVertex2f(0, 0);
@@ -542,13 +544,13 @@ void Game::render()
 		glColor4f(1, 1, 1, 0.2f);
 		if(m_mouseInArea && (m_listStamps->getSelectedItem() == 0 || m_selectLayer->getSelectedButton() != 4))
 		{
-			glTranslatef(-GLfloat(fmod((m_mouseBuffer.x + m_camPos.x), TILE_SIZE) - ((m_mouseBuffer.x + m_camPos.x) < 0 ? TILE_SIZE : 0) - m_mouseBuffer.x), -GLfloat(fmod((m_mouseBuffer.y + m_camPos.y), TILE_SIZE) - ((m_mouseBuffer.y + m_camPos.y) < 0 ? TILE_SIZE : 0) - m_mouseBuffer.y), 0);
+			glTranslatef(-GLfloat(fmod((m_mouseBuffer.x + m_camPos.x), 1) - ((m_mouseBuffer.x + m_camPos.x) < 0 ? 1 : 0) - m_mouseBuffer.x), -GLfloat(fmod((m_mouseBuffer.y + m_camPos.y), 1) - ((m_mouseBuffer.y + m_camPos.y) < 0 ? 1 : 0) - m_mouseBuffer.y), 0);
 			glBegin(GL_QUADS);
 			{
-				glVertex2f(0, 0);
-				glVertex2f(GLfloat(TILE_SIZE), 0);
-				glVertex2f(GLfloat(TILE_SIZE), GLfloat(TILE_SIZE));
-				glVertex2f(0, GLfloat(TILE_SIZE));
+				glVertex2f(-4, 0);
+				glVertex2f(0, -4);
+				glVertex2f(4, 0);
+				glVertex2f(0, 4);
 			}
 			glEnd();
 		}

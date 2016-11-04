@@ -22,6 +22,8 @@ public:
 	Sint8 m_mouseScroll;
 	Sint8 m_exitting;
 
+	float m_zoom;
+
 	struct keyPress
 	{
 		Sint32 m_keyCode;

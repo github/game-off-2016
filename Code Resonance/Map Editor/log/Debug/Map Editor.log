@@ -1,9 +1,17 @@
-﻿  ZoneMap.cpp
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(243): warning C4101: '_data': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(242): warning C4101: '_index': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(242): warning C4101: '_length': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(250): warning C4101: '_tileCount': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(251): warning C4101: '_tileId': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(251): warning C4101: '_mapIndex': unreferenced local variable
+﻿  Application.cpp
+  Generating Code...
+  Compiling...
+  Console.cpp
+  Component.cpp
+  Font.cpp
+  LTexture.cpp
+  ZoneMap.cpp
+c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(380): warning C4018: '<': signed/unsigned mismatch
+c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(396): warning C4018: '<': signed/unsigned mismatch
+c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(410): warning C4018: '<': signed/unsigned mismatch
+c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(425): warning C4018: '<': signed/unsigned mismatch
+  Game.cpp
+  Main.cpp
+  Generating Code...
   Map Editor.vcxproj -> C:\Users\Nick\Documents\GitHub\game-off-2016\Code Resonance\Map Editor\bin\Debug\Map Editor.exe
   Map Editor.vcxproj -> C:\Users\Nick\Documents\GitHub\game-off-2016\Code Resonance\Map Editor\bin\Debug\Map Editor.pdb (Partial PDB)

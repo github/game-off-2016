@@ -1,7 +1,5 @@
 #pragma once
 
-#define TILE_SIZE 32
-
 #include "engine\utils\Globals.h"
 #include "engine\utils\OpenGL.h"
 #include "engine\utils\Singleton.h"
