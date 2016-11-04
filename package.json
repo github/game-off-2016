@@ -1,7 +1,7 @@
 {
   "name": "console-cowboys",
   "version": "1.0.0",
-  "description": "",
+  "description": "can you jam with the console cowboys in cyberspace?",
   "author": "rothschild games",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,13 @@
     "webfontloader": "^1.6.26",
     "webpack": "^1.13.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:RothschildGames/console-cowboys.git"
+  },
   "dependencies": {
-    "phaser": "^2.6.2"
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "phaser": "^2.6.2",
+    "times-loop": "^2.0.0"
   }
 }

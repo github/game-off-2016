@@ -1,34 +1,68 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
-import Mushroom from '../sprites/Mushroom'
-import {setResponsiveWidth} from '../utils'
+import Target from '../sprites/Target'
+import Packet from '../sprites/Packet'
+import Server from '../sprites/Server'
+import {default as ServerLogic, BASE, NEUTRAL} from '../logic/Server'
+import times from 'times-loop'
 
+let serverPadding = 20;
 export default class extends Phaser.State {
   init () {}
   preload () {}
 
   create () {
-    let banner = this.add.text(this.game.world.centerX, this.game.height - 30, 'Phaser + ES6 + Webpack')
-    banner.font = 'Nunito'
-    banner.fontSize = 40
-    banner.fill = '#77BFA3'
-    banner.anchor.setTo(0.5)
 
-    this.mushroom = new Mushroom({
+    let clickSignal = new Phaser.Signal();
+    var currentServer = null;
+    clickSignal.add((server) => {
+      if (currentServer == null) {
+        if (server.canSendPacket()){
+          currentServer = server;
+        }
+      } else {
+        if (server != currentServer) {
+          let packet = new Packet({game, src: currentServer});
+          this.game.add.existing(packet);
+          packet.sendTo(server);
+          currentServer = null;
+        }
+      }
+    });
+
+    let serverB = new ServerLogic(BASE);
+    this.baseServer = new Server({
       game: this.game,
-      x: this.game.world.centerX,
-      y: this.game.world.centerY,
-      asset: 'mushroom'
-    })
+      logic: serverB,
+      clickSignal,
+      ...this.randomLocation()
+    });
+    this.game.add.existing(this.baseServer);
 
-    // set the sprite width to 30% of the game width
-    setResponsiveWidth(this.mushroom, 30, this.game.world)
-    this.game.add.existing(this.mushroom)
+
+    times(8, () => {
+      let serverN = new ServerLogic(NEUTRAL);
+      let s = new Server({
+        game: this.game,
+        logic: serverN,
+        clickSignal,
+        ...this.randomLocation()
+      });
+      this.game.add.existing(s);
+    });
+
   }
 
   render () {
     if (__DEV__) {
-      this.game.debug.spriteInfo(this.mushroom, 32, 32)
+      // this.game.debug.spriteInfo(this.mushroom, 32, 32)
+    }
+  }
+
+  randomLocation() {
+    return {
+      x: this.game.rnd.integerInRange(serverPadding, this.game.world.width - serverPadding),
+      y: this.game.rnd.integerInRange(serverPadding, this.game.world.height - serverPadding)
     }
   }
 }
