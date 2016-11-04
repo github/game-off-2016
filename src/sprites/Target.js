@@ -11,8 +11,6 @@ export default class extends Phaser.Graphics {
 
     this.lineStyle(width, color || 0x000000, 1);
     this.lineTo(10,10);
-
-    
   }
 
 

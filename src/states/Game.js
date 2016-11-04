@@ -6,13 +6,19 @@ import Server from '../sprites/Server'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import times from 'times-loop'
 
-let serverPadding = 20;
+const GRID_COLS = 3
+const GRID_ROW = 4
+const SERVER_PADDING = 25
+const STAGE_PADDING = 75
+
+const BASE_SERVERS = 1
+const ENEMY_SERVERS = 2
+
 export default class extends Phaser.State {
   init () {}
   preload () {}
 
   create () {
-
     let clickSignal = new Phaser.Signal();
     var currentServer = null;
     clickSignal.add((server) => {
@@ -30,23 +36,44 @@ export default class extends Phaser.State {
       }
     });
 
-    this.createServers(1, BASE, clickSignal);
-    this.createServers(8, NEUTRAL, clickSignal);
-    this.createServers(2, ENEMY, clickSignal);
-
+    const locations = this.createServerLocationsInGrid(GRID_COLS, GRID_ROW, { cellPadding: SERVER_PADDING })
+    const servers = locations.forEach((location, idx) => {
+      let type
+      if (idx <= BASE_SERVERS - 1) {
+        type = BASE
+      } else if (idx >= locations.length - ENEMY_SERVERS) {
+        type = ENEMY
+      } else {
+        type = NEUTRAL
+      }
+      this.createServer(type, location, clickSignal)
+    })
   }
 
-  createServers(count, type, clickSignal) {
-    times(count, () => {
-      let serverN = new ServerLogic(type);
-      let s = new Server({
-        game: this.game,
-        logic: serverN,
-        clickSignal,
-        ...this.randomLocation()
-      });
-      this.game.add.existing(s);
+  createServerLocationsInGrid(gridCols, gridRows, { cellPadding } = { cellPadding: 0 }) {
+    const locations = []
+    const cellW = (this.game.world.width - (STAGE_PADDING * 2)) / gridCols
+    const cellH = (this.game.world.height - (STAGE_PADDING * 2)) / gridRows
+    for (let col = 0; col < gridCols; col++) {
+      for (let row = 0; row < gridRows; row++) {
+        locations.push({
+          x: STAGE_PADDING + this.game.rnd.integerInRange(cellW * col + cellPadding, cellW * (col+1) - cellPadding),
+          y: STAGE_PADDING + this.game.rnd.integerInRange(cellH * row + cellPadding, cellH * (row+1) - cellPadding)
+        })
+      }
+    }
+    return locations;
+  }
+
+  createServer(type, location, clickSignal) {
+    let serverN = new ServerLogic(type);
+    let s = new Server({
+      game: this.game,
+      logic: serverN,
+      clickSignal,
+      ...location
     });
+    this.game.add.existing(s);
   }
 
   render () {
