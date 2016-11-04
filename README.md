@@ -23,6 +23,8 @@ Run:
 
 ```npm run deploy```
 
+and push to master
+
 This will optimize and minimize the compiled bundle.
 
 
