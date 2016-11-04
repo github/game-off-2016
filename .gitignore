@@ -7,3 +7,5 @@ Code Resonance/Map Editor/bin/Release/
 *.user
 Code Resonance/Code Resonance.sdf
 Code Resonance/Code Resonance.sdf
+*.sdf
+Code Resonance/.vs/Code Resonance/v14/.suo
