@@ -8225,6 +8225,7 @@
 	  var mesh = builder.createMesh();
 	  window.mesh = mesh;
 	  scene.add(mesh);
+	  camera.position.y += 5;
 	});
 
 	function onWindowResize() {
@@ -8232,11 +8233,11 @@
 	  camera.updateProjectionMatrix();
 
 	  renderer.setSize(viewWidth, viewHeight);
-	  camera.position.y -= 5;
 	}
 	window.addEventListener('resize', onWindowResize, false);
 
 	var render = function render() {
+	  mesh.rotateY(0.1);
 	  renderer.render(scene, camera);
 	  requestAnimationFrame(render);
 	};

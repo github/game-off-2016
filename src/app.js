@@ -46,6 +46,7 @@ parser.parse("./assets/mmmm/vox/chr_fatkid.vox").then(function(voxelData) {
   var mesh = builder.createMesh();
   window.mesh = mesh;
   scene.add(mesh);
+  camera.position.y += 5;  
 });
 
 function onWindowResize(){
@@ -53,11 +54,11 @@ function onWindowResize(){
   camera.updateProjectionMatrix();
 
   renderer.setSize( viewWidth, viewHeight );
-  camera.position.y -= 5;
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
 var render = function() {
+  mesh.rotateY(0.1);
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 };
