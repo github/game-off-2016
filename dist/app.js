@@ -8178,9 +8178,10 @@
 /* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	var THREE = __webpack_require__(299);
+	window.THREE = THREE;
 	var vox = __webpack_require__(300);
 	var viewWidth = document.documentElement.clientWidth;
 	var viewHeight = document.documentElement.clientHeight;
@@ -8196,13 +8197,15 @@
 	0.1, // Near
 	10000 // Far
 	);
+
+	window.camera = camera;
 	camera.position.set(-15, 10, 15);
 	camera.lookAt(scene.position);
 
 	var geometry = new THREE.BoxGeometry(5, 5, 5);
 	var material = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
 	var mesh = new THREE.Mesh(geometry, material);
-	scene.add(mesh);
+	//scene.add( mesh );
 
 	var light = new THREE.PointLight(0xFFFF00);
 	light.position.set(10, 0, 10);
@@ -8211,13 +8214,33 @@
 	renderer.setClearColor(0xdddddd, 1);
 	renderer.render(scene, camera);
 
-	function onWindowResize() {
-	    camera.aspect = viewWidth / viewHeight;
-	    camera.updateProjectionMatrix();
+	var parser = new vox.Parser();
+	parser.parse("./assets/mmmm/vox/chr_fatkid.vox").then(function (voxelData) {
+	  // voxelData.voxels; // voxel position and color data 
+	  // voxelData.size; // model size 
+	  // voxelData.palette; // palette data
 
-	    renderer.setSize(viewWidth, viewHeight);
+	  var param = { voxelSize: 1 };
+	  var builder = new vox.MeshBuilder(voxelData, param);
+	  var mesh = builder.createMesh();
+	  window.mesh = mesh;
+	  scene.add(mesh);
+	});
+
+	function onWindowResize() {
+	  camera.aspect = viewWidth / viewHeight;
+	  camera.updateProjectionMatrix();
+
+	  renderer.setSize(viewWidth, viewHeight);
+	  camera.position.y -= 5;
 	}
 	window.addEventListener('resize', onWindowResize, false);
+
+	var render = function render() {
+	  renderer.render(scene, camera);
+	  requestAnimationFrame(render);
+	};
+	render();
 
 /***/ },
 /* 299 */
