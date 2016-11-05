@@ -37,8 +37,7 @@ export default class extends Phaser.Graphics {
       hash.y.push(point.y);
       return hash;
     }, {x: [], y: []});
-    console.log(pointPath, points);
-    let tween = this.game.add.tween(this).to(points, 500 * pointPath.length ,Phaser.Easing.Linear.None,true).onComplete.add(() => this.destroy());
+    this.game.add.tween(this).to(points, 500 * pointPath.length ,Phaser.Easing.Linear.None,true).onComplete.add(() => this.destroy());
   }
 
   update () {

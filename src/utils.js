@@ -9,3 +9,12 @@ export const setResponsiveWidth = (sprite, percent, parent) => {
   sprite.width = parent.width / (100 / percent)
   sprite.height = sprite.texture.height - (sprite.texture.height * percentWidth / 100)
 }
+
+export const distance = (source, target) => {
+
+  var dx = source.x - target.x;
+  var dy = source.y - target.y;
+
+  return Math.sqrt(dx * dx + dy * dy);
+
+}
