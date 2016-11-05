@@ -1,6 +1,10 @@
 /// <reference path="./typings/index.d.ts"/>
 
-import * as Phaser from 'phaser';
+import * as Phaser from "phaser";
+
+const GAME_WIDTH = 1920;
+const GAME_HEIGHT = 1080;
+const GAME_ID = "f5-game";
 
 class F5 {
 
@@ -8,10 +12,10 @@ class F5 {
 
     constructor() {
         this.game = new Phaser.Game(
-            1920,
-            1080,
+            GAME_WIDTH,
+            GAME_HEIGHT,
             Phaser.AUTO,
-            'f5-game',
+            GAME_ID,
             {
                 preload: this.preload,
                 create: this.create,
