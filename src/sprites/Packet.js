@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-let size = 5;
+const size = 5;
 export default class extends Phaser.Graphics {
 
   constructor ({ game, src, color  }) {
@@ -29,7 +29,16 @@ export default class extends Phaser.Graphics {
       dst.hit();
       this.destroy();
     });
+  }
 
+  sendAlongPath(pointPath) {
+    let points = pointPath.reduce((hash, point) => {
+      hash.x.push(point.x);
+      hash.y.push(point.y);
+      return hash;
+    }, {x: [], y: []});
+    console.log(pointPath, points);
+    let tween = this.game.add.tween(this).to(points, 500,Phaser.Easing.Linear.None,true).onComplete.add(() => this.destroy());
   }
 
   update () {

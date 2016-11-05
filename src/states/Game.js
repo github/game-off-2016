@@ -3,7 +3,9 @@ import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
 import Server from '../sprites/Server'
+import Grid from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
+import Graphlib from "graphlib"
 import times from 'times-loop'
 
 const GRID_COLS = 3
@@ -16,27 +18,55 @@ const ENEMY_SERVERS = 2
 
 export default class extends Phaser.State {
   init () {}
-  preload () {}
+  preload () {
+    this.networkGraph = new Graphlib.Graph({directed: false});
+    window.networkGraph = this.networkGraph;
+    window.Graphlib = Graphlib;
+  }
 
   create () {
     let clickSignal = new Phaser.Signal();
     var currentServer = null;
+    var target = null;
     clickSignal.add((server) => {
       if (currentServer == null) {
         if (server.canSendPacket()){
           currentServer = server;
+          target = new Target({
+            game,
+            source: server
+          });
+          game.add.existing(target);
         }
       } else {
         if (server != currentServer) {
           let packet = new Packet({game, src: currentServer});
           this.game.add.existing(packet);
-          packet.sendTo(server);
+
+          let path = this.grid.shortestPath(currentServer.logic.uuid, server.logic.uuid);
+          if (path == null) {
+            packet.sendTo(server);
+            this.networkGraph.setEdge(currentServer.logic.uuid, server.logic.uuid, {color: 0x00FF00});
+            this.grid.render();
+          } else {
+            console.log("SENDING ALONG PATH", path);
+            var pointPath = path.map((uuid) => {
+              let s = this.networkGraph.node(uuid).server;
+              return {
+                x: s.x,
+                y: s.y
+              }
+            });
+            packet.sendAlongPath(pointPath);
+          }
           currentServer = null;
+          target.kill();
         }
       }
     });
 
-    const locations = this.createServerLocationsInGrid(GRID_COLS, GRID_ROW, { cellPadding: SERVER_PADDING })
+
+    const locations = this.createServerLocationsInGrid(GRID_COLS, GRID_ROW, { cellPadding: SERVER_PADDING });
     const servers = locations.forEach((location, idx) => {
       let type
       if (idx <= BASE_SERVERS - 1) {
@@ -46,8 +76,16 @@ export default class extends Phaser.State {
       } else {
         type = NEUTRAL
       }
-      this.createServer(type, location, clickSignal)
-    })
+      let server = this.createServer(type, location, clickSignal);
+      this.networkGraph.setNode(server.logic.uuid, {server: server, logic: server.logic});
+    });
+
+
+    this.grid = new Grid({game, networkGraph: this.networkGraph});
+    this.game.add.existing(this.grid);
+    window.g = this.grid;
+
+
   }
 
   createServerLocationsInGrid(gridCols, gridRows, { cellPadding } = { cellPadding: 0 }) {
@@ -58,7 +96,9 @@ export default class extends Phaser.State {
       for (let row = 0; row < gridRows; row++) {
         locations.push({
           x: STAGE_PADDING + this.game.rnd.integerInRange(cellW * col + cellPadding, cellW * (col+1) - cellPadding),
-          y: STAGE_PADDING + this.game.rnd.integerInRange(cellH * row + cellPadding, cellH * (row+1) - cellPadding)
+          y: STAGE_PADDING + this.game.rnd.integerInRange(cellH * row + cellPadding, cellH * (row+1) - cellPadding),
+          c: col,
+          r: row
         })
       }
     }
@@ -74,6 +114,7 @@ export default class extends Phaser.State {
       ...location
     });
     this.game.add.existing(s);
+    return s;
   }
 
   render () {

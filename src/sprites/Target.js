@@ -1,20 +1,23 @@
 import Phaser from 'phaser'
 
-let width = 5;
+const width = 3;
+const defaultColor = 0x00FF00;
+const defaultAlpha = 0.5;
 export default class extends Phaser.Graphics {
 
   constructor ({ game, source, color }) {
-    super(game, source.x, source.y);
+    super(game, 0,0);
     this.game = game;
-    this.anchor.setTo(0.5);
+    this.anchor.setTo(0);
     this.source = source;
 
-    this.lineStyle(width, color || 0x000000, 1);
-    this.lineTo(10,10);
+    this.lineStyle(width, color || defaultColor, defaultAlpha);
   }
 
-
-  update () {
+  update() {
+    this.clear();
+    this.moveTo(this.source.x, this.source.y);
+    this.lineTo(this.game.input.x, this.game.input.y);
   }
 
 }

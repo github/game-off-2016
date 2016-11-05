@@ -1,3 +1,5 @@
+import UUID from "uuid"
+
 export const BASE = "BASE";
 export const NEUTRAL = "NEUTRAL";
 export const CAPTURED = "CAPTURED";
@@ -6,7 +8,8 @@ export const ENEMY_CAPTURED = "ENEMY_CAPTURED";
 
 export default class {
   constructor(type) {
-    this.type = type
+    this.type = type;
+    this.uuid = UUID.v4();
   }
 
   color() {

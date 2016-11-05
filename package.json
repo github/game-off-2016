@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "graphlib": "^2.1.1",
     "phaser": "^2.6.2",
-    "times-loop": "^2.0.0"
+    "times-loop": "^2.0.0",
+    "uuid": "^2.0.3"
   }
 }
