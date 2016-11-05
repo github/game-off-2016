@@ -1,3 +1,10 @@
-.PHONY: build
+NODE_BIN = ./node_modules/.bin
+
+.PHONY: build lint
+all: lint build
+
 build:
-	./node_modules/.bin/webpack
+	$(NODE_BIN)/webpack
+
+lint:
+	$(NODE_BIN)/tslint --project ./tsconfig.json
