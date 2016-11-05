@@ -3,3 +3,4 @@ unity/Temp
 *.csproj
 *.sln
 unity/obj
+*.userprefs
