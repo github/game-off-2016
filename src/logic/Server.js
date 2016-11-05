@@ -39,4 +39,12 @@ export default class {
         return
     }
   }
+
+  isEnemy() {
+    switch (this.type) {
+      case ENEMY: return true;
+      case ENEMY_CAPTURED: return true;
+      default: return false;
+    }
+  }
 }

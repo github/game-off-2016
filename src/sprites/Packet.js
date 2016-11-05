@@ -31,13 +31,17 @@ export default class extends Phaser.Graphics {
     });
   }
 
-  sendAlongPath(pointPath) {
+  sendAlongPath(pointPath, server) {
     let points = pointPath.reduce((hash, point) => {
       hash.x.push(point.x);
       hash.y.push(point.y);
       return hash;
     }, {x: [], y: []});
-    this.game.add.tween(this).to(points, 500 * pointPath.length ,Phaser.Easing.Linear.None,true).onComplete.add(() => this.destroy());
+    let t = this.game.add.tween(this).to(points, 500 * pointPath.length ,Phaser.Easing.Linear.None,true);
+    t.onComplete.add(() => {
+      server.hit();
+      this.destroy();
+    });
   }
 
   update () {

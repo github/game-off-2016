@@ -7,7 +7,8 @@ export const ENEMY = 'ENEMY';
 
 const width = 3;
 const defaultColor = 0x0000FF;
-const defaultAlpha = 0.1;
+const defaultAlpha = 0.0;
+
 export default class extends Phaser.Graphics {
 
   constructor ({ game, networkGraph }) {
@@ -23,10 +24,12 @@ export default class extends Phaser.Graphics {
     this.clear();
     this.networkGraph.edges().forEach((edge) => {
       let attributes = this.networkGraph.edge(edge);
-      // console.log(edge);
       switch(attributes.type) {
         case CAPTURED:
-          this.lineStyle(width, 0x00ff00, 0.8);
+          this.lineStyle(width, 0x00FF00, 0.8);
+          break;
+        case ENEMY:
+          this.lineStyle(width, 0xFF0000, 0.8);
           break;
         default:
           this.lineStyle(width, defaultColor, defaultAlpha);
@@ -45,7 +48,6 @@ export default class extends Phaser.Graphics {
     if (results[target].distance == Number.POSITIVE_INFINITY) {
       return null;
     }
-    console.log("D", results[target].distance);
     var path = [target];
     while (results[target].predecessor != src) {
       target = results[target].predecessor;
@@ -58,9 +60,15 @@ export default class extends Phaser.Graphics {
 
   weightFn(edge) {
     let attributes = this.networkGraph.edge(edge);
+    let v = this.networkGraph.node(edge.v);
+    let w = this.networkGraph.node(edge.w);
+
+    let distance = attributes.distance;
+    if (v.logic.isEnemy() || w.logic.isEnemy()) distance *= 2;
     switch(attributes.type) {
-      case CAPTURED: return attributes.distance / 5;
-      default: return attributes.distance;
+      case CAPTURED: return distance / 4;
+      case ENEMY: return distance * 4;
+      default: return distance;
     }
   }
 

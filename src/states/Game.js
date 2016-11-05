@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
 import Server from '../sprites/Server'
-import {default as Grid, SIMPLE, CAPTURED} from '../sprites/Grid'
+import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
 import {distance} from '../utils'
@@ -15,7 +15,7 @@ const SERVER_PADDING = 25
 const STAGE_PADDING = 75
 
 const BASE_SERVERS = 1
-const ENEMY_SERVERS = 2
+const ENEMY_SERVERS = 3
 
 export default class extends Phaser.State {
   init () {}
@@ -26,6 +26,10 @@ export default class extends Phaser.State {
   }
 
   create () {
+    this.grid = new Grid({game, networkGraph: this.networkGraph});
+    this.game.add.existing(this.grid);
+    window.g = this.grid;
+
     let clickSignal = new Phaser.Signal();
     var currentServer = null;
     var target = null;
@@ -41,10 +45,9 @@ export default class extends Phaser.State {
         }
       } else {
         if (server != currentServer) {
-          let packet = new Packet({game, src: currentServer});
-          this.game.add.existing(packet);
           let path = this.grid.shortestPath(currentServer.logic.uuid, server.logic.uuid);
 
+          // COLOR EDGES AS CAPTURED
           path.reduce((last, current) => {
             let e = this.networkGraph.edge({v: last, w: current});
             this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
@@ -52,6 +55,9 @@ export default class extends Phaser.State {
           }, currentServer.logic.uuid);
           this.grid.render();
 
+          // SEND PACKET
+          let packet = new Packet({game, src: currentServer});
+          this.game.add.existing(packet);
           var pointPath = path.map((uuid) => {
             let s = this.networkGraph.node(uuid).server;
             return {
@@ -59,8 +65,8 @@ export default class extends Phaser.State {
               y: s.y
             }
           });
-          server.hit();
-          packet.sendAlongPath(pointPath);
+          
+          packet.sendAlongPath(pointPath, server);
         }
         currentServer = null;
         target.kill();
@@ -89,18 +95,15 @@ export default class extends Phaser.State {
     servers.forEach((source) => {
       servers.forEach((target) => {
         if (target.logic.uuid != source.logic.uuid) {
+          let type = (target.logic.isEnemy() && source.logic.isEnemy()) ? ENEMY_EDGE : SIMPLE;
           this.networkGraph.setEdge(source.logic.uuid, target.logic.uuid, {
-            type: SIMPLE,
+            type,
             distance: distance(source, target)
           });
         }
       });
     });
-
-    this.grid = new Grid({game, networkGraph: this.networkGraph});
-    this.game.add.existing(this.grid);
-    window.g = this.grid;
-
+    this.grid.render();
 
   }
 
