@@ -1,0 +1,12 @@
+root = true
+
+[*]
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+end_of_line = lf
+
+[Makefile]
+indent_size = 8
+indent_style = tab
