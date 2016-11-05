@@ -1,0 +1,26 @@
+{
+  "compileOnSave": true,
+  "buildOnSave": true,
+  "compilerOptions": {
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "mapRoot": "../../dist",
+    "module": "es6",
+    "moduleResolution": "node",
+    "outDir": "../dist",
+    "sourceMap": true,
+    "target": "es5",
+    "baseUrl": "",
+    "typeRoots": [
+      "./typings"
+    ],
+    "types": [
+      "pixi.js"
+    ]
+  },
+  "exclude": [
+      "node_modules"
+  ]
+}
