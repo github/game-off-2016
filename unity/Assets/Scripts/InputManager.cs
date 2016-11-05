@@ -24,6 +24,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class InputManager : MonoBehaviour {
@@ -84,6 +85,17 @@ public class InputManager : MonoBehaviour {
 				GameObject block = bf.GetBlock();
 				block.transform.position = buttonPos.position;
 				block.GetComponent<BlockBehaviour>().StartShot(GetShotVec(key));
+			}
+		}
+
+		// Judge if symmetry
+		if( Input.GetKeyDown(KeyCode.Return) ) {
+			// とりあえず.
+			int sceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+			if( sceneIndex <= SceneManager.sceneCount ) {
+				SceneManager.LoadScene(sceneIndex);
+			} else {
+				SceneManager.LoadScene(0);
 			}
 		}
 	}
