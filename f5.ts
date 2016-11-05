@@ -1,6 +1,7 @@
 /// <reference path="./typings/index.d.ts"/>
 
 import * as Phaser from "phaser";
+import { WarState } from "./src/war_state";
 
 const GAME_WIDTH = 1920;
 const GAME_HEIGHT = 1080;
@@ -17,17 +18,17 @@ class F5 {
             Phaser.AUTO,
             GAME_ID,
             {
-                preload: this.preload,
                 create: this.create,
             }
         );
     }
 
-    preload() {
+    create() {
+        this.game.state.add("war", WarState, false);
+        this.game.state.start("war");
     }
 
-    create() {
-    }
 }
+
 
 window.onload = () => new F5();
