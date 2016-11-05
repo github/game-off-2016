@@ -1,4 +1,5 @@
 import * as Phaser from "phaser";
+import { Her } from "./her";
 
 export class WarState extends Phaser.State {
 
@@ -12,16 +13,16 @@ export class WarState extends Phaser.State {
         this.her = Her.create(this.game);
     }
 
-}
-
-class Her {
-
-    constructor(private sprite: Phaser.Sprite) { }
-
-    static create(game: Phaser.Game): Her {
-        let sprite = game.add.sprite(game.world.centerX, game.world.centerY, "her");
-        sprite.anchor.setTo(0.5, 0.5);
-        return new Her(sprite);
+    update() {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) {
+            this.her.moveRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) {
+            this.her.moveLeft();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP) {
+            this.her.moveUp();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN) {
+            this.her.moveDown();
+        }
     }
 
 }
