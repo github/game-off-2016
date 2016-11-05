@@ -66,8 +66,8 @@ export default class extends Phaser.Graphics {
     let distance = attributes.distance;
     if (v.logic.isEnemy() || w.logic.isEnemy()) distance *= 2;
     switch(attributes.type) {
-      case CAPTURED: return distance / 4;
-      case ENEMY: return distance * 4;
+      case CAPTURED: return distance / 2;
+      case ENEMY: return distance * 5;
       default: return distance;
     }
   }
