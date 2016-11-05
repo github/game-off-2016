@@ -25,15 +25,31 @@
 using UnityEngine;
 using System.Collections;
 
-public class NewBehaviourScript : MonoBehaviour {
+public class BlockBehaviour : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
+	private bool onShot = false;
+	private float shotSpeed = 0.3f;
+	private Vector3 shotVec = Vector3.zero;
+
+	public void StartShot( Vector3 vec ) {
+		onShot = true;
+		shotVec = vec;
+		gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
 	}
 	
-	// Update is called once per frame
 	void Update () {
-	
+		if( onShot ) {
+			transform.Translate( shotVec * shotSpeed);
+		}	
+	}
+
+	void OnCollisionEnter2D( Collision2D coll ) {
+		Debug.Log("Stop");
+		onShot = false;
+		gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+	}
+	void OnTriggerEnter2D( Collider2D other ) {
+		Debug.Log("Stop");
+		onShot = false;
 	}
 }
