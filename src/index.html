@@ -7,7 +7,16 @@
   </head>
   <body>
     <script src="pixi.min.js"></script>
-    <script src="main.js"></script>
+    <script src="system.js"></script>
+    <script>
+      System.defaultJSExtensions = true;
+      SystemJS.config({
+        baseURL: '/'
+      });
+
+      // loads /js/main.js
+      SystemJS.import('main');
+    </script>
 
   </body>
 </html>

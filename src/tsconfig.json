@@ -6,17 +6,17 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
-    "module": "es6",
+    "module": "system",
     "moduleResolution": "node",
-    "outDir": "../dist",
+    "outFile": "../dist/main.js",
     "sourceMap": true,
-    "target": "es5",
+    "target": "es6",
     "baseUrl": "",
     "typeRoots": [
       "./typings"
     ],
     "types": [
-      "pixi.js"
+      "PIXI"
     ]
   },
   "exclude": [
