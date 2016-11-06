@@ -1,4 +1,20 @@
-canvas{
+#canv{
     height: 500px;
     width: 500px;
+    /*-webkit-filter: blur(1px);
+    filter: blur(1px);*/
+}
+body{
+    background-color: #111111;
+}
+.center{
+    text-align: center;
+    margin: 50px;
+}
+#foot{
+    color: #191919;
+    text-align: center;
+}
+#foot a {
+    color: #191919;
 }
