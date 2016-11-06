@@ -8271,11 +8271,19 @@
 	}
 	window.addEventListener('resize', onWindowResize, false);
 
+	mesh.rotateY(0.1);
+
+	var frame = 0;
 	var render = function render() {
-	  mesh.rotateY(0.1);
+	  frame++;
+	  camera.position.x = Math.cos(frame * 0.004) * 100;
+	  camera.position.y = 50;
+	  camera.position.z = Math.sin(frame * 0.004) * 100;
+	  camera.lookAt(mesh.position);
 	  renderer.render(scene, camera);
 	  requestAnimationFrame(render);
 	};
+
 	render();
 
 /***/ },
