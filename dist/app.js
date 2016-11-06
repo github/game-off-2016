@@ -8190,7 +8190,42 @@
 	renderer.setSize(viewWidth, viewHeight);
 	document.body.appendChild(renderer.domElement);
 
+	var setLights = function setLights(scene) {
+	  console.log("Initiate lights...");
+	  var ambientLight = new THREE.AmbientLight(0x000033);
+	  scene.add(ambientLight);
+
+	  var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.9);
+	  hemiLight.color.setHSL(0.6, 1, 0.6);
+	  hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+	  hemiLight.position.set(0, 500, 0);
+	  scene.add(hemiLight);
+
+	  var dirLight = new THREE.DirectionalLight(0xffffff, 1);
+	  dirLight.color.setHSL(0.1, 1, 0.95);
+	  dirLight.position.set(10, 10.75, 10);
+	  dirLight.position.multiplyScalar(10);
+	  scene.add(dirLight);
+
+	  dirLight.castShadow = true;
+
+	  dirLight.shadowMapWidth = 2048;
+	  dirLight.shadowMapHeight = 2048;
+
+	  var d = 150;
+
+	  dirLight.shadowCameraLeft = -d;
+	  dirLight.shadowCameraRight = d;
+	  dirLight.shadowCamefraTop = d;
+	  dirLight.shadowCameraBottom = -d;
+
+	  dirLight.shadowCameraFar = 3500;
+	  dirLight.shadowBias = -0.0001;
+	  dirLight.shadowDarkness = 0.45;
+	};
+
 	var scene = new THREE.Scene();
+	setLights(scene);
 
 	var camera = new THREE.PerspectiveCamera(35, // Field of view
 	viewWidth / viewHeight, // Aspect ratio
@@ -8207,9 +8242,9 @@
 	var mesh = new THREE.Mesh(geometry, material);
 	//scene.add( mesh );
 
-	var light = new THREE.PointLight(0xFFFF00);
-	light.position.set(10, 0, 10);
-	scene.add(light);
+	// const light = new THREE.PointLight( 0xFFFF00 );
+	// light.position.set( 10, 0, 10 );
+	// scene.add( light );
 
 	renderer.setClearColor(0xdddddd, 1);
 	renderer.render(scene, camera);
