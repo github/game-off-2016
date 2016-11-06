@@ -71,20 +71,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)\Game Engine\include;$(SolutionDir)\Game Engine\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Game Engine\Libraries\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)\Game Engine\include;$(SolutionDir)\Game Engine\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Game Engine\Libraries\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <BuildLog>
       <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -100,10 +109,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <BuildLog>
       <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
@@ -123,6 +135,55 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\entity\boss.h" />
+    <ClInclude Include="include\entity\enemy.h" />
+    <ClInclude Include="include\entity\entity.h" />
+    <ClInclude Include="include\entity\gun.h" />
+    <ClInclude Include="include\entity\player.h" />
+    <ClInclude Include="include\entity\projectile.h" />
+    <ClInclude Include="include\entity\weapon.h" />
+    <ClInclude Include="include\game\application.h" />
+    <ClInclude Include="include\game\camera.h" />
+    <ClInclude Include="include\game\editorstate.h" />
+    <ClInclude Include="include\game\gamestate.h" />
+    <ClInclude Include="include\game\level.h" />
+    <ClInclude Include="include\game\map.h" />
+    <ClInclude Include="include\game\menu.h" />
+    <ClInclude Include="include\game\selectionstate.h" />
+    <ClInclude Include="include\gfx\spritesheet.h" />
+    <ClInclude Include="include\gfx\texture.h" />
+    <ClInclude Include="include\gfx\texutils.h" />
+    <ClInclude Include="include\physics\AABB.h" />
+    <ClInclude Include="include\physics\physics.h" />
+    <ClInclude Include="include\sfx\music.h" />
+    <ClInclude Include="include\utils\dirent.h" />
+    <ClInclude Include="include\utils\general.h" />
+    <ClInclude Include="include\utils\gui\button.h" />
+    <ClInclude Include="include\utils\gui\selectionitem.h" />
+    <ClInclude Include="include\utils\singleton.h" />
+    <ClInclude Include="include\utils\timer.h" />
+    <ClInclude Include="include\utils\vector2f.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\entity\gun.cpp" />
+    <ClCompile Include="src\entity\player.cpp" />
+    <ClCompile Include="src\entity\projectile.cpp" />
+    <ClCompile Include="src\entity\weapon.cpp" />
+    <ClCompile Include="src\game\application.cpp" />
+    <ClCompile Include="src\game\editorstate.cpp" />
+    <ClCompile Include="src\game\level.cpp" />
+    <ClCompile Include="src\game\map.cpp" />
+    <ClCompile Include="src\game\menu.cpp" />
+    <ClCompile Include="src\game\selectionstate.cpp" />
+    <ClCompile Include="src\gfx\spritesheet.cpp" />
+    <ClCompile Include="src\gfx\texture.cpp" />
+    <ClCompile Include="src\gfx\texutils.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\physics\physics.cpp" />
+    <ClCompile Include="src\sfx\music.cpp" />
+    <ClCompile Include="src\utils\gui\button.cpp" />
+    <ClCompile Include="src\utils\gui\selectionitem.cpp" />
+    <ClCompile Include="src\utils\timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
