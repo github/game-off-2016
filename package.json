@@ -4,11 +4,21 @@
   "description": "Game for Github Gameoff 2016",
   "main": "dist/index.html",
   "scripts": {
-    "deploy-libs": "cp node_modules/pixi.js/bin/pixi.min.* dist/",
-    "deploy-assets": "cp -r src/assets dist",
-    "deploy-static": "cp src/index.html dist/",
-    "deploy": "mkdir -p dist; npm run deploy-libs; npm run deploy-assets; npm run deploy-static",
-    "start": "cd dist; live-server"
+    "deploy-libs": "mkdir -p dist; cp node_modules/pixi.js/bin/pixi.min.* dist/",
+    "deploy-watch-assets": "sync-files -w src/assets dist/assets",
+    "deploy-watch-styles": "sync-files -w src/css dist/css",
+    "deploy-watch-html": "sync-files -w src/index.html dist/index.html",
+    "deploy-assets": "sync-files src/assets dist/assets",
+    "deploy-styles": "sync-files src/css dist/css",
+    "deploy-html": "sync-files src/index.html dist/index.html",
+
+    "deploy-watch": "npm run deploy-watch-assets & npm run deploy-watch-styles & npm run deploy-watch-html",
+    "build-tsc": "tsc --p src/tsconfig.json",
+    "build-tsc-watch": "tsc -w --p src/tsconfig.json",
+    "watch": "npm run deploy-watch & npm run build-tsc-watch & npm run deploy-libs",
+    "build": "npm run deploy & npm run build-tsc & npm run deploy-libs",
+    "serve": "cd dist; live-server",
+    "start": "npm run watch & npm run serve"
   },
   "repository": {
     "url": "git+https://github.com/ropilz/game-off-2016.git",
@@ -24,9 +34,9 @@
     "url": "https://github.com/ropilz/game-off-2016/issues"
   },
   "dependencies": {
-    "@types/pixi.js": "^3.0.30",
     "live-server": "^1.1.0",
     "pixi.js": "^4.1.1",
+    "sync-files": "^1.0.3",
     "typescript": "^2.0.7"
   }
 }

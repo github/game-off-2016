@@ -1,12 +1,11 @@
 {
-  "compileOnSave": true,
-  "buildOnSave": true,
+  "compileOnSave": false,
+  "buildOnSave": false,
   "compilerOptions": {
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
-    "mapRoot": "../../dist",
     "module": "es6",
     "moduleResolution": "node",
     "outDir": "../dist",
