@@ -312,13 +312,9 @@ void Game::input()
 	m_guiAll->input(_rValue, Globals::getInstance().m_keyStates, Globals::getInstance().m_mouseStates, _mousePos);
 
 	if(Globals::getInstance().m_keyStates[GLFW_KEY_ENTER] == 1)
-	{
 		m_zoneMap->deselect();
-	}
 	if(Globals::getInstance().m_keyStates[GLFW_KEY_BACKSPACE] == 1)
-	{
 		m_zoneMap->deleteVertex();
-	}
 
 	if((_rValue & 2) != 2 && Globals::getInstance().m_keyStates[GLFW_KEY_G] == 1)
 		m_showGrid = !m_showGrid;
@@ -329,49 +325,53 @@ void Game::input()
 		{
 			m_lmbDown = true;
 			if(m_selectLayer->getSelectedButton() == 4)
-				m_selectStart = {Sint32(floor((m_mouseBuffer.x + m_camPos.x)) - 1), Sint32(floor((m_mouseBuffer.y + m_camPos.y)) - 1)};
+				m_selectStart = {Sint32(floor((_mousePos.x + m_camPos.x)) - 1), Sint32(floor((_mousePos.y + m_camPos.y)) - 1)};
 		}
 	}
 	if(Globals::getInstance().m_mouseStates[1] == 1)
-	{
-		if(m_tileMapArea.checkPoint(GLfloat(m_mouseBuffer.x), GLfloat(m_mouseBuffer.y)))
-		{
+		if(m_tileMapArea.checkPoint(GLfloat(_mousePos.x), GLfloat(_mousePos.y)))
 			m_rmbDown = true;
-		}
-	}
 	if(Globals::getInstance().m_mouseStates[0] == 0)
-	{
 		m_lmbDown = false;
-	}
+	if(Globals::getInstance().m_mouseStates[0] == 3)
+		m_zoneMap->releaseVertex();
 	if(Globals::getInstance().m_mouseStates[1] == 0)
-	{
 		m_rmbDown = false;
-	}
 	if((_rValue & 1) == 0 && m_lmbDown && !m_rmbDown && m_mouseInArea)
 	{
 		if(!m_zoneMap->objectIsSelected())
 		{
-			switch(m_selectLayer->getSelectedButton())
+			if(!m_zoneMap->selectObject(m_selectLayer->getSelectedButton(), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos))
 			{
-			case 0:
-				m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("SlantBrick.png")));
-				break;
-			case 1:
-				m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("BinaryBrick.png")));
-				break;
-			case 2:
-				m_zoneMap->addWorldObject(2, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("GlitchBrick.png")));
-				break;
-			case 3:
-				// Do stampy things
-				break;
+				switch(m_selectLayer->getSelectedButton())
+				{
+				case 0:
+					m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("SlantBrick.png")));
+					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
+					break;
+				case 1:
+					m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("BinaryBrick.png")));
+					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
+					break;
+				case 2:
+					m_zoneMap->addWorldObject(2, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("GlitchBrick.png")));
+					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
+					break;
+				case 3:
+					// Do stampy things
+					break;
+				}
 			}
 		}
-		m_zoneMap->addVertex((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos));
+		else
+			if(m_zoneMap->grabVertex(Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos) == -1)
+				m_zoneMap->addVertex(Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos);
 		m_lmbDown = false;
 	}
 	else if(m_rmbDown && (_rValue & 1) == 0)
 		m_camPos = m_camPos + (Vector2<GLfloat>(m_mouseBuffer) - Vector2<GLfloat>(_mousePos)) / Globals::getInstance().m_zoom;
+
+	m_zoneMap->highlightObject(m_selectLayer->getSelectedButton(), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos);
 
 	m_mouseBuffer = _mousePos;
 	m_mouseInArea = ((_rValue & 1) == 0
@@ -457,6 +457,8 @@ void Game::update()
 		m_guiTop->findComponent("TEXT_POS")->setTitle("Select Pos\nX:" + Util::numToString(Sint32((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos).x)) + "\nY:" + Util::numToString(Sint32((Vector2<GLfloat>(m_mouseBuffer) / Globals::getInstance().m_zoom + m_camPos).y)));
 	else
 		m_guiTop->findComponent("TEXT_POS")->setTitle("Select Pos\nX:NA\nY:NA");
+
+	m_zoneMap->update(Vector2<GLfloat>(Globals::getInstance().m_mousePos) / Globals::getInstance().m_zoom + m_camPos);
 
 	m_zoneMap->setViewSize(m_tileMapArea);
 	m_zoneMap->setGridVisible(m_showGrid);

@@ -21,7 +21,7 @@ public:
 		Vector2<Sint32> m_pos; // lowest x and lowest y values of vertices
 		Vector2<Sint32> m_size; // difference of highest x and y with lowest x and y
 		std::vector<Vector2<Sint32>> m_vertices;
-		std::vector<Vector2<Sint32>> m_triangles;
+		std::vector<Uint16> m_triangles; // Vertex indices
 
 		WorldObject(std::string p_name, Uint16 p_interactionType)
 		{
@@ -29,13 +29,49 @@ public:
 			m_interactionType = p_interactionType;
 		}
 
+		void moveVertex(Uint16 p_loc, Vector2<Sint32> p_vertex)
+		{
+			m_vertices[p_loc] = p_vertex;
+			if(m_vertices.size() > 2)
+				m_triangles = Math::triangulateIndex(m_vertices);
+
+			m_pos = m_vertices[0];
+			Vector2<Sint32> m_max = m_vertices[0];
+
+			for(Uint16 i = 1; i < m_vertices.size(); i++)
+			{
+				m_pos.x = min(m_pos.x, m_vertices[i].x);
+				m_pos.y = min(m_pos.y, m_vertices[i].y);
+				m_max.x = max(m_max.x, m_vertices[i].x);
+				m_max.y = max(m_max.y, m_vertices[i].y);
+			}
+			m_size = m_max - m_pos;
+		}
+
+		void insertVertex(Vector2<Sint32> p_vertex, Uint16 p_loc)
+		{
+			m_vertices.insert(m_vertices.begin() + p_loc, p_vertex);
+			if(m_vertices.size() > 2)
+				m_triangles = Math::triangulateIndex(m_vertices);
+
+			m_pos = m_vertices[0];
+			Vector2<Sint32> m_max = m_vertices[0];
+
+			for(Uint16 i = 1; i < m_vertices.size(); i++)
+			{
+				m_pos.x = min(m_pos.x, m_vertices[i].x);
+				m_pos.y = min(m_pos.y, m_vertices[i].y);
+				m_max.x = max(m_max.x, m_vertices[i].x);
+				m_max.y = max(m_max.y, m_vertices[i].y);
+			}
+			m_size = m_max - m_pos;
+		}
+
 		void addVertex(Vector2<Sint32> p_vertex)
 		{
 			m_vertices.push_back(p_vertex);
 			if(m_vertices.size() > 2)
-			{
-				m_triangles = Math::triangulate(m_vertices);
-			}
+				m_triangles = Math::triangulateIndex(m_vertices);
 
 			m_pos = m_vertices[0];
 			Vector2<Sint32> m_max = m_vertices[0];
@@ -55,7 +91,7 @@ public:
 			m_vertices.erase(m_vertices.begin() + p_index);
 			if(m_vertices.size() > 2)
 			{
-				m_triangles = Math::triangulate(m_vertices);
+				m_triangles = Math::triangulateIndex(m_vertices);
 
 				m_pos = m_vertices[0];
 				Vector2<Sint32> m_max = m_vertices[0];
@@ -84,7 +120,8 @@ private:
 
 	bool m_layerVisible[3];
 
-	Sint16 m_selected[3];
+	Sint16 m_selected[3], m_highlight[3];
+	Sint16 m_heldVertex;
 
 	std::vector<Texture> m_textures;
 
@@ -105,6 +142,10 @@ public:
 
 	void addVertex(Vector2<Sint32>);
 	bool objectIsSelected();
+	Sint16 grabVertex(Vector2<Sint32>);
+	void releaseVertex();
+	Sint16 highlightObject(Sint8 p_layer, Vector2<Sint32>);
+	bool selectObject(Sint8 p_layer, Vector2<Sint32>);
 	void deselect();
 	void deleteVertex();
 	Uint16 addWorldObject(Uint8 p_layer, WorldObject p_object, Texture p_texture);
@@ -112,6 +153,7 @@ public:
 	Uint16 getWorldObjectSize(Uint8 p_layer);
 	void removeWorldObject(Uint8 p_layer, Uint16 p_index);
 
+	void update(Vector2<Sint32> p_mousePos);
 	void render(Vector2<Sint32> p_camPos);
 
 	void save();

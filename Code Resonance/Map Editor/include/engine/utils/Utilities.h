@@ -72,6 +72,122 @@ namespace Math
 
 		return _alpha + _beta >= 1;
 	}
+	static std::vector<Uint16> triangulateIndex(std::vector<Vector2<Sint32>> p_polygon)
+	{
+		std::vector<Uint16> _reflex;
+		std::vector<Uint16> _triangles;
+		std::vector<Uint16> _indexList;
+		for(Uint16 i = 0; i < p_polygon.size(); i++)
+			_indexList.push_back(i);
+
+		if(p_polygon.size() < 3)
+		{
+			_triangles.clear();
+			for(Uint16 i = 0; i < p_polygon.size(); i++)
+				_triangles.push_back(i);
+			return _triangles;
+		}
+
+		Vector2<Sint32> _left = p_polygon[0];
+		Sint32 index = 0;
+
+		for(Sint32 i = 0; i < Sint32(p_polygon.size()); ++i)
+		{
+			if(p_polygon[i].x < _left.x ||
+				(p_polygon[i].x == _left.x && p_polygon[i].y < _left.y))
+			{
+				index = i;
+				_left = p_polygon[i];
+			}
+		}
+
+		std::vector<Vector2<Sint32>> _tri;
+		_tri.push_back(p_polygon[(index > 0) ? index - 1 : p_polygon.size() - 1]);
+		_tri.push_back(p_polygon[index]);
+		_tri.push_back(p_polygon[(index < Sint32(p_polygon.size()) - 1) ? index + 1 : 0]);
+		bool ccw = orientation(_tri);
+
+		_triangles.reserve(p_polygon.size() - 2);
+
+		if(p_polygon.size() == 3)
+		{
+			_triangles.clear();
+			for(Uint16 i = 0; i < p_polygon.size(); i++)
+				_triangles.push_back(i);
+			return _triangles;
+		}
+		while(p_polygon.size() >= 0)
+		{
+			_reflex.clear();
+			Sint16 eartip = -1, index = -1;
+			for(auto& i : p_polygon)
+			{
+				++index;
+				if(eartip >= 0) break;
+
+				Uint16 p = Uint16((index > 0) ? index - 1 : p_polygon.size() - 1);
+				Uint16 n = Uint16((index < Sint16(p_polygon.size()) - 1) ? index + 1 : 0);
+
+				std::vector<Vector2<Sint32>> tri{p_polygon[p], i, p_polygon[n]};
+				if(orientation(tri) != ccw)
+				{
+					_reflex.emplace_back(index);
+					continue;
+				}
+
+				bool ear = true;
+				for(auto& j : _reflex)
+				{
+					if(j == p || j == n) continue;
+					if(inTriangle(p_polygon[j], p_polygon[p], i, p_polygon[n]))
+					{
+						ear = false;
+						break;
+					}
+				}
+
+				if(ear)
+				{
+					auto j = p_polygon.begin() + index + 1,
+						k = p_polygon.end();
+
+					for(; j != k; ++j)
+					{
+						auto& v = *j;
+
+						if(&v == &p_polygon[p] ||
+							&v == &p_polygon[n] ||
+							&v == &p_polygon[index]) continue;
+
+						if(inTriangle(v, p_polygon[p], i, p_polygon[n]))
+						{
+							ear = false;
+							break;
+						}
+					}
+				}
+
+				if(ear) eartip = index;
+			}
+
+			if(eartip < 0) break;
+
+			Uint16 p = Uint16((eartip > 0) ? eartip - 1 : p_polygon.size() - 1);
+			Uint16 n = Uint16((eartip < Sint16(p_polygon.size()) - 1) ? eartip + 1 : 0);
+			Vector2<Sint32>* parts[3] = {
+				&p_polygon[p], &p_polygon[eartip], &p_polygon[n]
+			};
+			_triangles.push_back(_indexList[p]);
+			_triangles.push_back(_indexList[eartip]);
+			_triangles.push_back(_indexList[n]);
+
+			// Clip the ear from the polygon.
+			p_polygon.erase(p_polygon.begin() + eartip);
+			_indexList.erase(_indexList.begin() + eartip);
+		}
+
+		return _triangles;
+	}
 	static std::vector<Vector2<Sint32>> triangulate(std::vector<Vector2<Sint32>> p_polygon)
 	{
 		std::vector<Uint16> _reflex;

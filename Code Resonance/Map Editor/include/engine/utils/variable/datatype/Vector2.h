@@ -18,7 +18,7 @@ struct Vector2
 		x(p_x), y(p_y) {}
 
 	template< class C >
-	Vector2< T >(Vector2< C > p_v)
+	Vector2<T>(Vector2< C > p_v)
 	{
 		x = T(p_v.x);
 		y = T(p_v.y);
@@ -26,47 +26,47 @@ struct Vector2
 
 	Vector2 operator+(T v) const
 	{
-		return Vector2< T >(x + v, y + v);
+		return Vector2<T>(x + v, y + v);
 	}
 	Vector2 operator+(Vector2 v) const
 	{
-		return Vector2< T >(x + v.x, y + v.y);
+		return Vector2<T>(x + v.x, y + v.y);
 	}
 
 	Vector2 operator-(T v) const
 	{
-		return Vector2< T >(x - v, y - v);
+		return Vector2<T>(x - v, y - v);
 	}
 	Vector2 operator-(Vector2 v) const
 	{
-		return Vector2< T >(x - v.x, y - v.y);
+		return Vector2<T>(x - v.x, y - v.y);
 	}
 
 	Vector2 operator/(T v) const
 	{
-		return Vector2< T >(x / v, y / v);
+		return Vector2<T>(x / v, y / v);
 	}
 	Vector2 operator/(Vector2 v) const
 	{
-		return Vector2< T >(x / v.x, y / v.y);
+		return Vector2<T>(x / v.x, y / v.y);
 	}
 
 	Vector2 operator*(T v) const
 	{
-		return Vector2< T >(x*v, y*v);
+		return Vector2<T>(x*v, y*v);
 	}
 	Vector2 operator*(Vector2 v) const
 	{
-		return Vector2< T >(x*v.x, y*v.y);
+		return Vector2<T>(x*v.x, y*v.y);
 	}
 
 	Vector2 operator%(Uint16 v) const
 	{
-		return Vector2< T >(fmod(x, v), fmod(y, v));
+		return Vector2<T>(fmod(x, v), fmod(y, v));
 	}
-	Vector2 operator%(Vector2< Uint16 > v) const
+	Vector2 operator%(Vector2<Uint16> v) const
 	{
-		return Vector2< T >(fmod(x, v.x), fmod(y, v.y));
+		return Vector2<T>(fmod(x, v.x), fmod(y, v.y));
 	}
 
 	bool operator==(Vector2 v) const
@@ -74,29 +74,34 @@ struct Vector2
 		return bool(x == v.x && y == v.y);
 	}
 
-	Vector2< T > abs(GLfloat p_denominator = 1)
+	Vector2<T> abs(GLfloat p_denom = 1)
 	{
-		return Vector2< T >(fabsf(GLfloat(x) / p_denominator, p_val), fabsf(GLfloat(y) / p_denominator, p_val));
+		return Vector2<T>(fabsf(GLfloat(x) / p_denom, p_val), fabsf(GLfloat(y) / p_denom, p_val));
 	}
 
-	Vector2< T > floor(GLfloat p_denominator = 1)
+	Vector2<T> floor(GLfloat p_denom = 1)
 	{
-		return Vector2< T >(floorf(GLfloat(x) / p_denominator, p_val), floorf(GLfloat(y) / p_denominator, p_val));
+		return Vector2<T>(floorf(GLfloat(x) / p_denom, p_val), floorf(GLfloat(y) / p_denom, p_val));
 	}
 
-	Vector2< T > round(GLfloat p_denominator = 1)
+	Vector2<T> round(GLfloat p_denom = 1)
 	{
-		return Vector2< T >(roundf(GLfloat(x) / p_denominator, p_val), roundf(GLfloat(y) / p_denominator, p_val));
+		return Vector2<T>(roundf(GLfloat(x) / p_denom, p_val), roundf(GLfloat(y) / p_denom, p_val));
 	}
 
-	Vector2< T > ceil(GLfloat p_denominator = 1)
+	Vector2<T> ceil(GLfloat p_denom = 1)
 	{
-		return Vector2< T >(ceilf(GLfloat(x) / p_denominator, p_val), ceilf(GLfloat(y) / p_denominator, p_val));
+		return Vector2<T>(ceilf(GLfloat(x) / p_denom, p_val), ceilf(GLfloat(y) / p_denom, p_val));
 	}
 
-	Vector2< T > mod(T p_val)
+	Vector2<T> mod(T p_val)
 	{
-		return Vector2< T >(modf(x, p_val), modf(y, p_val));
+		return Vector2<T>(modf(x, p_val), modf(y, p_val));
+	}
+
+	GLfloat dot(Vector2<T> p_vec)
+	{
+		return GLfloat(x * p_vec.x + y * p_vec.y);
 	}
 
 	float getLength()
