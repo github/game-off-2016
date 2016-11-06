@@ -32,8 +32,8 @@
     var COLOR_BLUE      =   "#00FF00";
     var COLOR_BLACK      =   "#222222";
     var COLOR_WHITE      =   "#FFFFFF";
-    var img_bk=null;img_bk = new Image();img_bk.src = "brown.png";
-    var img_title=null;img_title = new Image();img_title.src = "PONGOUT.png";
+    var img_bk=null;img_bk = new Image();img_bk.src = "assets/brown.png";
+    var img_title=null;img_title = new Image();img_title.src = "assets/PONGOUT.png";
 
 
     //val
