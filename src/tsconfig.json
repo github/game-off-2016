@@ -6,11 +6,10 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
-    "module": "system",
+    "module": "es6",
     "moduleResolution": "node",
-    "outFile": "../dist/main.js",
     "sourceMap": true,
-    "target": "es6",
+    "target": "es5",
     "baseUrl": "",
     "typeRoots": [
       "./typings"

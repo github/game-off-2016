@@ -1,3 +1,8 @@
+import {Subject} from 'rxjs/subject';
+
+let a = new Subject();
+
+debugger;
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 PIXI.DEFAULT_RENDER_OPTIONS.antialias = false;
 PIXI.DEFAULT_RENDER_OPTIONS.roundPixels = true;
