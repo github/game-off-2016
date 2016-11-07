@@ -144,10 +144,10 @@
         }
         var x,y;
         status_breakout.block=[]
-        for(var _y=0;_y<=5;_y++){
+        for(var _y=0;_y<=4;_y++){
             for(var _x=0;_x<=5;_x++){
                 x=(LEN_LONG-LEN_SHORT)/2+BALL_SIZE/4+_x*BALL_SIZE*5+_x
-                y=_y*BALL_SIZE+_y*BALL_SIZE*0.5+(BALL_SIZE/2)
+                y=_y*BALL_SIZE+_y*BALL_SIZE*0.5+(BALL_SIZE*1.5)
                 status_breakout.block.push({x:x,
                                             y:y,
                                             w: BALL_SIZE*5,   
@@ -814,17 +814,17 @@
             status_score.life+=1
             beep("1up")
             var x,y;
-            for(var _y=0;_y<=5;_y++){
+            for(var _y=0;_y<=4;_y++){
                 for(var _x=0;_x<=5;_x++){
                     x=(LEN_LONG-LEN_SHORT)/2+BALL_SIZE/4+_x*BALL_SIZE*5+_x
-                    y=_y*BALL_SIZE+_y*BALL_SIZE*0.5+(BALL_SIZE/2)
+                    y=_y*BALL_SIZE+_y*BALL_SIZE*0.5+(BALL_SIZE*1.5)
                     status_breakout.block.push({x:x,
                                                 y:y,
                                                 w: BALL_SIZE*5,   
                                                 h: BALL_SIZE,   
                                             });
                 }
-            }   
+            }    
       }
       if(status_score.life==0){
         beep("gameover")
