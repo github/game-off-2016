@@ -251,7 +251,7 @@
         //enemy move
         if(status_pong.x+BALL_SIZE+BALL_SIZE<=(LEN_LONG-LEN_SHORT)/2){
             var x=cycle%5==0?9:6;
-            if(wait==true&&cycle>3){
+            if(wait==true&&cycle>2){
                 if(enemy_y<status_pong.y){
                     enemy_y=enemy_y-1*(enemy_y-status_breakout.y)/x
                 }else{
