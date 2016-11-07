@@ -3,6 +3,23 @@ window.THREE = THREE;
 const vox = require('vox.js');
 const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
+const modelNames = require('./modelNames.json');
+
+var sel = document.getElementById('modelSelector');
+var fragment = document.createDocumentFragment();
+
+modelNames.forEach(function(modelName) {
+    var opt = document.createElement('option');
+    opt.innerHTML = modelName;
+    opt.value = modelName;
+    fragment.appendChild(opt);
+});
+
+sel.addEventListener('change', function(event){
+  loadModel(event.target.value);
+});
+
+sel.appendChild(fragment);
 
 const renderer = new THREE.WebGLRenderer( {antialias: true} );
     renderer.setSize( viewWidth, viewHeight );
@@ -42,6 +59,7 @@ const setLights = function(scene) {
   dirLight.shadowDarkness = 0.45;
 };
 
+let focus;
 const scene = new THREE.Scene();
 setLights(scene);
 
@@ -59,30 +77,30 @@ camera.lookAt( scene.position );
 
 const geometry = new THREE.BoxGeometry( 5, 5, 5 );
 const material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
-const mesh = new THREE.Mesh( geometry, material );
-//scene.add( mesh );
-
-// const light = new THREE.PointLight( 0xFFFF00 );
-// light.position.set( 10, 0, 10 );
-// scene.add( light );
+const box = new THREE.Mesh( geometry, material );
+focus = box;
+scene.add( box );
 
 renderer.setClearColor( 0xdddddd, 1);
 renderer.render( scene, camera );
 
 
-var parser = new vox.Parser();
-parser.parse("./assets/mmmm/vox/chr_fatkid.vox").then(function(voxelData) {
-  // voxelData.voxels; // voxel position and color data 
-  // voxelData.size; // model size 
-  // voxelData.palette; // palette data
-
-  var param = { voxelSize: 1 };
-  var builder = new vox.MeshBuilder(voxelData, param);
-  var mesh = builder.createMesh();
-  window.mesh = mesh;
-  scene.add(mesh);
-  camera.position.y += 5;  
-});
+function loadModel(modelName){
+  var parser = new vox.Parser();
+  parser.parse(`./assets/mmmm/vox/${modelName}`).then(function(voxelData) {
+    scene.children.forEach(function(child){
+      if(child.type === 'Mesh'){
+        scene.remove(child);
+      }
+    });
+    var param = { voxelSize: 1 };
+    var builder = new vox.MeshBuilder(voxelData, param);
+    var mesh = builder.createMesh();
+    focus = mesh;
+    scene.add(mesh);
+    camera.position.y += 5;  
+  });
+}
 
 function onWindowResize(){
   camera.aspect = viewWidth / viewHeight;
@@ -92,7 +110,6 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
-mesh.rotateY(0.1);
 
 var frame = 0;
 var render = function() {
@@ -100,9 +117,10 @@ var render = function() {
   camera.position.x = Math.cos(frame * 0.004) * 100;
   camera.position.y = 50;
   camera.position.z = Math.sin(frame * 0.004) * 100;
-  camera.lookAt(mesh.position);  
+  camera.lookAt(focus.position);  
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 };
 
+loadModel('chr_fatkid.vox');
 render();
