@@ -1,16 +1,21 @@
 import * as Phaser from "phaser";
 import { Her } from "./her";
+import { SmallFish } from "./small_fish";
+
+const SPRITESHEETS_PATH = "assets/spritesheets";
 
 export class WarState extends Phaser.State {
 
     private her: Her;
 
     preload() {
-        this.game.load.image("her", "assets/spritesheets/main_char.png");
+        this.game.load.image("her", `${SPRITESHEETS_PATH}/main_char.png`);
+        this.game.load.image("small_fish", `${SPRITESHEETS_PATH}/small_fish.png`);
     }
 
     create() {
         this.her = Her.create(this.game);
+        SmallFish.create(this.game);
     }
 
     update() {
