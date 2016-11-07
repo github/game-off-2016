@@ -669,14 +669,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1577114118}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d8238cc53530b64fbb7828c3d3bb591, type: 3}
+  m_Script: {fileID: 11500000, guid: e08af0f64f1be97408a3620fb0885f79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 651311726}
-  damping: 0
-  lookAheadFactor: 0
-  lookAheadReturnSpeed: 0.5
-  lookAheadMoveThreshold: 0.1
+  PlayerCharacter: {fileID: 651311726}
+  horizontalEdgeBuffer: 6
+  verticalEdgeBuffer: 4
 --- !u!1001 &1596594541
 Prefab:
   m_ObjectHideFlags: 0
