@@ -531,10 +531,10 @@
         canv_pong.width=ctx.canvas.width;
         canv_pong.height=ctx.canvas.height;
         ctx_pong.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
-        ctx_pong.shadowBlur = 20;
-        ctx_pong.shadowColor = "rgba(0, 0, 0, 0.2)";
-        ctx_pong.shadowOffsetX = 2;
-        ctx_pong.shadowOffsetY = 2;
+        // ctx_pong.shadowBlur = 20;
+        // ctx_pong.shadowColor = "rgba(0, 0, 0, 0.2)";
+        // ctx_pong.shadowOffsetX = 2;
+        // ctx_pong.shadowOffsetY = 2;
 
         if(!firstStandby){
             //ball fill
@@ -601,10 +601,10 @@
         canv_breakout.height=ctx.canvas.height;
         ctx_breakout.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
         ctx_breakout.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
-        ctx_breakout.shadowBlur = 20;
-        ctx_breakout.shadowColor = "rgba(0, 0, 0, 0.2)";
-        ctx_breakout.shadowOffsetX = 2;
-        ctx_breakout.shadowOffsetY = 2;
+        // ctx_breakout.shadowBlur = 20;
+        // ctx_breakout.shadowColor = "rgba(0, 0, 0, 0.2)";
+        // ctx_breakout.shadowOffsetX = 2;
+        // ctx_breakout.shadowOffsetY = 2;
         if(!firstStandby){
             //ball fill
             ctx_breakout.fillStyle = COLOR_WHITE;
