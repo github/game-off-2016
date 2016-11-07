@@ -45,6 +45,8 @@
     logo_draw=false;
     standby=true;
     firstStandby=true;
+    wait=true;
+    cycle=1;
     seed=0
 
     //status
@@ -115,13 +117,15 @@
         }
         initPong()
         initBreakout()
+ 
     }
 
     function initPong(){
         status_pong.x=(LEN_LONG/2|0);
         status_pong.y=(LEN_LONG/2)+(LEN_SHORT/2)*(0.5-Math.random())|0;
         status_pong.vec[0]=-2
-
+        enemy_y=(LEN_LONG/2|0);
+        cycle=1;
         if(Math.round()<0.5){
              status_pong.vec[1]=3.2
         }else{
@@ -159,6 +163,9 @@
             standby=false
             status_score.gameover=false
             firstStandby=false
+            setTimeout(function(){
+                    wait=false
+                },500)
         }
     }
 
@@ -206,16 +213,19 @@
             status_pong.x=LEN_LONG/2;
             status_score.pong_score+=1
             beep("win")
+            cycle+=1
         }
         if(status_pong.x+BALL_SIZE>LEN_LONG){
             status_pong.vec[0]=-1*Math.abs(status_pong.vec[0])
             status_score.life-=1
             calcScore()
             beep("miss")
+            cycle+=1
         }
         if(status_pong.y<_top){
             status_pong.vec[1]=Math.abs(status_pong.vec[1])
             beep("wall")
+
         }
         if(status_pong.y+BALL_SIZE>_bottom){
             status_pong.vec[1]=-1*Math.abs(status_pong.vec[1])
@@ -233,23 +243,44 @@
             if(enemy_y-1*(BALL_SIZE*5/2)<=status_pong.y && enemy_y+1*(BALL_SIZE*5/2)>=status_pong.y ){
                 status_pong.vec[0]=Math.abs(status_pong.vec[0])
                 beep("enemy")
+                cycle+=1
             }
         }
 
 
         //enemy move
         if(status_pong.x+BALL_SIZE+BALL_SIZE<=(LEN_LONG-LEN_SHORT)/2){
-            if(enemy_y<status_pong.y){
-                enemy_y=enemy_y-1*(enemy_y-status_pong.y)/8
+            var x=cycle%5==0?9:6;
+            if(wait==true&&cycle>3){
+                if(enemy_y<status_pong.y){
+                    enemy_y=enemy_y-1*(enemy_y-status_breakout.y)/x
+                }else{
+                    enemy_y=enemy_y-1*(enemy_y-status_breakout.y)/x
+                }
             }else{
-                enemy_y=enemy_y-1*(enemy_y-status_pong.y)/8
+                if(enemy_y<status_pong.y){
+                    enemy_y=enemy_y-1*(enemy_y-status_pong.y)/x
+                }else{
+                    enemy_y=enemy_y-1*(enemy_y-status_pong.y)/x
+                }
             }
+
         }else{
-            if(enemy_y<status_pong.y){
-                enemy_y=enemy_y-1*(enemy_y-status_pong.y)/20
+            var x=20;
+            if(wait==true&&cycle>3){
+                if(enemy_y<status_pong.y){
+                    enemy_y=enemy_y-1*(enemy_y-status_breakout.y)/x
+                }else{
+                    enemy_y=enemy_y-1*(enemy_y-status_breakout.y)/x
+                } 
             }else{
-                enemy_y=enemy_y-1*(enemy_y-status_pong.y)/20
-            } 
+                if(enemy_y<status_pong.y){
+                    enemy_y=enemy_y-1*(enemy_y-status_pong.y)/x
+                }else{
+                    enemy_y=enemy_y-1*(enemy_y-status_pong.y)/x
+                } 
+            }
+
         }
 
 
@@ -272,9 +303,18 @@
             status_pong.y=status_pong.y+gra
         }
         if(status_pong.x<(LEN_LONG/2) && status_pong.vec[0]>0 ){
-            status_pong.x=status_pong.x+Math.abs(LEN_LONG/2-status_pong.x)/25
+            status_pong.x=status_pong.x+Math.abs(LEN_LONG/2-status_pong.x)/20
         }else if(status_pong.x>(LEN_LONG/2) && status_pong.vec[0]<0 ){
-            status_pong.x=status_pong.x-Math.abs(LEN_LONG/2-status_pong.x)/25
+            status_pong.x=status_pong.x-Math.abs(LEN_LONG/2-status_pong.x)/20
+        }
+
+        //もや音
+        if(dist<60&&wait==false){
+            wait=true;
+            beep("moya");
+            setTimeout(function(){
+                wait=false
+            },1000)
         }
 
     }
@@ -361,9 +401,10 @@
             status_breakout.y=status_breakout.y+gra/2
         }
 
-        if(status_breakout.y>(LEN_LONG/2) && status_breakout.vec[1]<0 ){
-            status_breakout.y=status_breakout.y-Math.abs(LEN_LONG/2-status_breakout.y)/25
+        if(status_breakout.y>(LEN_LONG/4) && status_breakout.vec[1]<0 ){
+            status_breakout.y=status_breakout.y-Math.abs(LEN_LONG/4-status_breakout.y)/25
         }
+
 
     }
     function collision(idx){
@@ -490,6 +531,10 @@
         canv_pong.width=ctx.canvas.width;
         canv_pong.height=ctx.canvas.height;
         ctx_pong.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
+        ctx_pong.shadowBlur = 20;
+        ctx_pong.shadowColor = "rgba(0, 0, 0, 0.2)";
+        ctx_pong.shadowOffsetX = 2;
+        ctx_pong.shadowOffsetY = 2;
 
         if(!firstStandby){
             //ball fill
@@ -516,6 +561,7 @@
         ctx_pong.globalAlpha = 1;
         ctx_pong.fillRect(x,y,w,h);
         ctx_pong.fill();
+        
         //bar stroke
         ctx_pong.strokeStyle  = COLOR_RED;
         ctx_pong.lineWidth =1;
@@ -554,7 +600,11 @@
         canv_breakout.width=ctx.canvas.width;
         canv_breakout.height=ctx.canvas.height;
         ctx_breakout.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
-
+        ctx_breakout.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
+        ctx_breakout.shadowBlur = 20;
+        ctx_breakout.shadowColor = "rgba(0, 0, 0, 0.2)";
+        ctx_breakout.shadowOffsetX = 2;
+        ctx_breakout.shadowOffsetY = 2;
         if(!firstStandby){
             //ball fill
             ctx_breakout.fillStyle = COLOR_WHITE;
