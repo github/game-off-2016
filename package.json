@@ -21,6 +21,7 @@
     "url": "https://github.com/ropilz/game-off-2016/issues"
   },
   "dependencies": {
+    "@types/chai": "^3.4.34",
     "clean-webpack-plugin": "^0.1.14",
     "copy-webpack-plugin": "^4.0.0",
     "html-webpack-plugin": "^2.24.1",
