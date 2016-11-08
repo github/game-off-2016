@@ -76,11 +76,28 @@ const camera = new THREE.PerspectiveCamera(
 window.camera = camera;
 camera.position.set( 0, 5, 10 );
 
-const geometry = new THREE.BoxGeometry( 5, 5, 5 );
-const material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
-const box = new THREE.Mesh( geometry, material );
+var geometry = new THREE.BoxGeometry( 5, 5, 5 );
+var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
+var box = new THREE.Mesh( geometry, material );
 focus = box;
 scene.add( box );
+
+var textureLoader = new THREE.TextureLoader();
+var texture2 = textureLoader.load( "./assets/textures/crate.gif" );
+var material2 = new THREE.MeshPhongMaterial( {
+  color: 0xffffff,
+  map: texture2,
+} );
+texture2.anisotropy = 1;
+texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
+texture2.repeat.set( 512, 512 );
+
+var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
+var mesh1 = new THREE.Mesh( geometry, material2 );
+mesh1.rotation.x = - Math.PI / 2;
+mesh1.scale.set( 1000, 1000, 1000 );
+scene.add(mesh1);
+
 
 renderer.setClearColor( 0xdddddd, 1);
 renderer.render( scene, camera );
@@ -88,7 +105,8 @@ renderer.render( scene, camera );
 
 function loadModel(modelName){
   const vl = new VoxLoader({
-    filename: `./assets/mmmm/vox/${modelName}`
+    filename: `./assets/mmmm/vox/${modelName}`,
+    blockSize: 1
   });
 
   vl.LoadModel((vox) => {
@@ -114,10 +132,13 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
+var ticks = 0;
 var update = function(dt, elapsed){
-//  camera.position.x = Math.cos(dt * 0.004) * 10;
-  //  camera.position.z = Math.sin(dt * 0.004) * 10;
-  //camera.lookAt(focus.position);  
+  ticks++;
+  camera.position.x = Math.cos(ticks * 0.004) * 100;
+  camera.position.y = 50;
+  camera.position.z = Math.sin(ticks * 0.004) * 100;
+  camera.lookAt(focus.position);  
 };
 
 var render = function() {

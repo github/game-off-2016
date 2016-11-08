@@ -8261,12 +8261,29 @@
 	focus = box;
 	scene.add(box);
 
+	var textureLoader = new THREE.TextureLoader();
+	var texture2 = textureLoader.load("./assets/textures/crate.gif");
+	var material2 = new THREE.MeshPhongMaterial({
+	  color: 0xffffff,
+	  map: texture2
+	});
+	texture2.anisotropy = 1;
+	texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
+	texture2.repeat.set(512, 512);
+
+	var geometry = new THREE.PlaneBufferGeometry(100, 100);
+	var mesh1 = new THREE.Mesh(geometry, material2);
+	mesh1.rotation.x = -Math.PI / 2;
+	mesh1.scale.set(1000, 1000, 1000);
+	scene.add(mesh1);
+
 	renderer.setClearColor(0xdddddd, 1);
 	renderer.render(scene, camera);
 
 	function loadModel(modelName) {
 	  var vl = new VoxLoader({
-	    filename: './assets/mmmm/vox/' + modelName
+	    filename: './assets/mmmm/vox/' + modelName,
+	    blockSize: 1
 	  });
 
 	  vl.LoadModel(function (vox) {
@@ -8292,10 +8309,13 @@
 	}
 	window.addEventListener('resize', onWindowResize, false);
 
+	var ticks = 0;
 	var update = function update(dt, elapsed) {
-	  //  camera.position.x = Math.cos(dt * 0.004) * 10;
-	  //  camera.position.z = Math.sin(dt * 0.004) * 10;
-	  //camera.lookAt(focus.position);  
+	  ticks++;
+	  camera.position.x = Math.cos(ticks * 0.004) * 100;
+	  camera.position.y = 50;
+	  camera.position.z = Math.sin(ticks * 0.004) * 100;
+	  camera.lookAt(focus.position);
 	};
 
 	var render = function render() {
@@ -68174,9 +68194,11 @@
 	    this.colors = [];
 	    this.colors2 = undefined;
 	    this.voxelData = [];
+	    this.blockSize = 0.1;
 	    Object.assign(this, props);
 	    this.chunk = new Chunk({
-	        world: this.world
+	        world: this.world,
+	        blockSize: this.blockSize
 	    });
 	};
 

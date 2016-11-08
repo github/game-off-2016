@@ -24,9 +24,11 @@ function Vox(props) {
   this.colors = [];
   this.colors2 = undefined;
   this.voxelData = [];
+  this.blockSize = 0.1;
   Object.assign(this, props);
   this.chunk = new Chunk({
-    world: this.world
+    world: this.world,
+    blockSize: this.blockSize
   });  
 };
 
