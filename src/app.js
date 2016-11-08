@@ -1,6 +1,6 @@
 const THREE = require("three");
-window.THREE = THREE;
 const VoxLoader = require('./VoxLoader/Vox.js');
+const GameLoop = require('fixed-game-loop');
 const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
 const modelNames = require('./modelNames.json');
@@ -112,17 +112,18 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
-
-var frame = 0;
-var render = function() {
-  frame++;
-  camera.position.x = Math.cos(frame * 0.004) * 10;
+var update = function(dt, elapsed){
+  camera.position.x = Math.cos(dt * 0.004) * 10;
   camera.position.y = 5;
-  camera.position.z = Math.sin(frame * 0.004) * 10;
+  camera.position.z = Math.sin(dt * 0.004) * 10;
   camera.lookAt(focus.position);  
+};
+
+var render = function() {
   renderer.render(scene, camera);
-  requestAnimationFrame(render);
 };
 
 loadModel('chr_fatkid.vox');
-render();
+const loop = new GameLoop({ update, render });
+
+

@@ -8181,8 +8181,8 @@
 	'use strict';
 
 	var THREE = __webpack_require__(299);
-	window.THREE = THREE;
 	var VoxLoader = __webpack_require__(311);
+	var GameLoop = __webpack_require__(317);
 	var viewWidth = document.documentElement.clientWidth;
 	var viewHeight = document.documentElement.clientHeight;
 	var modelNames = __webpack_require__(302);
@@ -8290,19 +8290,19 @@
 	}
 	window.addEventListener('resize', onWindowResize, false);
 
-	var frame = 0;
-	var render = function render() {
-	  frame++;
-	  camera.position.x = Math.cos(frame * 0.004) * 10;
+	var update = function update(dt, elapsed) {
+	  camera.position.x = Math.cos(dt * 0.004) * 10;
 	  camera.position.y = 5;
-	  camera.position.z = Math.sin(frame * 0.004) * 10;
+	  camera.position.z = Math.sin(dt * 0.004) * 10;
 	  camera.lookAt(focus.position);
+	};
+
+	var render = function render() {
 	  renderer.render(scene, camera);
-	  requestAnimationFrame(render);
 	};
 
 	loadModel('chr_fatkid.vox');
-	render();
+	var loop = new GameLoop({ update: update, render: render });
 
 /***/ },
 /* 299 */
@@ -69572,6 +69572,198 @@
 	};
 
 	module.exports = Utils;
+
+/***/ },
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(318);
+
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var now = __webpack_require__(319),
+	  raf = __webpack_require__(320);
+
+	module.exports = Timer;
+
+	/**
+	 * @constructor
+	 */
+	function Timer(options) {
+	  this._initialized = false;
+
+	  this._fixedDeltaTime = 1000 / 60;
+	  this._fixedDeltaTimeInSeconds = this._fixedDeltaTime / 1000;
+	  this._FRAME_TIME_MAX = 250;
+	  this._elapsed = 0;
+
+	  this._config(options);
+
+	  if (this._autoStart) {
+	    this.start();
+	  }
+	}
+
+	Timer.prototype = {
+	  start: function() {
+	    if (!this._initialized) {
+	      this._initialized = true;
+
+	      this._accumulator = 0;
+	      this._tick = tick.bind(this);
+
+	      this._isPaused = false;
+	      this._prevTime = now();
+	      this._requestID = raf.request(this._tick);
+
+	      return true;
+	    }
+	    return false;
+	  },
+
+	  /** pauses the timer */
+	  pause: function() {
+	    if (this._initialized && this._isPaused) {
+	      return false;
+	    }
+
+	    this._isPaused = true;
+	    raf.cancel(this._requestID);
+
+	    this._pauseTime = now();
+	    this._onPause();
+
+	    return true;
+	  },
+
+	  /** resumes the timer */
+	  resume: function() {
+	    if (this._initialized && !this._isPaused) {
+	      return false;
+	    }
+
+	    var pauseDuration;
+
+	    this._isPaused = false;
+	    this._prevTime = now();
+
+	    pauseDuration = this._prevTime - this._pauseTime;
+	    this._onResume(pauseDuration);
+
+	    this._requestID = raf.request(this._tick);
+
+	    return true;
+	  },
+
+	  togglePause: function() {
+	    if (this._isPaused) {
+	      this.resume();
+	    } else {
+	      this.pause();
+	    }
+	  },
+
+	  /** returns true if the timer is paused */
+	  isPaused: function () {
+	    return this._isPaused;
+	  },
+
+	  _config: function(options) {
+	    var empty = function() {};
+
+	    this._update = options.update || empty;
+	    this._render = options.render || empty;
+	    this._onPause = options.onPause || empty;
+	    this._onResume = options.onResume || empty;
+
+	    this._autoStart = options.autoStart == null ? true : options.autoStart;
+	  }
+	};
+
+	function tick() {
+	  var curTime = now();
+	  var frameTime = curTime - this._prevTime;
+
+	  if (frameTime > this._FRAME_TIME_MAX) {
+	    frameTime = this._FRAME_TIME_MAX;
+	  }
+
+	  this._prevTime = curTime;
+
+	  this._accumulator += frameTime;
+
+	  while(this._accumulator >= this._fixedDeltaTime) {
+	    this._accumulator -= this._fixedDeltaTime;
+	    this._elapsed += this._fixedDeltaTime;
+	    this._update(this._fixedDeltaTimeInSeconds, this._elapsed);
+	  }
+
+	  this._render();
+
+	  this._requestID = raf.request(this._tick);
+	}
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {// return the current time in milliseconds
+	var d = global.Date;
+
+	module.exports = d.now || function () {
+	  return (new d()).getTime();
+	};
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {/** requestAnimationFrame polyfill
+	 * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	 * http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+	 */
+	var vendors = ['ms', 'moz', 'webkit', 'o'],
+
+	  requestAnimationFrame = global.requestAnimationFrame,
+	  cancelAnimationFrame = global.cancelAnimationFrame,
+
+	  x = 0, l = vendors.length;
+
+	for (; x < l; ++x) {
+	  if (requestAnimationFrame && cancelAnimationFrame) break;
+	  requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];
+	  cancelAnimationFrame = global[vendors[x] + 'CancelAnimationFrame'] || global[vendors[x] + 'CancelRequestAnimationFrame'];
+	}
+
+	if (!requestAnimationFrame || !cancelAnimationFrame) {
+	  var now = __webpack_require__(319),
+	    lastTime = 0, max = Math.max;
+
+	  requestAnimationFrame = function(callback, element) {
+	    var currTime = now(),
+	      timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+	      id = global.setTimeout(function () {
+	        callback(currTime + timeToCall);
+	      }, timeToCall);
+	    lastTime = currTime + timeToCall;
+	    return id;
+	  };
+
+	  cancelAnimationFrame = function (id) {
+	    global.clearTimeout(id);
+	  };
+	}
+
+	module.exports.request = requestAnimationFrame.bind(global);
+	module.exports.cancel = cancelAnimationFrame.bind(global);
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }
 /******/ ]);
