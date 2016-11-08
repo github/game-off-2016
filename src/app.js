@@ -1,9 +1,11 @@
 const THREE = require("three");
 const VoxLoader = require('./VoxLoader/Vox.js');
 const GameLoop = require('fixed-game-loop');
+const KeyDrown = require('keydrown');
 const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
 const modelNames = require('./modelNames.json');
+
 
 var sel = document.getElementById('modelSelector');
 var fragment = document.createDocumentFragment();
@@ -75,7 +77,7 @@ const camera = new THREE.PerspectiveCamera(
 
 
 window.camera = camera;
-camera.position.set( 0, 5, 10 );
+camera.position.set( 0, 50, 100 );
 
 var geometry = new THREE.BoxGeometry( 5, 5, 5 );
 var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
@@ -127,6 +129,23 @@ function loadModel(modelName){
   });
 }
 
+var zVelocity = 0;
+var xVelocity = 0;
+
+KeyDrown.W.down(() => {
+  zVelocity = -1;
+  focus.rotation.z = Math.PI;
+});
+KeyDrown.S.down(() => { zVelocity = 1; });
+KeyDrown.A.down(() => { xVelocity = -1; });
+KeyDrown.D.down(() => { xVelocity = 1; });
+
+KeyDrown.W.up(() => { zVelocity = 0; });
+KeyDrown.S.up(() => { zVelocity = 0; });
+KeyDrown.A.up(() => { xVelocity = 0; });
+KeyDrown.D.up(() => { xVelocity = 0; });
+
+
 function onWindowResize(){
   camera.aspect = viewWidth / viewHeight;
   camera.updateProjectionMatrix();
@@ -138,10 +157,13 @@ window.addEventListener( 'resize', onWindowResize, false );
 var ticks = 0;
 var update = function(dt, elapsed){
   ticks++;
-  camera.position.x = Math.cos(ticks * 0.004) * 100;
-  camera.position.y = 50;
-  camera.position.z = Math.sin(ticks * 0.004) * 100;
-  camera.lookAt(focus.position);  
+  KeyDrown.tick();
+  focus.position.z += dt * zVelocity * 18;
+  focus.position.x += dt * xVelocity * 18;
+  // camera.position.x = Math.cos(ticks * 0.004) * 100;
+  // camera.position.y = 50;
+  // camera.position.z = Math.sin(ticks * 0.004) * 100;
+  //camera.lookAt(focus.position);  
 };
 
 var render = function() {
