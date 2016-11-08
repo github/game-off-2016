@@ -17,6 +17,11 @@ const STAGE_PADDING = 75
 const BASE_SERVERS = 1
 const ENEMY_SERVERS = 3
 
+const MODES = {
+  build: 'BUILD',
+  deploy: 'DEPLOY'
+}
+
 export default class extends Phaser.State {
   init () {}
   preload () {
@@ -26,6 +31,7 @@ export default class extends Phaser.State {
   }
 
   create () {
+    this.mode = MODES.build
     this.grid = new Grid({game, networkGraph: this.networkGraph});
     this.game.add.existing(this.grid);
     window.g = this.grid;
@@ -34,7 +40,7 @@ export default class extends Phaser.State {
     var currentServer = null;
     var target = null;
     clickSignal.add((server) => {
-      if (currentServer == null) {
+      if (currentServer == null) { // PICK ORIGIN
         if (server.canSendPacket()){
           currentServer = server;
           target = new Target({
@@ -44,32 +50,27 @@ export default class extends Phaser.State {
           game.add.existing(target);
         }
       } else {
-        if (server != currentServer) {
-          let path = this.grid.shortestPath(currentServer.logic.uuid, server.logic.uuid);
-
-          // COLOR EDGES AS CAPTURED
-          path.reduce((last, current) => {
-            let e = this.networkGraph.edge({v: last, w: current});
-            this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
-            return current;
-          }, currentServer.logic.uuid);
-          this.grid.render();
-
-          // SEND PACKET
-          let packet = new Packet({game, src: currentServer});
-          this.game.add.existing(packet);
-          var pointPath = path.map((uuid) => {
-            let s = this.networkGraph.node(uuid).server;
-            return {
-              x: s.x,
-              y: s.y
-            }
-          });
-          currentServer.logic.subtractPackets(1)
-
-          packet.sendAlongPath(pointPath, server);
+        if (server != currentServer) { // PICK TARGET (origin already selected)
+          // let path = this.grid.shortestPath(currentServer.logic.uuid, server.logic.uuid);
+          let path = [server.logic.uuid]
+          let packet, pointPath
+          if (this.mode === MODES.build) { // BUILD MODE
+            // COLOR EDGES AS CAPTURED
+            path.reduce((last, current) => {
+              let e = this.networkGraph.edge({v: last, w: current});
+              this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
+              return current;
+            }, currentServer.logic.uuid);
+            this.grid.render();
+            [packet, pointPath] = this.sendPacketOnPath(currentServer, path)
+          } else if ((this.mode === MODES.deploy) && (this.networkGraph.hasEdge(server, currentServer))) { // DEPLOY MODE
+            [packet, pointPath] = this.sendPacketOnPath(currentServer, path)
+          }
+          if (packet) { // SEND PACKET IF POSSIBLE
+            packet.sendAlongPath(pointPath, server);
+          }
         }
-        currentServer = null;
+        currentServer = null; // DESELECT AFTER CLICK (TODO (shay): determine if this is the behavior we want)
         target.kill();
       }
     });
@@ -135,6 +136,20 @@ export default class extends Phaser.State {
     });
     this.game.add.existing(s);
     return s;
+  }
+
+  sendPacketOnPath(originServer, path) {
+    let packet = new Packet({game: this.game, src: originServer});
+    this.game.add.existing(packet);
+    var pointPath = path.map((uuid) => {
+      let s = this.networkGraph.node(uuid).server;
+      return {
+        x: s.x,
+        y: s.y
+      }
+    });
+    originServer.logic.subtractPackets(1)
+    return [packet, pointPath]
   }
 
   render () {
