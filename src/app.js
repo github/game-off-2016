@@ -74,8 +74,7 @@ const camera = new THREE.PerspectiveCamera(
 
 
 window.camera = camera;
-camera.position.set( -15, 10, 15 );
-camera.lookAt( scene.position );
+camera.position.set( 0, 5, 10 );
 
 const geometry = new THREE.BoxGeometry( 5, 5, 5 );
 const material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
@@ -117,7 +116,6 @@ window.addEventListener( 'resize', onWindowResize, false );
 
 var update = function(dt, elapsed){
 //  camera.position.x = Math.cos(dt * 0.004) * 10;
-  camera.position.y = 5;
   //  camera.position.z = Math.sin(dt * 0.004) * 10;
   //camera.lookAt(focus.position);  
 };
