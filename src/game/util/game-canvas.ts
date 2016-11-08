@@ -39,6 +39,10 @@ export class GameCanvas {
       }
     }
 
+    if (this.scale < config.minScale) {
+      this.scale = config.minScale;
+    }
+
     this.stage.x = (this.renderer.width - this.width * this.scale) / 2;
     this.stage.y = (this.renderer.height - this.height * this.scale) / 2;
     this.stage.scale.x = this.scale;
