@@ -76,16 +76,17 @@
     function init(){
 
         if('ontouchstart' in window){
-            document.getElementById("canv").addEventListener("touchstart",ev_mouseMove)
-            document.getElementById("canv").addEventListener("touchmove",ev_mouseMove)
-            document.getElementById("canv").addEventListener("touchend",ev_mouseMove) 
+            $("#canv").bind('touchstart',ev_mouseMove)
+            $("#canv").bind('touchmove',ev_mouseMove)
+            $("#canv").bind('touchend',ev_mouseMove)
        }else{
-            document.getElementById("canv").addEventListener("mousemove",ev_mouseMove)
+            $("#canv").bind('mousemove',ev_mouseMove)
         }
         if('ontouchstart' in window){
+            $("#canv").bind('touchstart',newGame)
             document.getElementById("canv").addEventListener("touchstart",newGame)
        }else{
-            document.getElementById("canv").addEventListener("mousedown",newGame)
+            $("#canv").bind('mousedown',newGame)
         }
 
 
