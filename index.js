@@ -60,7 +60,8 @@
         x:0,
         y:0,
         vec:[0,0],
-        block:[]
+        block:[],
+        falling:[],
     }
     status_score={
         pong_score:0,
@@ -143,6 +144,7 @@
              status_breakout.vec[0]=-2.6
         }
         var x,y;
+        status_breakout.falling=[]
         status_breakout.block=[]
         for(var _y=0;_y<=4;_y++){
             for(var _x=0;_x<=5;_x++){
@@ -371,15 +373,28 @@
                 beep("player")
             }
         }
+
+
+        //falling
+        for(var i=status_breakout.falling.length-1;i>=0;i--){
+            status_breakout.falling[i].y+=6;
+            if(LEN_SHORT+(LEN_LONG-LEN_SHORT)/2<status_breakout.falling[i].y){
+                status_breakout.falling[i].y+=10;
+            }
+            if(collision_falling(i)){
+                beep("falling")
+            }
+        }
         //block
         for(var i=status_breakout.block.length-1;i>=0;i--){
-            if(collision(i)){
+            if(collision_block(i)){
                 status_score.breakout_score+=1
                 calcScore()
                 beep("clash")
                 break;
             }
         }
+
 
 
         //ball move 
@@ -407,13 +422,14 @@
 
 
     }
-    function collision(idx){
+    function collision_block(idx){
         var x=status_breakout.x
         var y=status_breakout.y
         var block=status_breakout.block[idx]
         if(block.y<=y&&block.y+block.h>=y){
             if(block.x<=x+BALL_SIZE*2&&block.x+block.w>=x ){
                 status_breakout.vec[1]=-1*status_breakout.vec[1]
+                status_breakout.falling=status_breakout.falling.concat(status_breakout.block[idx])
                 if(block.x<=x+BALL_SIZE*2){
                     status_breakout.vec[0]=-1*Math.abs(status_breakout.vec[0])
                     status_breakout.block.splice(idx,1)
@@ -424,6 +440,28 @@
                     status_breakout.block.splice(idx,1)
                     return true
                 }
+            }
+        }
+        return false
+    }
+    function collision_falling(idx){
+        var x=status_pong.x
+        var y=status_pong.y
+        var block=status_breakout.falling[idx]
+        if(block.y-2<=y&&block.y+block.h+2>=y){
+            if(block.x<=x+BALL_SIZE*2&&block.x+block.w>=x ){
+                status_pong.vec[0]=-1*status_pong.vec[0]
+                status_pong.vec[1]=-1*status_pong.vec[1]
+                status_breakout.falling.splice(idx,1)
+                wait=true
+                setTimeout(function(){
+                    wait=false
+                },500)
+
+                return true;
+            }
+            if(block.y>LEN_LONG){
+                status_breakout.falling.splice(idx,1)
             }
         }
         return false
@@ -652,9 +690,21 @@
             ctx_breakout.beginPath();
             ctx_breakout.strokeRect(x,y,w,h);
             ctx_breakout.stroke();
-
-
-
+        }
+        //falling
+        for(var i =0;i<status_breakout.falling.length;i++){
+            x=status_breakout.falling[i].x;
+            y=status_breakout.falling[i].y;
+            w=status_breakout.falling[i].w;
+            h=status_breakout.falling[i].h;
+            ctx_breakout.fillStyle = COLOR_WHITE;
+            ctx_breakout.globalAlpha = 0.6;
+            ctx_breakout.strokeStyle  = COLOR_BLUE;
+            ctx_breakout.lineWidth =1;
+            ctx_breakout.globalAlpha = 0.6;
+            ctx_breakout.beginPath();
+            ctx_breakout.strokeRect(x,y,w,h);
+            ctx_breakout.stroke();
         }
 
 
@@ -830,9 +880,6 @@
         beep("gameover")
         status_score.gameover=true;
         standby=true;
-        if(status_score.hegh_score<status_score.hegh_score*pong_score){
-            status_score.hegh_score=status_score.hegh_score*pong_score
-        }
       }
       
   }
