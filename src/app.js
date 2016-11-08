@@ -63,6 +63,7 @@ const setLights = function(scene) {
 let focus;
 window.focus = focus;
 const scene = new THREE.Scene();
+window.scene = scene;
 setLights(scene);
 
 const camera = new THREE.PerspectiveCamera(
@@ -79,6 +80,7 @@ camera.position.set( 0, 5, 10 );
 var geometry = new THREE.BoxGeometry( 5, 5, 5 );
 var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
 var box = new THREE.Mesh( geometry, material );
+box.voxel = true;
 focus = box;
 scene.add( box );
 
@@ -111,12 +113,13 @@ function loadModel(modelName){
 
   vl.LoadModel((vox) => {
     scene.children.forEach(function(child){
-      if(child.type === 'Mesh'){
+      if(child.type === 'Mesh' && child.voxel){
         scene.remove(child);
       }
     });
     vox.getChunk().Rebuild();
     var mesh = vox.getMesh();
+    mesh.voxel = true;
     scene.add(mesh);
     focus = mesh;
     window.mesh = mesh;
