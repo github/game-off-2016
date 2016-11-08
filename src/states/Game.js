@@ -65,7 +65,7 @@ export default class extends Phaser.State {
               y: s.y
             }
           });
-          
+
           packet.sendAlongPath(pointPath, server);
         }
         currentServer = null;
@@ -148,6 +148,6 @@ export default class extends Phaser.State {
       y: this.game.rnd.integerInRange(serverPadding, this.game.world.height - serverPadding)
     }
   }
-  
-  
+
+
 }
