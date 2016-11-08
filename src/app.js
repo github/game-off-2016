@@ -61,6 +61,7 @@ const setLights = function(scene) {
 };
 
 let focus;
+window.focus = focus;
 const scene = new THREE.Scene();
 setLights(scene);
 
@@ -101,6 +102,8 @@ function loadModel(modelName){
     var mesh = vox.getMesh();
     scene.add(mesh);
     focus = mesh;
+    window.mesh = mesh;
+    camera.lookAt(focus.position);      
   });
 }
 
@@ -113,10 +116,10 @@ function onWindowResize(){
 window.addEventListener( 'resize', onWindowResize, false );
 
 var update = function(dt, elapsed){
-  camera.position.x = Math.cos(dt * 0.004) * 10;
+//  camera.position.x = Math.cos(dt * 0.004) * 10;
   camera.position.y = 5;
-  camera.position.z = Math.sin(dt * 0.004) * 10;
-  camera.lookAt(focus.position);  
+  //  camera.position.z = Math.sin(dt * 0.004) * 10;
+  //camera.lookAt(focus.position);  
 };
 
 var render = function() {

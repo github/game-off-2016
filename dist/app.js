@@ -8242,6 +8242,7 @@
 	};
 
 	var focus = void 0;
+	window.focus = focus;
 	var scene = new THREE.Scene();
 	setLights(scene);
 
@@ -8279,6 +8280,8 @@
 	    var mesh = vox.getMesh();
 	    scene.add(mesh);
 	    focus = mesh;
+	    window.mesh = mesh;
+	    camera.lookAt(focus.position);
 	  });
 	}
 
@@ -8291,10 +8294,10 @@
 	window.addEventListener('resize', onWindowResize, false);
 
 	var update = function update(dt, elapsed) {
-	  camera.position.x = Math.cos(dt * 0.004) * 10;
+	  //  camera.position.x = Math.cos(dt * 0.004) * 10;
 	  camera.position.y = 5;
-	  camera.position.z = Math.sin(dt * 0.004) * 10;
-	  camera.lookAt(focus.position);
+	  //  camera.position.z = Math.sin(dt * 0.004) * 10;
+	  //camera.lookAt(focus.position);  
 	};
 
 	var render = function render() {
@@ -68843,22 +68846,22 @@
 
 	    geometry.computeBoundingBox();
 
-	    geometry.applyMatrix(new THREE.Matrix4().makeTranslation(-geometry.boundingBox.max.x / 2, -geometry.boundingBox.max.z / 2, 0));
+	    // geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -geometry.boundingBox.max.x/2,
+	    //                                                           -geometry.boundingBox.max.z/2,
+	    //                                                           0));
 	    geometry.computeVertexNormals();
 
 	    var material3 = new THREE.MeshLambertMaterial({ vertexColors: THREE.VertexColors, wireframe: this.wireframe });
 
 	    // geometry.center();
 	    var mesh = new THREE.Mesh(geometry, material3);
-	    mesh.rotation.set(Math.PI / 2, Math.PI, 0);
+	    mesh.rotation.set(-Math.PI / 2, 0, -0.75);
 
 	    mesh.castShadow = true;
 	    mesh.receiveShadow = true;
 
 	    mesh.position.set(0, 0, 0);
-	    // game.scene.add( mesh );
 	    mesh.that = this;
-	    //game.targets.push(mesh); // TBD: Should this be here?
 	    this.mesh = mesh;
 	    this.GetBoundingBox();
 	    this.isBuilt = true;
