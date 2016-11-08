@@ -195,6 +195,7 @@
      */
     function ev_mouseMove(e){
         getMousePosition(e);
+        e.preventDefault();
     }
 
 
