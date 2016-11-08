@@ -1,6 +1,8 @@
 const {Graphics, Container, Texture, Sprite} = PIXI;
+import {Player} from '../entities/player';
+import {GameLoop} from '../util/game-loop';
 
-export function load(map: string[]) {
+export function load(map: string[], gl: GameLoop) {
   const stage = new Container();
   const graphics = new Graphics();
   stage.addChild(graphics);
@@ -10,13 +12,9 @@ export function load(map: string[]) {
       if (map[row][tile] === 'X') {
         graphics.drawRect(32 * tile, 32 * row, 32, 32);
       } else if (map[row][tile] === 'P') {
-        var texture = Texture.fromImage('assets/basics/nin.png');
-        var player = new Sprite(texture);
-        player.anchor.x = 0;
-        player.anchor.y = 0;
-        player.position.x = 32 * tile + (32 - 24) / 2;
-        player.position.y = 32 * row + (32 - 24);
-        stage.addChild(player);
+        const player = new Player(gl);
+        player.tile = new PIXI.Point(tile, row);
+        stage.addChild(player.view);
       }
     }
   }
