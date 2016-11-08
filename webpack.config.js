@@ -35,8 +35,6 @@ module.exports = {
       template: './index.html'
     }),
     new CopyWebpackPlugin([
-      {from: '../node_modules/pixi.js/bin/pixi.min.js'},
-      {from: '../node_modules/pixi.js/bin/pixi.min.js.map'},
       {from: './assets', to: './assets'},
       {from: './css', to: './css'}
     ])

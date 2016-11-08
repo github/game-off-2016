@@ -1,4 +1,4 @@
-const {Graphics, Container, Texture, Sprite} = PIXI;
+import {Graphics, Container, Point} from 'pixi.js';
 import {Player} from '../entities/player';
 import {GameLoop} from '../util/game-loop';
 
@@ -13,7 +13,7 @@ export function load(map: string[], gl: GameLoop) {
         graphics.drawRect(32 * tile, 32 * row, 32, 32);
       } else if (map[row][tile] === 'P') {
         const player = new Player(gl);
-        player.tile = new PIXI.Point(tile, row);
+        player.tile = new Point(tile, row);
         stage.addChild(player.view);
       }
     }

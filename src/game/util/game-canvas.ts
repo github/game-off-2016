@@ -1,14 +1,23 @@
 import {config} from '../config';
+import {
+  SCALE_MODES,
+  DEFAULT_RENDER_OPTIONS,
+  WebGLRenderer,
+  CanvasRenderer,
+  Container,
+  autoDetectRenderer,
+  Graphics
+} from 'pixi.js';
 
-PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
-PIXI.DEFAULT_RENDER_OPTIONS.antialias = false;
-PIXI.DEFAULT_RENDER_OPTIONS.roundPixels = true;
+SCALE_MODES.DEFAULT = SCALE_MODES.NEAREST;
+DEFAULT_RENDER_OPTIONS.antialias = false;
+DEFAULT_RENDER_OPTIONS.roundPixels = true;
 
 
 export class GameCanvas {
   scale: number;
-  renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
-  stage: PIXI.Container;
+  renderer: WebGLRenderer | CanvasRenderer;
+  stage: Container;
   private _width: number;
   private _height: number;
 
@@ -58,12 +67,12 @@ export class GameCanvas {
     this._width = config.tileSize * config.gridWidth;
     this._height = config.tileSize * config.gridHeight;
 
-    this.renderer = PIXI.autoDetectRenderer(0, 0, {backgroundColor : 0});
+    this.renderer = autoDetectRenderer(0, 0, {backgroundColor : 0});
 
-    this.stage = new PIXI.Container();
+    this.stage = new Container();
     this.stage.scale.x = this.scale;
     this.stage.scale.y = this.scale;
-    const graphics = new PIXI.Graphics();
+    const graphics = new Graphics();
     this.stage.addChild(graphics);
     graphics.beginFill(0x1099bb);
     graphics.drawRect(0, 0, this.width, this.height);

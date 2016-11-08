@@ -13,9 +13,6 @@
     "baseUrl": "",
     "typeRoots": [
       "./typings"
-    ],
-    "types": [
-      "PIXI"
     ]
   },
   "exclude": [

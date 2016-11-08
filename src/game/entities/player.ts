@@ -1,6 +1,6 @@
 import {Keyboard} from '../util/keyboard';
 import {config} from '../config';
-const {Graphics, Container, Texture, Sprite} = PIXI;
+import {Point, Texture, Sprite} from 'pixi.js';
 import {GameLoop} from '../util/game-loop';
 
 export class Player {
@@ -9,11 +9,11 @@ export class Player {
   private ySpeed: number;
   private keyState: {[key: string]: boolean};
   private keyMap: {[key: number]: string};
-  private _view: PIXI.Sprite;
+  private _view: Sprite;
 
   get view() { return this._view; }
 
-  set tile(pos: PIXI.Point) {
+  set tile(pos: Point) {
     this._view.position.x = 32 * pos.x + (32 - 24) / 2;
     this._view.position.y = 32 * pos.y + (32 - 24);
   }
