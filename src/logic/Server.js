@@ -27,6 +27,10 @@ export default class {
     this.packetCreationTimer -= count * BASE_PACKET_CREATION_RATE
   }
 
+  subtractPackets(count) {
+    this.packets = Math.max(0, this.packets - count)
+  }
+
   getPacketsToBeCreated() {
     return Math.floor(this.packetCreationTimer / BASE_PACKET_CREATION_RATE)
   }
@@ -42,16 +46,22 @@ export default class {
   }
 
   canSendPacket() {
+    return this.packets > 0
+  }
+
+  canTransportPacket() {
     switch (this.type) {
-      case BASE: return true;
-      case CAPTURED: return true;
-      case NEUTRAL: return false;
-      case ENEMY: return false;
-      case ENEMY_CAPTURED: return false;
+      case NEUTRAL: return true
+      case BASE: return true
+      default: return false
     }
   }
 
   hit() {
+    if (this.canTransportPacket()) {
+      this.addPackets(1)
+    }
+    
     switch (this.type) {
       case NEUTRAL:
         this.type = CAPTURED;

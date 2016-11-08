@@ -65,6 +65,7 @@ export default class extends Phaser.State {
               y: s.y
             }
           });
+          currentServer.logic.subtractPackets(1)
 
           packet.sendAlongPath(pointPath, server);
         }
