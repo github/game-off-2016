@@ -1,6 +1,5 @@
 const THREE = require("three");
 window.THREE = THREE;
-const vox = require('vox.js');
 const VoxLoader = require('./VoxLoader/Vox.js');
 const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
@@ -9,14 +8,6 @@ const modelNames = require('./modelNames.json');
 var sel = document.getElementById('modelSelector');
 var fragment = document.createDocumentFragment();
 
-
-// const vl = new VoxLoader({
-//   filename: "./assets/mmmm/vox/chr_fatkid.vox"
-// });
-
-// vl.LoadModel((vox) => {
-//   debugger;
-// });
 
 modelNames.forEach(function(modelName) {
     var opt = document.createElement('option');
@@ -94,23 +85,6 @@ scene.add( box );
 renderer.setClearColor( 0xdddddd, 1);
 renderer.render( scene, camera );
 
-
-// function loadModel(modelName){
-//   var parser = new vox.Parser();
-//   parser.parse(`./assets/mmmm/vox/${modelName}`).then(function(voxelData) {
-//     scene.children.forEach(function(child){
-//       if(child.type === 'Mesh'){
-//         scene.remove(child);
-//       }
-//     });
-//     var param = { voxelSize: 1 };
-//     var builder = new vox.MeshBuilder(voxelData, param);
-//     var mesh = builder.createMesh();
-//     focus = mesh;
-//     scene.add(mesh);
-//     camera.position.y += 5;  
-//   });
-// }
 
 function loadModel(modelName){
   const vl = new VoxLoader({
