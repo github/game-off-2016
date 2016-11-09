@@ -1,5 +1,5 @@
 (function (global) {
-
+    "use strict";
     // Class ------------------------------------------------
     function Pongout () {}    
 
@@ -37,33 +37,33 @@
 
 
     //val
-    mouse_x=0
-    mouse_y=0
-    enemy_y=0
-    img_bk_loaded=false;
-    img_title_loaded=false;
-    logo_draw=false;
-    standby=true;
-    firstStandby=true;
-    wait=true;
-    cycle=1;
-    seed=0
+    var mouse_x=0
+    var mouse_y=0
+    var enemy_y=0
+    var img_bk_loaded=false;
+    var img_title_loaded=false;
+    var logo_draw=false;
+    var standby=true;
+    var firstStandby=true;
+    var wait=true;
+    var cycle=1;
+    var seed=0
 
     //status
-    status_pong={
+    var status_pong={
         x:0,
         y:0,
         vec:[0,0],
     }
     //status
-    status_breakout={
+    var status_breakout={
         x:0,
         y:0,
         vec:[0,0],
         block:[],
         falling:[],
     }
-    status_score={
+    var status_score={
         pong_score:0,
         breakout_score:0,
         hegh_score:0,
@@ -161,6 +161,12 @@
     }
 
     function newGame(){
+
+        $("audio").each(function(){
+            $(this)[0].load();
+        })
+
+
         if(standby==true){
             initParam()
             standby=false
@@ -211,8 +217,8 @@
             return
         }
 
-        _top=(LEN_LONG-LEN_SHORT)/2|0
-        _bottom=((LEN_LONG-LEN_SHORT)/2)+LEN_SHORT|0
+        var _top=(LEN_LONG-LEN_SHORT)/2|0
+        var _bottom=((LEN_LONG-LEN_SHORT)/2)+LEN_SHORT|0
         //field
         if(status_pong.x<0){
             status_pong.vec[0]=Math.abs(status_pong.vec[0])
@@ -294,8 +300,8 @@
         status_pong.x=status_pong.x+status_pong.vec[0]
         status_pong.y=status_pong.y+status_pong.vec[1]
         //ボール斥力
-        dist=Math.sqrt(Math.pow(status_pong.x-status_breakout.x,2)+Math.pow(status_pong.y-status_breakout.y,2))
-        gra=60/dist
+        var dist=Math.sqrt(Math.pow(status_pong.x-status_breakout.x,2)+Math.pow(status_pong.y-status_breakout.y,2))
+        var gra=60/dist
         if(status_pong.x-status_breakout.x<0){
             status_pong.x=status_pong.x-gra/2
         }
@@ -333,8 +339,8 @@
         if(status_score.gameover==true){
             return
         }
-        _top=(LEN_LONG-LEN_SHORT)/2|0
-        _bottom=((LEN_LONG-LEN_SHORT)/2)+LEN_SHORT|0
+        var _top=(LEN_LONG-LEN_SHORT)/2|0
+        var _bottom=((LEN_LONG-LEN_SHORT)/2)+LEN_SHORT|0
         //field
         if(status_breakout.y<0){
             status_breakout.vec[1]=Math.abs(status_breakout.vec[1])
@@ -405,8 +411,8 @@
         status_breakout.x=status_breakout.x+status_breakout.vec[0]
         status_breakout.y=status_breakout.y+status_breakout.vec[1]
         //ボール斥力
-        dist=Math.sqrt(Math.pow(status_pong.x-status_breakout.x,2)+Math.pow(status_pong.y-status_breakout.y,2))
-        gra=60/dist
+        var dist=Math.sqrt(Math.pow(status_pong.x-status_breakout.x,2)+Math.pow(status_pong.y-status_breakout.y,2))
+        var gra=60/dist
         if(status_breakout.x-status_pong.x<0){
             status_breakout.x=status_breakout.x-gra
         }
@@ -595,6 +601,7 @@
 
 
         //bar fill
+        var x,y,w,h;
         h=BALL_SIZE*5
         w=BALL_SIZE
         x=LEN_LONG-(BALL_SIZE*2)
@@ -662,6 +669,7 @@
             ctx_breakout.stroke();
         }
         //bar fill
+        var x,y,w,h;
         w=BALL_SIZE*5
         h=BALL_SIZE
         y=LEN_LONG-(BALL_SIZE*2)
@@ -751,17 +759,18 @@
         ctx_noise.clearRect(0,0,ctx.canvas.width,ctx.canvas.width);
         canv_noise.width=ctx.canvas.width;
         canv_noise.height=ctx.canvas.height;
+        var x,y,w,h;
         if(standby){
             w = ctx_noise.canvas.width
             h = ctx_noise.canvas.height
-            rgb = {
+            var rgb = {
                 r: 230,
                 g: 192,
                 b: 184
-            },
-            idata = ctx_noise.createImageData(w, h)
-            data  = idata.data
-            dotAlpha = 100
+            }
+            var idata = ctx_noise.createImageData(w, h)
+            var data  = idata.data
+            var dotAlpha = 100
 
             for(var i = 0, l = data.length; i < l; i += 4) {
                 data[i + 0] = rgb.r;
