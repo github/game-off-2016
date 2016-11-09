@@ -16,6 +16,10 @@ export const config = {
     player: {
       speed: 2,
       size: 24
+    },
+    ranged: {
+      radius: 4,
+      size: 32
     }
   }
 };

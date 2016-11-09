@@ -15,6 +15,7 @@ export class Player {
   private _moveBody: (body: Rectangle, dx: number, dy: number) => Rectangle;
 
   get view() { return this._view; }
+  get body() { return this._body; }
 
   set tile(pos: Point) {
     this._body.x = config.tileSize * pos.x + (config.tileSize - this.config.size - 1) / 2;
