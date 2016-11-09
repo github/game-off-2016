@@ -57,7 +57,7 @@ tilt = function(str1, values) {
     if(values < 5 && values > -5){
       document.getElementById("helptext1").innerHTML = "Center";
     }
-    if(values > 5){
+    else if(values > 5){
        document.getElementById("helptext1").innerHTML = "Left";
        player.isMovingLeft = false;
     }
