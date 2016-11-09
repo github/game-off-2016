@@ -51,6 +51,25 @@ var Base = function() {
 
 var base = new Base();
 
+tilt = function() {
+  console.log("Hello");
+};
+
+
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function () {
+        tilt();
+    }, true);
+} else if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', function () {
+        tilt();
+    }, true);
+} else {
+    window.addEventListener("MozOrientation", function () {
+        tilt();
+    }, true);
+}
+
 //Player object
 var Player = function() {
   this.vy = 11;
