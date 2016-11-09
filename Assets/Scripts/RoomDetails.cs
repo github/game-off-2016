@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class RoomDetails : MonoBehaviour {
-    public int ID;
+    public int Id;
     public int HorizontalSize;
     public int VerticalSize;
+    public GameObject[] Doors;
 
 	// Use this for initialization
 	void Start () {
