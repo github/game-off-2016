@@ -56,14 +56,16 @@ tilt = function(str1, values) {
     document.getElementById("helptext").innerHTML = values;
     if(values < 5 && values > -5){
       document.getElementById("helptext1").innerHTML = "Center";
+      player.isMovingLeft = false;
+      player.isMovingRight = false;
     }
     else if(values > 5){
        document.getElementById("helptext1").innerHTML = "Left";
-       player.isMovingLeft = false;
+       player.isMovingLeft = true;
     }
     else{
       document.getElementById("helptext1").innerHTML = "Right";
-      player.isMovingRight = false;
+      player.isMovingRight = true;
     }
     oldValue = values;
   }
