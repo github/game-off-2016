@@ -428,7 +428,6 @@ var collidesFlag = 0;
   }
 
   function updateScore() {
-    // var tempScoreText = 0;
     if (collidesFlag == 1 && score > 0 )
     {
       if ((score - tempscoreText) > 6)
@@ -438,28 +437,9 @@ var collidesFlag = 0;
         tempscoreText = score;
       }
     }
-    // else (collidesFlag == 1)
-    // {
-    //   var scoreText = document.getElementById("score");
-    //   scoreText.innerHTML = score;
-    //   tempscoreText = score;
-    // }
-    // else
-    // {
-    //   var scoreText = document.getElementById("score");
-    //   scoreText.innerHTML = score;
-    // }
+
     if ( collidesFlag)
       collidesFlag = 0;
-    
-    // if(scoreText > 200)
-    // {
-    //   if((scoreText - tempScoreText) >6)
-    //     scoreText.innerHTML = score;
-    // }
-    // else
-    //   scoreText.innerHTML = score;
-   // scoreText.innerHTML = score;
   }
 
   function gameOver() {
@@ -524,7 +504,7 @@ function reset() {
   score = 0;
   var scoreText = document.getElementById("score");
   scoreText.innerHTML = score;
-  
+
   base = new Base();
   player = new Player();
   Spring = new spring();
