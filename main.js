@@ -54,11 +54,16 @@ var temp1 = true;
 tilt = function(str1, values) {
   if(temp1){
     document.getElementById("helptext").innerHTML = values;
-    if(values > oldValue){
+    if(values < 5 && values > -5){
+      document.getElementById("helptext1").innerHTML = "Center";
+    }
+    if(values > 5){
        document.getElementById("helptext1").innerHTML = "Left";
+       player.isMovingLeft = false;
     }
     else{
       document.getElementById("helptext1").innerHTML = "Right";
+      player.isMovingRight = false;
     }
     oldValue = values;
   }
