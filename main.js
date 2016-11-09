@@ -54,7 +54,7 @@ var temp1 = true;
 tilt = function(str1, values) {
   if(temp1){
     document.getElementById("helptext").innerHTML = values;
-    temp1 = false;
+    
   }
   else{
     document.getElementById("helptext").innerHTML = "Hola!";
