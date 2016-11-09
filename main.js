@@ -396,9 +396,11 @@ function init() {
 
     if (subs.y > height) subs.appearance = false;
   }
-
+var tempscoreText = score;
+var collidesFlag = 0;
   function collides() {
     //Platforms
+    collidesFlag = 1;
     platforms.forEach(function(p, i) {
       if (player.vy > 0 && p.state === 0 && (player.x + 15 < p.x + p.width) && (player.x + player.width - 15 > p.x) && (player.y + player.height > p.y) && (player.y + player.height < p.y + p.height)) {
 
@@ -426,14 +428,38 @@ function init() {
   }
 
   function updateScore() {
-    var tempScoreText = 0;
-    var scoreText = document.getElementById("score");
-    if(scoreText > 200)
+    // var tempScoreText = 0;
+    if (collidesFlag == 1 && score > 0 )
     {
-      if((scoreText - tempScoreText) >6)
+      if ((score - tempscoreText) > 6)
+      {
+        var scoreText = document.getElementById("score");
         scoreText.innerHTML = score;
+        tempscoreText = score;
+      }
     }
+    // else (collidesFlag == 1)
+    // {
+    //   var scoreText = document.getElementById("score");
+    //   scoreText.innerHTML = score;
+    //   tempscoreText = score;
+    // }
+    // else
+    // {
+    //   var scoreText = document.getElementById("score");
+    //   scoreText.innerHTML = score;
+    // }
+    if ( collidesFlag)
+      collidesFlag = 0;
     
+    // if(scoreText > 200)
+    // {
+    //   if((scoreText - tempScoreText) >6)
+    //     scoreText.innerHTML = score;
+    // }
+    // else
+    //   scoreText.innerHTML = score;
+   // scoreText.innerHTML = score;
   }
 
   function gameOver() {
@@ -496,7 +522,9 @@ function reset() {
   flag = 0;
   position = 0;
   score = 0;
-
+  var scoreText = document.getElementById("score");
+  scoreText.innerHTML = score;
+  
   base = new Base();
   player = new Player();
   Spring = new spring();
