@@ -48,13 +48,19 @@ var Base = function() {
     } catch (e) {}
   };
 };
-
+var oldValue = 0;
 var base = new Base();
 var temp1 = true;
 tilt = function(str1, values) {
   if(temp1){
     document.getElementById("helptext").innerHTML = values;
-    
+    if(values > oldValue){
+       document.getElementById("helptext1").innerHTML = "Left";
+    }
+    else{
+      document.getElementById("helptext1").innerHTML = "Right";
+    }
+    oldValue = values;
   }
   else{
     document.getElementById("helptext").innerHTML = "Hola!";
@@ -66,7 +72,7 @@ tilt = function(str1, values) {
 
 if (window.DeviceOrientationEvent) {
     window.addEventListener("deviceorientation", function () {
-        tilt("Device Orientation", [event.beta, event.gamma, event.gamma]);
+        tilt("Device Orientation", event.gamma);
     }, true);
 } else if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', function () {
