@@ -940,6 +940,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000012823192984}
+  - 114: {fileID: 114000012685591498}
   m_Layer: 0
   m_Name: Test Room 001
   m_TagString: Untagged
@@ -2331,6 +2332,20 @@ BoxCollider2D:
   m_Offset: {x: 0.00000024586916, y: -0.0016585886}
   serializedVersion: 2
   m_Size: {x: 0.07894616, y: 0.6295688}
+--- !u!114 &114000012685591498
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013858821328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c386b8c54af8e0048b0eb29b49518099, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 1
+  HorizontalSize: 4
+  VerticalSize: 2
 --- !u!212 &212000010006410030
 SpriteRenderer:
   m_ObjectHideFlags: 1
