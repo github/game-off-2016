@@ -51,9 +51,9 @@ var Base = function() {
 
 var base = new Base();
 var temp1 = true;
-tilt = function(str1) {
+tilt = function(str1, values) {
   if(temp1){
-    document.getElementById("helptext").innerHTML = str1;
+    document.getElementById("helptext").innerHTML = values;
     temp1 = false;
   }
   else{
@@ -66,7 +66,7 @@ tilt = function(str1) {
 
 if (window.DeviceOrientationEvent) {
     window.addEventListener("deviceorientation", function () {
-        tilt("Device Orientation");
+        tilt("Device Orientation", [event.beta, event.gamma, event.gamma]);
     }, true);
 } else if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', function () {
