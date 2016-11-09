@@ -6,27 +6,29 @@ import {Keyboard} from './keyboard';
 import {Map} from './map';
 
 export class Game {
-  private gameLoop: GameLoop;
-  private canvas: GameCanvas;
-  private keyboard: Keyboard;
+  private _gameLoop: GameLoop;
+  private _canvas: GameCanvas;
+  private _keyboard: Keyboard;
+  private _map: Map;
 
-  get mainLoop$() { return this.gameLoop.main$; }
-  get gameLoop$() { return this.gameLoop.game$; }
-  get renderLoop$() { return this.gameLoop.render$; }
-  get keyPress$() { return this.keyboard.keyPress$; }
+  get mainLoop$() { return this._gameLoop.main$; }
+  get gameLoop$() { return this._gameLoop.game$; }
+  get renderLoop$() { return this._gameLoop.render$; }
+  get keyPress$() { return this._keyboard.keyPress$; }
 
-  get view() { return this.canvas.renderer.view; }
+  get view() { return this._canvas.renderer.view; }
+  get currentMap() { return this._map; }
 
   constructor() {
-    this.gameLoop = new GameLoop();
-    this.canvas = new GameCanvas();
-    this.keyboard = new Keyboard();
-    const map = new Map(this);
-    map.loadLevel(level1);
-    this.canvas.stage.addChild(map.view);
+    this._gameLoop = new GameLoop();
+    this._canvas = new GameCanvas();
+    this._keyboard = new Keyboard();
+    this._map = new Map(this);
+    this._map.loadLevel(level1);
+    this._canvas.stage.addChild(this._map.view);
   }
 
   start() {
-    this.gameLoop.render$.subscribe(e => this.canvas.paint());
+    this._gameLoop.render$.subscribe(e => this._canvas.paint());
   }
 }

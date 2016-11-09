@@ -1,6 +1,7 @@
 import {config} from '../../config';
-import {Point, Texture, Sprite} from 'pixi.js';
+import {Point, Texture, Sprite, Rectangle} from 'pixi.js';
 import {Game} from '../game';
+import {moveBody} from '../functional';
 
 export class Player {
   private xSpeed: number;
@@ -9,18 +10,23 @@ export class Player {
   private keyMap: {[key: number]: string};
   private _view: Sprite;
   private config: any;
+  private _body: Rectangle;
 
+  private _moveBody: (body: Rectangle, dx: number, dy: number) => Rectangle;
 
   get view() { return this._view; }
 
   set tile(pos: Point) {
-    this._view.position.x = config.tileSize * pos.x + (config.tileSize - this.config.size) / 2;
-    this._view.position.y = config.tileSize * pos.y + (config.tileSize - this.config.size);
+    this._body.x = config.tileSize * pos.x + (config.tileSize - this.config.size - 1) / 2;
+    this._body.y = config.tileSize * pos.y + (config.tileSize - this.config.size - 1);
+    this._view.position.x = this._body.x;
+    this._view.position.y = this._body.y;
   }
 
   update(time) {
-    this._view.position.x += this.xSpeed * this.config.speed;
-    this._view.position.y += this.ySpeed * this.config.speed;
+    this._body = this._moveBody(this._body, this.xSpeed * this.config.speed, this.ySpeed * this.config.speed);
+    this._view.position.x = this._body.x;
+    this._view.position.y = this._body.y;
   }
 
   constructor(
@@ -30,14 +36,17 @@ export class Player {
     this.ySpeed = 0;
     this.keyState = {};
     this.config = Object.assign(config.entities.player);
+    this._body = new Rectangle(0, 0, this.config.size, this.config.size);
+    this._moveBody = moveBody.bind(null, _game.currentMap);
+
     _game.keyPress$.subscribe(e => this.updateStateFromKeyboard(e));
 
     const texture = Texture.fromImage('assets/basics/nin.png');
     this._view = new Sprite(texture);
     this._view.anchor.x = 0;
     this._view.anchor.y = 0;
-    this._view.position.x = 0;
-    this._view.position.y = 0;
+    this._view.position.x = this._body.x;
+    this._view.position.y = this._body.y;
 
     this.update = this.update.bind(this);
     _game.gameLoop$.subscribe(this.update);
