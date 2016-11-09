@@ -1,10 +1,8 @@
-import {Keyboard} from '../util/keyboard';
-import {config} from '../config';
+import {config} from '../../config';
 import {Point, Texture, Sprite} from 'pixi.js';
-import {GameLoop} from '../util/game-loop';
+import {Game} from '../game';
 
 export class Player {
-  private keyboard: Keyboard;
   private xSpeed: number;
   private ySpeed: number;
   private keyState: {[key: string]: boolean};
@@ -25,13 +23,14 @@ export class Player {
     this._view.position.y += this.ySpeed * this.config.speed;
   }
 
-  constructor(gl: GameLoop) {
+  constructor(
+    private _game: Game
+  ) {
     this.xSpeed = 0;
     this.ySpeed = 0;
     this.keyState = {};
-    this.keyboard = new Keyboard();
     this.config = Object.assign(config.entities.player);
-    this.keyboard.keyPress$.subscribe(e => this.updateStateFromKeyboard(e));
+    _game.keyPress$.subscribe(e => this.updateStateFromKeyboard(e));
 
     const texture = Texture.fromImage('assets/basics/nin.png');
     this._view = new Sprite(texture);
@@ -41,7 +40,7 @@ export class Player {
     this._view.position.y = 0;
 
     this.update = this.update.bind(this);
-    gl.game$.subscribe(this.update);
+    _game.gameLoop$.subscribe(this.update);
 
     this.keyMap = Object.keys(config.keys).reduce((ret, key) => {
       ret[config.keys[key]] = key;

@@ -78,7 +78,6 @@ export class GameCanvas {
     graphics.drawRect(0, 0, this.width, this.height);
 
     this.resizeCanvas();
-    document.body.appendChild(this.renderer.view);
 
     window.addEventListener('resize', () => this.resizeCanvas());
   }

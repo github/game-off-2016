@@ -8,7 +8,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
   context: __dirname + "/src",
   entry: {
-    app: "./game/main.ts"
+    app: "./main.ts"
   },
   devtool: 'source-map',
   resolve: {
