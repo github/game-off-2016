@@ -51,9 +51,9 @@ var Base = function() {
 
 var base = new Base();
 var temp1 = true;
-tilt = function() {
+tilt = function(str1) {
   if(temp1){
-    document.getElementById("helptext").innerHTML = "New text!";
+    document.getElementById("helptext").innerHTML = str1;
     temp1 = false;
   }
   else{
@@ -66,15 +66,15 @@ tilt = function() {
 
 if (window.DeviceOrientationEvent) {
     window.addEventListener("deviceorientation", function () {
-        tilt();
+        tilt("Device Orientation");
     }, true);
 } else if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', function () {
-        tilt();
+        tilt("DeviceMotion");
     }, true);
 } else {
     window.addEventListener("MozOrientation", function () {
-        tilt();
+        tilt("Moz Orientation");
     }, true);
 }
 
