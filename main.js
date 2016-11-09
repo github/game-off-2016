@@ -50,8 +50,16 @@ var Base = function() {
 };
 
 var base = new Base();
-
+var temp1 = true;
 tilt = function() {
+  if(temp1){
+    document.getElementById("helptext").innerHTML = "New text!";
+    temp1 = false;
+  }
+  else{
+    document.getElementById("helptext").innerHTML = "Hola!";
+    temp1 = true;
+  }
   console.log("Hello");
 };
 
