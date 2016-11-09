@@ -3,6 +3,8 @@ using System.Collections;
 
 public class RoomNavigationManager : MonoBehaviour {
 
+    public GameObject[] RoomPrefabs;
+
 	// Use this for initialization
 	void Start () {
 	
