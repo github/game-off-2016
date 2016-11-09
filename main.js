@@ -65,7 +65,7 @@ tilt = function(str1, values) {
     }
     else{
       document.getElementById("helptext1").innerHTML = "Right";
-      player.isMovingLeft = false;
+      player.isMovingLeft = true;
     }
     oldValue = values;
   }
