@@ -291,7 +291,7 @@ function init() {
       if (player.vx > 0) player.vx -= 0.1;
     }
 
-    // Speed limits!
+    // Speed limits!da
     if(player.vx > 8)
       player.vx = 8;
     else if(player.vx < -8)
@@ -426,8 +426,14 @@ function init() {
   }
 
   function updateScore() {
+    var tempScoreText = 0;
     var scoreText = document.getElementById("score");
-    scoreText.innerHTML = score;
+    if(scoreText > 200)
+    {
+      if((scoreText - tempScoreText) >6)
+        scoreText.innerHTML = score;
+    }
+    
   }
 
   function gameOver() {
