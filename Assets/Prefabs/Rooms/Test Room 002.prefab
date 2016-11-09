@@ -68,6 +68,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000010521509380}
   - 61: {fileID: 61000013427888796}
+  - 114: {fileID: 114000010063363068}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -355,6 +356,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000012918829922}
   - 61: {fileID: 61000011441439884}
+  - 114: {fileID: 114000011633731242}
   m_Layer: 0
   m_Name: Door (1)
   m_TagString: Untagged
@@ -1206,12 +1208,12 @@ Transform:
   - {fileID: 4000014109870658}
   - {fileID: 4000011949245760}
   - {fileID: 4000010521509380}
+  - {fileID: 4000012918829922}
   - {fileID: 4000012651983446}
   - {fileID: 4000010485406320}
   - {fileID: 4000014127591308}
   - {fileID: 4000010897021788}
   - {fileID: 4000010376902370}
-  - {fileID: 4000012918829922}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &4000010024438078
@@ -1356,7 +1358,7 @@ Transform:
   - {fileID: 4000010689002388}
   - {fileID: 4000011649822172}
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 13
+  m_RootOrder: 14
 --- !u!4 &4000010417999594
 Transform:
   m_ObjectHideFlags: 1
@@ -1412,7 +1414,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 10
+  m_RootOrder: 11
 --- !u!4 &4000010495467388
 Transform:
   m_ObjectHideFlags: 1
@@ -1516,7 +1518,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 12
+  m_RootOrder: 13
 --- !u!4 &4000011040403186
 Transform:
   m_ObjectHideFlags: 1
@@ -1907,7 +1909,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 9
+  m_RootOrder: 10
 --- !u!4 &4000012874396894
 Transform:
   m_ObjectHideFlags: 1
@@ -1933,7 +1935,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 14
+  m_RootOrder: 9
 --- !u!4 &4000012926877850
 Transform:
   m_ObjectHideFlags: 1
@@ -2161,7 +2163,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000010001259984}
-  m_RootOrder: 11
+  m_RootOrder: 12
 --- !u!4 &4000014132488312
 Transform:
   m_ObjectHideFlags: 1
@@ -2627,6 +2629,18 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 0.07894616, y: 0.6308952}
+--- !u!114 &114000010063363068
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010182038196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17f3e5f43f60a145b4acbfdcecc1c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 0
 --- !u!114 &114000010686330354
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2638,9 +2652,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c386b8c54af8e0048b0eb29b49518099, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 2
+  Id: 1
   HorizontalSize: 4
   VerticalSize: 2
+  Doors:
+  - {fileID: 1000010182038196}
+  - {fileID: 1000011141473668}
+--- !u!114 &114000011633731242
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011141473668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17f3e5f43f60a145b4acbfdcecc1c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 1
 --- !u!212 &212000010031629086
 SpriteRenderer:
   m_ObjectHideFlags: 1
