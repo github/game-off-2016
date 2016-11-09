@@ -11,5 +11,11 @@ export const config = {
     'left': 37,
     'action': 32,
     'confirm': 13
+  },
+  entities: {
+    player: {
+      speed: 2,
+      size: 24
+    }
   }
 };

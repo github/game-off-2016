@@ -10,17 +10,19 @@ export class Player {
   private keyState: {[key: string]: boolean};
   private keyMap: {[key: number]: string};
   private _view: Sprite;
+  private config: any;
+
 
   get view() { return this._view; }
 
   set tile(pos: Point) {
-    this._view.position.x = 32 * pos.x + (32 - 24) / 2;
-    this._view.position.y = 32 * pos.y + (32 - 24);
+    this._view.position.x = config.tileSize * pos.x + (config.tileSize - this.config.size) / 2;
+    this._view.position.y = config.tileSize * pos.y + (config.tileSize - this.config.size);
   }
 
   update(time) {
-    this._view.position.x += this.xSpeed;
-    this._view.position.y += this.ySpeed;
+    this._view.position.x += this.xSpeed * this.config.speed;
+    this._view.position.y += this.ySpeed * this.config.speed;
   }
 
   constructor(gl: GameLoop) {
@@ -28,6 +30,7 @@ export class Player {
     this.ySpeed = 0;
     this.keyState = {};
     this.keyboard = new Keyboard();
+    this.config = Object.assign(config.entities.player);
     this.keyboard.keyPress$.subscribe(e => this.updateStateFromKeyboard(e));
 
     const texture = Texture.fromImage('assets/basics/nin.png');

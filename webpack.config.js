@@ -35,6 +35,7 @@ module.exports = {
       template: './index.html'
     }),
     new CopyWebpackPlugin([
+      {from: '../node_modules/stats.js/build/stats.min.js'},
       {from: './assets', to: './assets'},
       {from: './css', to: './css'}
     ])
