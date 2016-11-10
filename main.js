@@ -14,6 +14,8 @@ var width = 422,
 
 canvas.width = width;
 canvas.height = height;
+// canvas.width = window.innerWidth;
+// canvas.height = window.innerHeight;
 
 //Variables for game
 var platforms = [],
