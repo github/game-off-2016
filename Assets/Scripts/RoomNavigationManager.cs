@@ -6,10 +6,10 @@ public class RoomNavigationManager : MonoBehaviour {
     public GameObject[] RoomPrefabs;
 
     private GameObject activeRoomPrefab;
-
-    // Use this for initialization
-    void Start() {
-        RoomPrefabs[0].GetComponent<RoomDetails>().Doors[0].GetComponent<DoorDetails>().SetConnectedDoor(1, 1);
+    
+    void Awake() {
+        activeRoomPrefab = Instantiate(RoomPrefabs[0]);
+        activeRoomPrefab.GetComponent<RoomDetails>().Doors[0].GetComponent<DoorDetails>().SetConnectedDoor(1, 1);
     }
 
     // Change room prefab
