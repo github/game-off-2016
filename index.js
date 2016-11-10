@@ -28,7 +28,8 @@
     var LEN_LONG        =  500;
     var LEN_SHORT       =  310;
     var BALL_SIZE       =  (LEN_LONG/50|0);
-    var COLOR_RED       =   "#FF0000";
+    var COLOR_RED_LINE       =   "#FF0000";
+    var COLOR_RED       =   "#FF3333";
     var COLOR_BLUE      =   "#00FF00";
     var COLOR_BLACK      =   "#222222";
     var COLOR_WHITE      =   "#FFFFFF";
@@ -560,7 +561,7 @@
         y=((LEN_LONG-LEN_SHORT)/2|0);
         w=LEN_LONG;
         h=LEN_SHORT;
-        ctx_board.strokeStyle  = COLOR_RED;
+        ctx_board.strokeStyle  = COLOR_RED_LINE;
         ctx_board.lineWidth =1;
         ctx_board.globalAlpha = 0.6;
         ctx_board.beginPath();
@@ -589,7 +590,7 @@
             ctx_pong.fillRect(status_pong.x,status_pong.y,BALL_SIZE,BALL_SIZE);
             ctx_pong.fill();
             //ball stroke
-            ctx_pong.strokeStyle  = COLOR_RED;
+            ctx_pong.strokeStyle  = COLOR_RED_LINE;
             ctx_pong.lineWidth =1;
             ctx_pong.globalAlpha = 1;
             ctx_pong.beginPath();
@@ -610,7 +611,7 @@
         ctx_pong.fill();
         
         //bar stroke
-        ctx_pong.strokeStyle  = COLOR_RED;
+        ctx_pong.strokeStyle  = COLOR_RED_LINE;
         ctx_pong.lineWidth =1;
         ctx_pong.globalAlpha = 1;
         ctx_pong.beginPath();
@@ -627,7 +628,7 @@
             ctx_pong.fillRect(x,y,w,h);
             ctx_pong.fill();
             //enemy stroke
-            ctx_pong.strokeStyle  = COLOR_RED;
+            ctx_pong.strokeStyle  = COLOR_RED_LINE;
             ctx_pong.lineWidth =1;
             ctx_pong.globalAlpha = 1;
             ctx_pong.beginPath();
