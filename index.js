@@ -255,6 +255,11 @@
         if(status_pong.x+BALL_SIZE>=LEN_LONG-1*(BALL_SIZE*2) && status_pong.x+BALL_SIZE<=LEN_LONG-1*(BALL_SIZE)){
             if(mouse_y-1*(BALL_SIZE*5/2)<=status_pong.y && mouse_y+1*(BALL_SIZE*5/2)>=status_pong.y ){
                 status_pong.vec[0]=-1*Math.abs(status_pong.vec[0])
+                if(mouse_y<status_pong.y+BALL_SIZE/2){
+                    status_pong.vec[1]=1*Math.abs(status_pong.vec[1])
+                }else{
+                    status_pong.vec[1]=-1*Math.abs(status_pong.vec[1])
+                }
                 beep("player")
             }
         }
@@ -262,6 +267,11 @@
         if(status_pong.x<=(BALL_SIZE*2) && status_pong.x>=1*(BALL_SIZE)){
             if(enemy_y-1*(BALL_SIZE*5/2)<=status_pong.y && enemy_y+1*(BALL_SIZE*5/2)>=status_pong.y ){
                 status_pong.vec[0]=Math.abs(status_pong.vec[0])
+                if(enemy_y<status_pong.y+BALL_SIZE/2){
+                    status_pong.vec[1]=1*Math.abs(status_pong.vec[1])
+                }else{
+                    status_pong.vec[1]=-1*Math.abs(status_pong.vec[1])
+                }
                 beep("enemy")
                 cycle+=1
             }
@@ -374,7 +384,7 @@
                 var vxx=0;
                 var vx=0;
                 var vy=0
-                if(mouse_x<status_breakout.x){
+                if(mouse_x<status_breakout.x+BALL_SIZE/2){
                     vxx=1
                 }else{
                     vxx=-1
