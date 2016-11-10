@@ -1,17 +1,22 @@
 import {config} from '../../config';
 import {Point, Rectangle, Graphics, Circle} from 'pixi.js';
 import {Game} from '../game';
+import {IEntity} from './entity';
+import {EnergyBall} from './energyBall';
+import {ITimeEvent} from '../game-loop';
 import {
   inRange,
   lineOfSight
 } from '../functional';
 
-export class Ranged {
+export class Ranged implements IEntity {
   private _view: Graphics;
   private config: any;
   private _body: Rectangle;
   private _range: Circle;
   private _connectLine: Graphics;
+  private _state: 'searching' | 'shooting' | 'cooldown';
+  private _timer: number;
 
   get view() { return this._view; }
   get body() { return this._body; }
@@ -35,9 +40,25 @@ export class Ranged {
     this._range.y = this._body.y + (config.tileSize) / 2;
   }
 
-  update(time) {
+  get position() {
+    return new Point(
+      this._body.x + this._body.width / 2,
+      this._body.y + this._body.height / 2
+    );
+  }
+
+  shoot() {
+    let shoot = new EnergyBall(this._game);
+    shoot.position = new Point(
+      this._body.x + this._body.width / 2,
+      this._body.y + this._body.height / 2
+    );
+    shoot.setTarget(this._game.currentMap.player);
+    this._game.currentMap.view.addChild(shoot.view);
+  }
+
+  update(time: ITimeEvent) {
     if (this._playerInRange()) {
-    console.log('updating tower');
       let player = this._game.currentMap.player.body;
       this._connectLine.clear();
       this._connectLine.lineStyle(1, 0x00FF00, 1);
@@ -51,11 +72,25 @@ export class Ranged {
     } else {
       this._game.currentMap.view.removeChild(this._connectLine);
     }
+    if (this._state === 'searching' && this._playerInRange()) {
+      this._state = 'shooting';
+      this._timer = this.config.shootDelay;
+    }
+    if (this._state === 'shooting' && this._timer < 0) {
+        this._state = 'cooldown';
+        this._timer = this.config.shootCooldown;
+        this.shoot();
+    }
+    if (this._state === 'cooldown' && this._timer < 0) {
+        this._state = 'searching';
+    }
+    this._timer -= time.delta;
   }
 
   constructor(
     private _game: Game
   ) {
+    this._state = 'searching';
     this.config = Object.assign(config.entities.ranged);
     this._body = new Rectangle(0, 0, this.config.size, this.config.size);
     this._range = new Circle(0, 0, config.tileSize * this.config.radius );

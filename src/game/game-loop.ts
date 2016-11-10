@@ -1,6 +1,6 @@
 import { Observable, Subject } from 'rxjs/Rx';
 
-interface ITimeEvent {
+export interface ITimeEvent {
   timestamp: number;
   delta: number;
 };

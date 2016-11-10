@@ -1,6 +1,10 @@
 import {Map} from '../map';
 import {Rectangle, Circle} from 'pixi.js';
 
+export function isOutOfBOunds(map: Map, body: Rectangle) {
+  return body.x < 0 || body.y < 0 || body.right > map.width || body.bottom > map.height;
+}
+
 export function fixOutOfBOunds(map: Map, body: Rectangle) {
   let newBody = body.clone();
   if (newBody.x < 0) { newBody.x = 0; }
@@ -10,11 +14,19 @@ export function fixOutOfBOunds(map: Map, body: Rectangle) {
   return newBody;
 }
 
+export function wallAt(map: Map, x, y) {
+  let tile = map.tileAt(x, y);
+  if (tile && tile.type !== 'block') {
+    tile = null;
+  }
+  return tile;
+}
+
 export function wallCollision(map: Map, body: Rectangle) {
-  return map.tileAt(body.right, body.bottom) ||
-         map.tileAt(body.left, body.bottom) ||
-         map.tileAt(body.right, body.top) ||
-         map.tileAt(body.left, body.top);
+  return wallAt(map, body.right, body.bottom) ||
+         wallAt(map, body.left, body.bottom) ||
+         wallAt(map, body.right, body.top) ||
+         wallAt(map, body.left, body.top);
 }
 
 export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {

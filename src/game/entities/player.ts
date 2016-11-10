@@ -1,9 +1,11 @@
 import {config} from '../../config';
 import {Point, Texture, Sprite, Rectangle} from 'pixi.js';
 import {Game} from '../game';
+import {ITimeEvent} from '../game-loop';
 import {moveBody} from '../functional';
+import {IEntity} from './entity';
 
-export class Player {
+export class Player implements IEntity {
   private xSpeed: number;
   private ySpeed: number;
   private keyState: {[key: string]: boolean};
@@ -17,6 +19,13 @@ export class Player {
   get view() { return this._view; }
   get body() { return this._body; }
 
+  get position() {
+    return new Point(
+      this._body.x + this._body.width / 2,
+      this._body.y + this._body.height / 2
+    );
+  }
+
   set tile(pos: Point) {
     this._body.x = config.tileSize * pos.x + (config.tileSize - this.config.size - 1) / 2;
     this._body.y = config.tileSize * pos.y + (config.tileSize - this.config.size - 1);
@@ -24,7 +33,7 @@ export class Player {
     this._view.position.y = this._body.y;
   }
 
-  update(time) {
+  update(time: ITimeEvent) {
     this._body = this._moveBody(this._body, this.xSpeed * this.config.speed, this.ySpeed * this.config.speed);
     this._view.position.x = this._body.x;
     this._view.position.y = this._body.y;
@@ -40,7 +49,7 @@ export class Player {
     this._body = new Rectangle(0, 0, this.config.size, this.config.size);
     this._moveBody = moveBody.bind(null, _game.currentMap);
 
-    _game.keyPress$.subscribe(e => this.updateStateFromKeyboard(e));
+    _game.keyPress$.subscribe(e => this._updateStateFromKeyboard(e));
 
     const texture = Texture.fromImage('assets/basics/nin.png');
     this._view = new Sprite(texture);
@@ -58,7 +67,7 @@ export class Player {
     }, {});
   }
 
-  updateStateFromKeyboard(e: KeyboardEvent) {
+  private _updateStateFromKeyboard(e: KeyboardEvent) {
     let value = e.type === 'keydown';
     let key = this.keyMap[e.which];
     if (!key) { return; }

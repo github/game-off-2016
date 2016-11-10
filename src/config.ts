@@ -19,7 +19,13 @@ export const config = {
     },
     ranged: {
       radius: 4,
-      size: 32
+      size: 32,
+      shootDelay: 1000,
+      shootCooldown: 2000
+    },
+    energyBall: {
+      size: 20,
+      speed: 2
     }
   }
 };
