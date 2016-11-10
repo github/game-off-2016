@@ -23,8 +23,8 @@ canvas {
 }
 
 #scoreBoard {
-  width: 76%;
-  height: 12%;
+  width: 420px;
+  height: 50px;
   background: rgba(182, 200, 220, 0.7);
   position: absolute;
   top: -3px;
@@ -34,9 +34,9 @@ canvas {
 }
 
 #scoreBoard p {
-  font-size: 4.7%;
+  font-size: 20px;
   padding: 0;
-  line-height: 11.8%;
+  line-height: 47px;
   margin: 0px 0 0 5px;
 }
 
@@ -68,8 +68,8 @@ h3 {text-align: right; margin: -10px 20px 0 0; color: #5e96be}
 h3 a {color: #5a5816}
 
 .button {
-  width: 19%;
-  height: 7.3px;
+  width: 105px;
+  height: 31px;
   background: url(http://i.imgur.com/2WEhF.png) 0 0 no-repeat;
   display: block;
   color:  #000;
@@ -88,8 +88,8 @@ h3 a {color: #5a5816}
 .info {position: absolute; right: 20px; bottom: 00px; margin: 0; color: green}
 
 .info .key {
-  width: 4%;
-  height: 4%;
+  width: 16px;
+  height: 16px;
   background: url(http://i.imgur.com/2WEhF.png) no-repeat;
   text-indent: -9999px;
   display: inline-block;
