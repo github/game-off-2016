@@ -18,7 +18,7 @@ made by [kurehajime](https://github.com/kurehajime)
 
 [Iwata asks](http://iwataasks.nintendo.com/interviews/#/wii/nsmb/0/0)
 
->#### Iwata  
+>### Iwata  
 So you were analyzing what made games fun to play. 
 >
 ### Miyamoto  
