@@ -15,4 +15,15 @@ public class DoorDetails : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    void OnCollisionEnter2D() {
+        Debug.Log("collision detected, connecting to room " + connectedRoomId + " door " + connectedDoorId);
+    }
+
+    public void SetConnectedDoor(int roomId, int doorId) {
+        connectedRoomId = roomId;
+        connectedDoorId = doorId;
+    }
+
+
 }
