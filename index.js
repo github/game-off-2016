@@ -160,13 +160,12 @@
     }
 
     function newGame(){
-        var audio=document.getElementsByTagName("audio")
-        for(var i=0;i<audio.length;i++){
-            audio[i].load();
+        if(firstStandby){
+            var audio=document.getElementsByTagName("audio")
+            for(var i=0;i<audio.length;i++){
+                audio[i].load();
+            }
         }
-
-
-
         if(standby==true){
             initParam()
             standby=false
