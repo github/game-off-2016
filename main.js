@@ -50,8 +50,48 @@ var Base = function() {
     } catch (e) {}
   };
 };
-
+var oldValue = 0;
 var base = new Base();
+var temp1 = true;
+tilt = function(str1, values) {
+  if(temp1){
+    document.getElementById("helptext").innerHTML = values;
+    if(values < 7 && values > -7){
+      document.getElementById("helptext1").innerHTML = "Center";
+      player.isMovingLeft = false;
+      player.isMovingRight = false;
+    }
+    else if(values > 7){
+       document.getElementById("helptext1").innerHTML = "Left";
+       player.isMovingRight = true;
+    }
+    else{
+      document.getElementById("helptext1").innerHTML = "Right";
+      player.isMovingLeft = true;
+    }
+    oldValue = values;
+  }
+  else{
+    document.getElementById("helptext").innerHTML = "Hola!";
+    temp1 = true;
+  }
+  console.log("Hello");
+};
+
+
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function () {
+        tilt("Device Orientation", event.gamma);
+    }, true);
+} else if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', function () {
+        tilt("DeviceMotion");
+    }, true);
+} else {
+    window.addEventListener("MozOrientation", function () {
+        tilt("Moz Orientation");
+    }, true);
+}
 
 //Player object
 var Player = function() {

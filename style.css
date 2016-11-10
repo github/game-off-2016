@@ -8,16 +8,16 @@ body {
 }
 
 .container {
-  height: 552px;
-  width: 422px;
+  height: 100%;
+  width: 100%;
   position: relative;
   margin: 20px auto 0; 
   overflow: hidden;
 }
 
 canvas {
-  height: 552px;
-  width: 422px;
+  height: 100%;
+  width: 100%;
   display: block;
   background: url(http://i.imgur.com/Y0BMP.png) top left;
 }
