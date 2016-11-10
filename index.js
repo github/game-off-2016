@@ -781,7 +781,7 @@
 
 
         if(img_bk_loaded){
-            ctx_noise.globalAlpha = 0.5;
+            ctx_noise.globalAlpha = 0.4;
             ctx_noise.drawImage(img_bk,0,0, ctx.canvas.width, ctx.canvas.height,0,0,500,500);
         }
 
