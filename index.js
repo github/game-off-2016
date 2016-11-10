@@ -171,12 +171,18 @@
         }
         if(standby==true){
             initParam()
-            standby=false
-            status_score.gameover=false
             firstStandby=false
+            standby=false
+
+            
             setTimeout(function(){
-                    wait=false
-                },500)
+                status_score.gameover=false
+                firstStandby=false
+                setTimeout(function(){
+                        wait=false
+                    },500)
+            },400);
+
         }
     }
 
