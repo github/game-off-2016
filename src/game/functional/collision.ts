@@ -14,19 +14,19 @@ export function fixOutOfBOunds(map: Map, body: Rectangle) {
   return newBody;
 }
 
-export function wallAt(map: Map, x, y) {
+export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false) {
   let tile = map.tileAt(x, y);
-  if (tile && tile.type !== 'block') {
+  if (tile && !rangedAsWalls && tile.type !== 'block') {
     tile = null;
   }
   return tile;
 }
 
-export function wallCollision(map: Map, body: Rectangle) {
-  return wallAt(map, body.right, body.bottom) ||
-         wallAt(map, body.left, body.bottom) ||
-         wallAt(map, body.right, body.top) ||
-         wallAt(map, body.left, body.top);
+export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false) {
+  return wallAt(map, body.right, body.bottom, rangedAsWalls) ||
+         wallAt(map, body.left, body.bottom, rangedAsWalls) ||
+         wallAt(map, body.right, body.top, rangedAsWalls) ||
+         wallAt(map, body.left, body.top, rangedAsWalls);
 }
 
 export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
@@ -35,7 +35,7 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
 
   // Y movement
   newBody.y += dy;
-  tile = wallCollision(map, newBody);
+  tile = wallCollision(map, newBody, true);
   if (tile !== null) {
     let tileBody = tile.body;
     if (dy > 0) {
@@ -46,7 +46,7 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
   }
   // X movement
   newBody.x += dx;
-  tile = wallCollision(map, newBody);
+  tile = wallCollision(map, newBody, true);
   if (tile !== null) {
     let tileBody = tile.body;
     if (dx > 0) {
