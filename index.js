@@ -76,17 +76,17 @@
     function init(){
 
         if('ontouchstart' in window){
-            $("#canv").bind('touchstart',ev_mouseMove)
-            $("#canv").bind('touchmove',ev_mouseMove)
-            $("#canv").bind('touchend',ev_mouseMove)
+            document.getElementById("canv").addEventListener("touchstart",ev_mouseMove,false)
+            document.getElementById("canv").addEventListener("touchmove",ev_mouseMove,false)
+            document.getElementById("canv").addEventListener("touchend",ev_mouseMove,false)
        }else{
-            $("#canv").bind('mousemove',ev_mouseMove)
+            document.getElementById("canv").addEventListener("mousemove",ev_mouseMove,false)
         }
         if('ontouchstart' in window){
-            $("#canv").bind('touchstart',newGame)
-            document.getElementById("canv").addEventListener("touchstart",newGame)
+            document.getElementById("canv").addEventListener("touchstart",newGame,false)
        }else{
-            $("#canv").bind('mousedown',newGame)
+            document.getElementById("canv").addEventListener("mousedown",newGame,false)
+
         }
 
 
@@ -161,10 +161,11 @@
     }
 
     function newGame(){
+        var audio=document.getElementsByTagName("audio")
+        for(var i=0;i<audio.length;i++){
+            audio[i].load();
+        }
 
-        $("audio").each(function(){
-            $(this)[0].load();
-        })
 
 
         if(standby==true){
@@ -184,7 +185,7 @@
     function getMousePosition(e) {  
         if(!e.clientX){//SmartPhone
             if(e.touches){
-                e = e.originalEvent.touches[0];            
+                e = e.touches[0];            
             }else if(e.originalEvent.touches){
                 e = e.originalEvent.touches[0];
             }else{
