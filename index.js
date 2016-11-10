@@ -479,7 +479,7 @@
         if(block.y-2<=y&&block.y+block.h+2>=y){
             if(block.x<=x+BALL_SIZE*2&&block.x+block.w>=x ){
                 status_pong.vec[0]=-1*status_pong.vec[0]
-                status_pong.vec[1]=-1*status_pong.vec[1]
+                //status_pong.vec[1]=-1*status_pong.vec[1]
                 status_breakout.falling.splice(idx,1)
                 wait=true
                 setTimeout(function(){
