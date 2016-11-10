@@ -18,6 +18,7 @@ public class DoorDetails : MonoBehaviour {
 
     void OnCollisionEnter2D() {
         Debug.Log("collision detected, connecting to room " + connectedRoomId + " door " + connectedDoorId);
+        Managers.RoomNavigationManager.ChangeRoom(connectedRoomId, connectedDoorId);
     }
 
     public void SetConnectedDoor(int roomId, int doorId) {
