@@ -47,7 +47,6 @@
     var firstStandby=true;
     var wait=true;
     var cycle=1;
-    var seed=0
 
     //status
     var status_pong={
@@ -485,7 +484,6 @@
 
     function drawLoop(){
         draw()
-        seed+=1
         _requestAnimationFrame(drawLoop);
     }
 

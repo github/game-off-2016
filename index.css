@@ -11,8 +11,12 @@ body{
 }
 .center{
     text-align: center;
-    margin: 50px 0px;
     padding: 0px;
+}
+@media screen and (min-height:550px) {
+    .center{
+        margin: 50px 0px;
+    }
 }
 #foot{
     color: #191919;
