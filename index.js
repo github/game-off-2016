@@ -48,6 +48,7 @@
     var firstStandby=true;
     var wait=true;
     var cycle=1;
+    var isMobile=false;
 
     //status
     var status_pong={
@@ -84,6 +85,7 @@
         }
         if('ontouchstart' in window){
             document.getElementById("canv").addEventListener("touchstart",newGame,false)
+            isMobile=true;
        }else{
             document.getElementById("canv").addEventListener("mousedown",newGame,false)
 
@@ -181,7 +183,7 @@
     /** 
      * マウス位置取得
      */
-    function getMousePosition(e) {  
+    function getMousePosition(e) {
         if(!e.clientX){//SmartPhone
             if(e.touches){
                 e = e.touches[0];            
@@ -782,8 +784,10 @@
 
 
         if(img_bk_loaded){
-            ctx_noise.globalAlpha = 0.4;
-            ctx_noise.drawImage(img_bk,0,0, ctx.canvas.width, ctx.canvas.height,0,0,500,500);
+            if(isMobile==false){
+                ctx_noise.globalAlpha = 0.4;
+                ctx_noise.drawImage(img_bk,0,0, ctx.canvas.width, ctx.canvas.height,0,0,500,500);
+            }
         }
 
 
