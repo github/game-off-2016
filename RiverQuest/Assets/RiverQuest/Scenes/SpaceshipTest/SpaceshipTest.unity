@@ -587,6 +587,8 @@ GameObject:
   - 65: {fileID: 997727298}
   - 23: {fileID: 997727297}
   - 114: {fileID: 997727300}
+  - 95: {fileID: 997727301}
+  - 114: {fileID: 997727302}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -669,6 +671,34 @@ MonoBehaviour:
   Room1: {fileID: 394763211}
   Room2: {fileID: 1558550798}
   IsOpen: 0
+--- !u!95 &997727301
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997727295}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 158172f38592379449488142469d0eb9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &997727302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997727295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c70f9b11be2334ea29814dbad10dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1264363833
 GameObject:
   m_ObjectHideFlags: 0
