@@ -6,9 +6,15 @@ import {
 import {Game} from './game';
 import {config} from '../config';
 
+interface IMapObject {
+  readonly body: Rectangle;
+  readonly type: string;
+}
+
 export class Map {
   private _stage: Container;
-  private _map: string[];
+  private _mapConfig: string[];
+  private _map: IMapObject[][];
   private _player: Player;
   private _ranged: Ranged[];
 
@@ -24,32 +30,34 @@ export class Map {
   tileAt(x: number, y: number) {
     x = Math.floor(x / config.tileSize);
     y = Math.floor(y / config.tileSize);
-    if (this._map[y] && (this._map[y][x] === 'X' || this._map[y][x] === 'T')) {
-      return new Rectangle(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
-    } else {
-      return null;
-    }
+    return (this._map[y] ? this._map[y][x] : null) || null;
   }
 
   loadLevel(level: any) {
-    this._map = level.map;
+    this._mapConfig = level.map;
     this._ranged = [];
     this._stage = new Container();
     const graphics = new Graphics();
     this._stage.addChild(graphics);
+    this._map = Array.apply(null, Array(config.gridHeight)).map(() => []);
     graphics.beginFill(0xFFFF88);
-    for (let row = 0; row < this._map.length; row += 1) {
-      for (let tile = 0; tile < this._map[row].length; tile += 1) {
-        if (this._map[row][tile] === 'X') {
+    for (let row = 0; row < this._mapConfig.length; row += 1) {
+      for (let tile = 0; tile < this._mapConfig[row].length; tile += 1) {
+        if (this._mapConfig[row][tile] === 'X') {
           graphics.drawRect(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize);
+          this._map[row][tile] = {
+            type: 'block',
+            body: new Rectangle(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize)
+          };
         }
 
-        if (this._map[row][tile] === 'T') {
+        if (this._mapConfig[row][tile] === 'T') {
           const ranged = new Ranged(this._game);
           ranged.tile = new Point(tile, row);
           this._stage.addChild(ranged.view);
           this._ranged.push(ranged);
-        } else if (this._map[row][tile] === 'P') {
+          this._map[row][tile] = ranged;
+        } else if (this._mapConfig[row][tile] === 'P') {
           const player = new Player(this._game);
           player.tile = new Point(tile, row);
           this._stage.addChild(player.view);

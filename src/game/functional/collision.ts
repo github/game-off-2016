@@ -20,24 +20,27 @@ export function wallCollision(map: Map, body: Rectangle) {
 export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
   let newBody = body.clone();
   let tile;
+
   // Y movement
   newBody.y += dy;
   tile = wallCollision(map, newBody);
   if (tile !== null) {
+    let tileBody = tile.body;
     if (dy > 0) {
-      newBody.y = tile.y - newBody.height - 1;
+      newBody.y = tileBody.y - newBody.height - 1;
     } else {
-      newBody.y = tile.y + tile.height + 1;
+      newBody.y = tileBody.y + tileBody.height + 1;
     }
   }
   // X movement
   newBody.x += dx;
   tile = wallCollision(map, newBody);
   if (tile !== null) {
+    let tileBody = tile.body;
     if (dx > 0) {
-      newBody.x = tile.x - newBody.width - 1;
+      newBody.x = tileBody.x - newBody.width - 1;
     } else {
-      newBody.x = tile.x + tile.width + 1;
+      newBody.x = tileBody.x + tileBody.width + 1;
     }
   }
   return fixOutOfBOunds(map, newBody);
@@ -64,7 +67,7 @@ export function lineOfSight(map: Map, x0: number, y0: number, x1: number, y1: nu
   dy *= 2;
   for (; n > 0; --n) {
     let tile = map.tileAt(x, y);
-    if (tile !== null && !tile.contains(x0, y0) && !tile.contains(x1, y1)) {
+    if (tile !== null && tile.type === 'block' && !tile.body.contains(x0, y0) && !tile.body.contains(x1, y1)) {
       los = false;
       break;
     }

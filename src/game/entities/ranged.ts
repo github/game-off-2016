@@ -14,6 +14,8 @@ export class Ranged {
   private _connectLine: Graphics;
 
   get view() { return this._view; }
+  get body() { return this._body; }
+  get type() { return 'ranged'; }
 
   private _playerInRange(): boolean {
     return inRange(this._range, this._game.currentMap.player.body) &&
@@ -25,12 +27,12 @@ export class Ranged {
   }
 
   set tile(pos: Point) {
-    this._body.x = config.tileSize * pos.x + (config.tileSize) / 2;
-    this._body.y = config.tileSize * pos.y + (config.tileSize) / 2;
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
-    this._range.x = this._body.x;
-    this._range.y = this._body.y;
+    this._body.x = config.tileSize * pos.x;
+    this._body.y = config.tileSize * pos.y;
+    this._view.position.x = this._body.x + (config.tileSize) / 2;
+    this._view.position.y = this._body.y + (config.tileSize) / 2;
+    this._range.x = this._body.x + (config.tileSize) / 2;
+    this._range.y = this._body.y + (config.tileSize) / 2;
   }
 
   update(time) {
@@ -39,7 +41,10 @@ export class Ranged {
       let player = this._game.currentMap.player.body;
       this._connectLine.clear();
       this._connectLine.lineStyle(1, 0x00FF00, 1);
-      this._connectLine.moveTo(this._body.x, this._body.y);
+      this._connectLine.moveTo(
+        this._body.x + this._body.width / 2,
+        this._body.y + this._body.height / 2
+      );
       this._connectLine.lineTo(player.x + player.width / 2, player.y  + player.height / 2);
       this._connectLine.lineWidth = 3;
       this._game.currentMap.view.addChild(this._connectLine);
