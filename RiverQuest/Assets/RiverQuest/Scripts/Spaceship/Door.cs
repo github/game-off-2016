@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using RiverQuest.Controller;
+using UnityEngine;
 
 namespace RiverQuest.Spaceship
 {
     [RequireComponent(typeof(Animator))]
-    public class Door : MonoBehaviour
+    public class Door : MonoBehaviour, IActivatable
     {
         [SerializeField]
         public bool IsOpen { get; private set; }
@@ -15,7 +17,7 @@ namespace RiverQuest.Spaceship
         {
             _animator = GetComponent<Animator>();
             _o2transfer = GetComponent<OxygenTransfer>();
-            IsOpen = false;
+            SetOpen(false);
         }
 
         public void SetOpen(bool isOpen)
@@ -25,6 +27,21 @@ namespace RiverQuest.Spaceship
             _animator.SetTrigger("Activated");
 
             if (_o2transfer != null) _o2transfer.IsOpen = IsOpen;
+        }
+
+        public void Highlight()
+        {
+            GetComponent<MeshRenderer>().material.color = Color.red;
+        }
+
+        public void Unhighlight()
+        {
+            GetComponent<MeshRenderer>().material.color = Color.white;
+        }
+
+        public void Activate(MultiPadController controller)
+        {
+            SetOpen(!IsOpen);
         }
     }
 }
