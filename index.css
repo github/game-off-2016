@@ -1,6 +1,8 @@
 #canv{
     height: 500px;
     width: 500px;
+    margin: 0px;
+    padding: 0px;
     /*-webkit-filter: blur(1px);
     filter: blur(1px);*/
 }
@@ -10,6 +12,7 @@ body{
 .center{
     text-align: center;
     margin: 50px 0px;
+    padding: 0px;
 }
 #foot{
     color: #191919;
