@@ -24,6 +24,4 @@ public class DoorDetails : MonoBehaviour {
         connectedRoomId = roomId;
         connectedDoorId = doorId;
     }
-
-
 }
