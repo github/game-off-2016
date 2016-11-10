@@ -8181,12 +8181,12 @@
 	'use strict';
 
 	var THREE = __webpack_require__(299);
-	var VoxLoader = __webpack_require__(311);
-	var GameLoop = __webpack_require__(317);
-	var KeyDrown = __webpack_require__(321);
+	var VoxLoader = __webpack_require__(300);
+	var GameLoop = __webpack_require__(309);
+	var KeyDrown = __webpack_require__(313);
 	var viewWidth = document.documentElement.clientWidth;
 	var viewHeight = document.documentElement.clientHeight;
-	var modelNames = __webpack_require__(302);
+	var modelNames = __webpack_require__(314);
 
 	var sel = document.getElementById('modelSelector');
 	var fragment = document.createDocumentFragment();
@@ -8248,7 +8248,7 @@
 	window.scene = scene;
 	setLights(scene);
 
-	var camera = new THREE.PerspectiveCamera(35, // Field of view
+	var camera = new THREE.PerspectiveCamera(75, // Field of view
 	viewWidth / viewHeight, // Aspect ratio
 	0.1, // Near
 	10000 // Far
@@ -8256,13 +8256,7 @@
 
 	window.camera = camera;
 	camera.position.set(0, 50, 100);
-
-	var geometry = new THREE.BoxGeometry(5, 5, 5);
-	var material = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
-	var box = new THREE.Mesh(geometry, material);
-	box.voxel = true;
-	focus = box;
-	scene.add(box);
+	camera.lookAt(scene.position);
 
 	var textureLoader = new THREE.TextureLoader();
 	var texture2 = textureLoader.load("./assets/textures/crate.gif");
@@ -8280,9 +8274,16 @@
 	mesh1.scale.set(1000, 1000, 1000);
 	scene.add(mesh1);
 
+	var geometry = new THREE.BoxGeometry(5, 5, 5);
+	var material = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+	var anchor = new THREE.Mesh(geometry, material);
+	window.anchor = anchor;
+	scene.add(anchor);
+
 	renderer.setClearColor(0xdddddd, 1);
 	renderer.render(scene, camera);
 
+	var helper, mesh;
 	function loadModel(modelName) {
 	  var vl = new VoxLoader({
 	    filename: './assets/mmmm/vox/' + modelName,
@@ -8296,12 +8297,20 @@
 	      }
 	    });
 	    vox.getChunk().Rebuild();
-	    var mesh = vox.getMesh();
-	    mesh.voxel = true;
-	    scene.add(mesh);
-	    focus = mesh;
+	    var vmesh = vox.getMesh();
+	    vmesh.voxel = true;
+	    scene.add(vmesh);
+
+	    // helper = new THREE.BoundingBoxHelper(vmesh, 0xff0000);
+	    // helper.update();
+	    // // If you want a visible bounding anchor
+	    // scene.add(helper); 
+
+	    mesh = vmesh;
+	    vmesh.parent = anchor;
 	    window.mesh = mesh;
-	    camera.lookAt(focus.position);
+	    camera.lookAt(vmesh.position);
+	    //cameraFollow();
 	  });
 	}
 
@@ -8310,7 +8319,6 @@
 
 	KeyDrown.W.down(function () {
 	  zVelocity = -1;
-	  focus.rotation.z = Math.PI;
 	});
 	KeyDrown.S.down(function () {
 	  zVelocity = 1;
@@ -8343,16 +8351,30 @@
 	}
 	window.addEventListener('resize', onWindowResize, false);
 
+	function cameraFollow() {
+	  var relativeCameraOffset = new THREE.Vector3(0, 40, 40);
+	  var cameraOffset = relativeCameraOffset.applyMatrix4(anchor.matrixWorld);
+	  camera.position.x = cameraOffset.x;
+	  camera.position.y = cameraOffset.y;
+	  camera.position.z = cameraOffset.z;
+	}
+	window.cameraFollow = cameraFollow;
+
 	var ticks = 0;
 	var update = function update(dt, elapsed) {
 	  ticks++;
 	  KeyDrown.tick();
-	  focus.position.z += dt * zVelocity * 18;
-	  focus.position.x += dt * xVelocity * 18;
+	  if (mesh) {
+	    anchor.translateZ(dt * zVelocity * 18);
+	    anchor.translateX(dt * xVelocity * 18);
+	    //    mesh.position.z += dt * zVelocity * 18;
+	    //    mesh.position.x += dt * xVelocity * 18;
+	    cameraFollow();
+	  }
+
 	  // camera.position.x = Math.cos(ticks * 0.004) * 100;
 	  // camera.position.y = 50;
 	  // camera.position.z = Math.sin(ticks * 0.004) * 100;
-	  //camera.lookAt(focus.position);  
 	};
 
 	var render = function render() {
@@ -50666,513 +50688,851 @@
 
 
 /***/ },
-/* 300 */,
+/* 300 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var VoxelData = __webpack_require__(301);
+	var Chunk = __webpack_require__(302);
+	var fs = __webpack_require__(308);
+
+	var voxColors = [0x00000000, 0xffffffff, 0xffccffff, 0xff99ffff, 0xff66ffff, 0xff33ffff, 0xff00ffff, 0xffffccff, 0xffccccff, 0xff99ccff, 0xff66ccff, 0xff33ccff, 0xff00ccff, 0xffff99ff, 0xffcc99ff, 0xff9999ff, 0xff6699ff, 0xff3399ff, 0xff0099ff, 0xffff66ff, 0xffcc66ff, 0xff9966ff, 0xff6666ff, 0xff3366ff, 0xff0066ff, 0xffff33ff, 0xffcc33ff, 0xff9933ff, 0xff6633ff, 0xff3333ff, 0xff0033ff, 0xffff00ff, 0xffcc00ff, 0xff9900ff, 0xff6600ff, 0xff3300ff, 0xff0000ff, 0xffffffcc, 0xffccffcc, 0xff99ffcc, 0xff66ffcc, 0xff33ffcc, 0xff00ffcc, 0xffffcccc, 0xffcccccc, 0xff99cccc, 0xff66cccc, 0xff33cccc, 0xff00cccc, 0xffff99cc, 0xffcc99cc, 0xff9999cc, 0xff6699cc, 0xff3399cc, 0xff0099cc, 0xffff66cc, 0xffcc66cc, 0xff9966cc, 0xff6666cc, 0xff3366cc, 0xff0066cc, 0xffff33cc, 0xffcc33cc, 0xff9933cc, 0xff6633cc, 0xff3333cc, 0xff0033cc, 0xffff00cc, 0xffcc00cc, 0xff9900cc, 0xff6600cc, 0xff3300cc, 0xff0000cc, 0xffffff99, 0xffccff99, 0xff99ff99, 0xff66ff99, 0xff33ff99, 0xff00ff99, 0xffffcc99, 0xffcccc99, 0xff99cc99, 0xff66cc99, 0xff33cc99, 0xff00cc99, 0xffff9999, 0xffcc9999, 0xff999999, 0xff669999, 0xff339999, 0xff009999, 0xffff6699, 0xffcc6699, 0xff996699, 0xff666699, 0xff336699, 0xff006699, 0xffff3399, 0xffcc3399, 0xff993399, 0xff663399, 0xff333399, 0xff003399, 0xffff0099, 0xffcc0099, 0xff990099, 0xff660099, 0xff330099, 0xff000099, 0xffffff66, 0xffccff66, 0xff99ff66, 0xff66ff66, 0xff33ff66, 0xff00ff66, 0xffffcc66, 0xffcccc66, 0xff99cc66, 0xff66cc66, 0xff33cc66, 0xff00cc66, 0xffff9966, 0xffcc9966, 0xff999966, 0xff669966, 0xff339966, 0xff009966, 0xffff6666, 0xffcc6666, 0xff996666, 0xff666666, 0xff336666, 0xff006666, 0xffff3366, 0xffcc3366, 0xff993366, 0xff663366, 0xff333366, 0xff003366, 0xffff0066, 0xffcc0066, 0xff990066, 0xff660066, 0xff330066, 0xff000066, 0xffffff33, 0xffccff33, 0xff99ff33, 0xff66ff33, 0xff33ff33, 0xff00ff33, 0xffffcc33, 0xffcccc33, 0xff99cc33, 0xff66cc33, 0xff33cc33, 0xff00cc33, 0xffff9933, 0xffcc9933, 0xff999933, 0xff669933, 0xff339933, 0xff009933, 0xffff6633, 0xffcc6633, 0xff996633, 0xff666633, 0xff336633, 0xff006633, 0xffff3333, 0xffcc3333, 0xff993333, 0xff663333, 0xff333333, 0xff003333, 0xffff0033, 0xffcc0033, 0xff990033, 0xff660033, 0xff330033, 0xff000033, 0xffffff00, 0xffccff00, 0xff99ff00, 0xff66ff00, 0xff33ff00, 0xff00ff00, 0xffffcc00, 0xffcccc00, 0xff99cc00, 0xff66cc00, 0xff33cc00, 0xff00cc00, 0xffff9900, 0xffcc9900, 0xff999900, 0xff669900, 0xff339900, 0xff009900, 0xffff6600, 0xffcc6600, 0xff996600, 0xff666600, 0xff336600, 0xff006600, 0xffff3300, 0xffcc3300, 0xff993300, 0xff663300, 0xff333300, 0xff003300, 0xffff0000, 0xffcc0000, 0xff990000, 0xff660000, 0xff330000, 0xff0000ee, 0xff0000dd, 0xff0000bb, 0xff0000aa, 0xff000088, 0xff000077, 0xff000055, 0xff000044, 0xff000022, 0xff000011, 0xff00ee00, 0xff00dd00, 0xff00bb00, 0xff00aa00, 0xff008800, 0xff007700, 0xff005500, 0xff004400, 0xff002200, 0xff001100, 0xffee0000, 0xffdd0000, 0xffbb0000, 0xffaa0000, 0xff880000, 0xff770000, 0xff550000, 0xff440000, 0xff220000, 0xff110000, 0xffeeeeee, 0xffdddddd, 0xffbbbbbb, 0xffaaaaaa, 0xff888888, 0xff777777, 0xff555555, 0xff444444, 0xff222222, 0xff111111];
+
+	function Vox(props) {
+	    this.world = null;
+	    this.colors = [];
+	    this.colors2 = undefined;
+	    this.voxelData = [];
+	    this.blockSize = 0.1;
+	    Object.assign(this, props);
+	    this.chunk = new Chunk({
+	        world: this.world,
+	        blockSize: this.blockSize
+	    });
+	};
+
+	Vox.prototype.getChunk = function () {
+	    return this.chunk;
+	};
+
+	Vox.prototype.getMesh = function () {
+	    return this.chunk.mesh;
+	};
+
+	Vox.prototype.readInt = function (buffer, from) {
+	    return buffer[from] | buffer[from + 1] << 8 | buffer[from + 2] << 16 | buffer[from + 3] << 24;
+	};
+
+	Vox.prototype.proccesVoxData = function (arrayBuffer, callback, name) {
+	    var buffer = new Uint8Array(arrayBuffer);
+	    var voxId = this.readInt(buffer, 0);
+	    var version = this.readInt(buffer, 4);
+	    // TBD: Check version to support
+	    var i = 8;
+	    while (i < buffer.length) {
+	        var subSample = false;
+	        var sizex = 0,
+	            sizey = 0,
+	            sizez = 0;
+	        var id = String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++]));
+
+	        var chunkSize = this.readInt(buffer, i) & 0xFF;
+	        i += 4;
+	        var childChunks = this.readInt(buffer, i) & 0xFF;
+	        i += 4;
+
+	        if (id == "SIZE") {
+	            sizex = this.readInt(buffer, i) & 0xFF;
+	            i += 4;
+	            sizey = this.readInt(buffer, i) & 0xFF;
+	            i += 4;
+	            sizez = this.readInt(buffer, i) & 0xFF;
+	            i += 4;
+	            if (sizex > 32 || sizey > 32) {
+	                subSample = true;
+	            }
+	            console.log(this.filename + " => Create VOX Chunk!");
+	            this.chunk.Create(sizex, sizey, sizez);
+	            i += chunkSize - 4 * 3;
+	        } else if (id == "XYZI") {
+	            var numVoxels = Math.abs(this.readInt(buffer, i));
+	            i += 4;
+	            this.voxelData = new Array(numVoxels);
+	            for (var n = 0; n < this.voxelData.length; n++) {
+	                ;
+	                this.voxelData[n] = new VoxelData();
+	                this.voxelData[n].Create(buffer, i, subSample); // Read 4 bytes
+	                i += 4;
+	            }
+	        } else if (id == "RGBA") {
+	            console.log(this.filename + " => Regular color chunk");
+	            this.colors2 = new Array(256);
+	            for (var n = 0; n < 256; n++) {
+	                var r = buffer[i++] & 0xFF;
+	                var g = buffer[i++] & 0xFF;
+	                var b = buffer[i++] & 0xFF;
+	                var a = buffer[i++] & 0xFF;
+	                this.colors2[n] = { 'r': r, 'g': g, 'b': b, 'a': a };
+	            }
+	        } else {
+	            i += chunkSize;
+	        }
+	    }
+
+	    if (this.voxelData == null || this.voxelData.length == 0) {
+	        return null;
+	    }
+
+	    for (var n = 0; n < this.voxelData.length; n++) {
+	        if (this.colors2 == undefined) {
+	            var c = voxColors[Math.abs(this.voxelData[n].color - 1)];
+	            var cRGBA = {
+	                b: (c & 0xff0000) >> 16,
+	                g: (c & 0x00ff00) >> 8,
+	                r: c & 0x0000ff,
+	                a: 1
+	            };
+	            this.chunk.ActivateBlock(this.voxelData[n].x, this.voxelData[n].y, this.voxelData[n].z, cRGBA);
+	        } else {
+	            this.chunk.ActivateBlock(this.voxelData[n].x, this.voxelData[n].y, this.voxelData[n].z, this.colors2[Math.abs(this.voxelData[n].color - 1)]);
+	        }
+	    }
+	    callback(this, this.name);
+	};
+
+	Vox.prototype.onLoadHandler = function (callback, oEvent) {
+	    var oReq = oEvent.currentTarget;
+	    console.log("Loaded model: " + oReq.responseURL);
+
+	    var arrayBuffer = oReq.response;
+	    if (arrayBuffer) {
+	        this.proccesVoxData(arrayBuffer, callback);
+	    }
+	};
+
+	Vox.prototype.LoadModel = function (callback) {
+	    var oReq = new XMLHttpRequest();
+	    oReq.open("GET", this.filename, true);
+	    oReq.responseType = "arraybuffer";
+	    oReq.onload = this.onLoadHandler.bind(this, callback);
+	    oReq.send(null);
+	};
+
+	module.exports = Vox;
+
+/***/ },
 /* 301 */
 /***/ function(module, exports) {
 
-	
+	"use strict";
+
+	//==============================================================================
+	// Author: Nergal
+	// http://webgl.nu
+	// Date: 2014-11-17
+	//==============================================================================
+	function VoxelData() {
+	    this.x;
+	    this.y;
+	    this.z;
+	    this.color;
+
+	    VoxelData.prototype.Create = function (buffer, i, subSample) {
+	        this.x = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
+	        this.y = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
+	        this.z = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
+	        this.color = buffer[i] & 0xFF;
+	    };
+	}
+	module.exports = VoxelData;
 
 /***/ },
 /* 302 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = [
-		"alien_bot1.vox",
-		"alien_bot2.vox",
-		"alien_bot3.vox",
-		"alien_crawl1.vox",
-		"alien_crawl2.vox",
-		"alien_egg1.vox",
-		"alien_egg2.vox",
-		"alien_egg3.vox",
-		"alien_engi1a.vox",
-		"alien_engi1b.vox",
-		"alien_engi1c.vox",
-		"alien_engi2a.vox",
-		"alien_engi2b.vox",
-		"alien_engi2c.vox",
-		"alien_engi2d.vox",
-		"alien_engi3.vox",
-		"alien_eye1a.vox",
-		"alien_eye1b.vox",
-		"alien_eye1c.vox",
-		"alien_infected1.vox",
-		"alien_infected2.vox",
-		"alien_infected3.vox",
-		"alien_lift.vox",
-		"alien_saucer1a.vox",
-		"alien_saucer1b.vox",
-		"alien_saucer1c.vox",
-		"alien_saucer2a.vox",
-		"alien_saucer2b.vox",
-		"alien_saucer2c.vox",
-		"alien_saucer3a.vox",
-		"alien_saucer3b.vox",
-		"alien_saucer3c.vox",
-		"alien_tool1.vox",
-		"alien_tool2.vox",
-		"alien_tool3.vox",
-		"chr_army1.vox",
-		"chr_army1a.vox",
-		"chr_army1b.vox",
-		"chr_army2.vox",
-		"chr_army2a.vox",
-		"chr_army2b.vox",
-		"chr_army3.vox",
-		"chr_army4.vox",
-		"chr_army4a.vox",
-		"chr_base.vox",
-		"chr_beardo1.vox",
-		"chr_beardo2.vox",
-		"chr_beardo3.vox",
-		"chr_beardo4.vox",
-		"chr_beau.vox",
-		"chr_bedroll1.vox",
-		"chr_bedroll2.vox",
-		"chr_bridget.vox",
-		"chr_bro.vox",
-		"chr_brookie.vox",
-		"chr_butcher.vox",
-		"chr_chef.vox",
-		"chr_cop1.vox",
-		"chr_cop2.vox",
-		"chr_costume1.vox",
-		"chr_costume2.vox",
-		"chr_costume3.vox",
-		"chr_costume4.vox",
-		"chr_eskimo.vox",
-		"chr_fatkid.vox",
-		"chr_goth1.vox",
-		"chr_goth2.vox",
-		"chr_goth3.vox",
-		"chr_hazmat1.vox",
-		"chr_hazmat2.vox",
-		"chr_headphones.vox",
-		"chr_hobo1.vox",
-		"chr_hunter1.vox",
-		"chr_hunter2.vox",
-		"chr_janitor.vox",
-		"chr_lady1.vox",
-		"chr_lady2.vox",
-		"chr_lady3.vox",
-		"chr_lady4.vox",
-		"chr_mailman.vox",
-		"chr_mayor.vox",
-		"chr_mechanic.vox",
-		"chr_mike.vox",
-		"chr_mission1.vox",
-		"chr_mission2.vox",
-		"chr_naked1.vox",
-		"chr_naked2.vox",
-		"chr_naked3.vox",
-		"chr_naked4.vox",
-		"chr_naked5.vox",
-		"chr_naked6.vox",
-		"chr_nun.vox",
-		"chr_nurse.vox",
-		"chr_paramedic1.vox",
-		"chr_paramedic2.vox",
-		"chr_ponytail1.vox",
-		"chr_ponytail2.vox",
-		"chr_ponytail3.vox",
-		"chr_priest.vox",
-		"chr_punk.vox",
-		"chr_raver1.vox",
-		"chr_raver2.vox",
-		"chr_raver3.vox",
-		"chr_riotcop.vox",
-		"chr_robot.vox",
-		"chr_scientist.vox",
-		"chr_sign1.vox",
-		"chr_sign2.vox",
-		"chr_sports1.vox",
-		"chr_sports2.vox",
-		"chr_sports3.vox",
-		"chr_sports4.vox",
-		"chr_suit1.vox",
-		"chr_suit2.vox",
-		"chr_suit3.vox",
-		"chr_suit4.vox",
-		"chr_sumo1.vox",
-		"chr_sumo2.vox",
-		"chr_super1.vox",
-		"chr_super2.vox",
-		"chr_super3.vox",
-		"chr_super4.vox",
-		"chr_super5.vox",
-		"chr_thief.vox",
-		"chr_worker1.vox",
-		"chr_worker2.vox",
-		"chr_worker3.vox",
-		"chr_zombie1.vox",
-		"chr_zombie2.vox",
-		"chr_zombie3.vox",
-		"chr_zombie4.vox",
-		"env_crete1a.vox",
-		"env_crete1b.vox",
-		"env_crete1c.vox",
-		"env_crete1d.vox",
-		"env_crete2a.vox",
-		"env_crete2b.vox",
-		"env_crete2c.vox",
-		"env_crete2d.vox",
-		"env_grass1a.vox",
-		"env_grass1b.vox",
-		"env_grass1c.vox",
-		"env_grass1d.vox",
-		"mob_bear.vox",
-		"mob_cat1.vox",
-		"mob_cat2.vox",
-		"mob_cat3.vox",
-		"mob_cat4.vox",
-		"mob_dog1.vox",
-		"mob_dog2.vox",
-		"mob_penguin.vox",
-		"obj_arcade1.vox",
-		"obj_arcade2.vox",
-		"obj_arcade3.vox",
-		"obj_arcade4.vox",
-		"obj_arcade5.vox",
-		"obj_armgate1.vox",
-		"obj_armgate2.vox",
-		"obj_bench1.vox",
-		"obj_bench2.vox",
-		"obj_bench3.vox",
-		"obj_bench4.vox",
-		"obj_bench5.vox",
-		"obj_boxingring.vox",
-		"obj_busstop.vox",
-		"obj_campfire.vox",
-		"obj_candle.vox",
-		"obj_cart1.vox",
-		"obj_cart1a.vox",
-		"obj_cart1b.vox",
-		"obj_cart2.vox",
-		"obj_cart2a.vox",
-		"obj_cart2b.vox",
-		"obj_celltower.vox",
-		"obj_chair1.vox",
-		"obj_chair2.vox",
-		"obj_christmas1.vox",
-		"obj_column1.vox",
-		"obj_column2.vox",
-		"obj_column3.vox",
-		"obj_cone1.vox",
-		"obj_container1.vox",
-		"obj_container2.vox",
-		"obj_container3.vox",
-		"obj_container4.vox",
-		"obj_cross.vox",
-		"obj_crosswalk.vox",
-		"obj_curb1.vox",
-		"obj_curb2.vox",
-		"obj_curb3.vox",
-		"obj_curb4.vox",
-		"obj_curb5.vox",
-		"obj_curb6.vox",
-		"obj_curb7.vox",
-		"obj_curb7a.vox",
-		"obj_curb8.vox",
-		"obj_dogstand.vox",
-		"obj_door1.vox",
-		"obj_door2.vox",
-		"obj_door3.vox",
-		"obj_door4.vox",
-		"obj_driveway1.vox",
-		"obj_driveway2.vox",
-		"obj_driveway3.vox",
-		"obj_fence1.vox",
-		"obj_fence2.vox",
-		"obj_fence3.vox",
-		"obj_fence4.vox",
-		"obj_fence5.vox",
-		"obj_fence6.vox",
-		"obj_fence7.vox",
-		"obj_fire1.vox",
-		"obj_fire2.vox",
-		"obj_fire3.vox",
-		"obj_fire4.vox",
-		"obj_fire5.vox",
-		"obj_fountain.vox",
-		"obj_grave1.vox",
-		"obj_grave2.vox",
-		"obj_grave3.vox",
-		"obj_grave4.vox",
-		"obj_grill.vox",
-		"obj_guitarcase.vox",
-		"obj_halo.vox",
-		"obj_house1.vox",
-		"obj_house1a.vox",
-		"obj_house1b.vox",
-		"obj_house1c.vox",
-		"obj_house2.vox",
-		"obj_house2a.vox",
-		"obj_house2b.vox",
-		"obj_house2c.vox",
-		"obj_house2d.vox",
-		"obj_house3.vox",
-		"obj_house3a.vox",
-		"obj_house3b.vox",
-		"obj_house3c.vox",
-		"obj_house4.vox",
-		"obj_house4a.vox",
-		"obj_house4b.vox",
-		"obj_house4c.vox",
-		"obj_house4d.vox",
-		"obj_house5.vox",
-		"obj_house5a.vox",
-		"obj_house5b.vox",
-		"obj_house5c.vox",
-		"obj_house6.vox",
-		"obj_house6a.vox",
-		"obj_house6b.vox",
-		"obj_house6c.vox",
-		"obj_house6d.vox",
-		"obj_house7.vox",
-		"obj_house7a.vox",
-		"obj_house7b.vox",
-		"obj_house7c.vox",
-		"obj_house8.vox",
-		"obj_house8a.vox",
-		"obj_house8b.vox",
-		"obj_house8c.vox",
-		"obj_hydrant.vox",
-		"obj_mailbox.vox",
-		"obj_mailbox2.vox",
-		"obj_mailbox2a.vox",
-		"obj_mailbox2b.vox",
-		"obj_mushroom1.vox",
-		"obj_mushroom2.vox",
-		"obj_mushroom3.vox",
-		"obj_newsbox1.vox",
-		"obj_newsbox2.vox",
-		"obj_newsbox3.vox",
-		"obj_newsbox4.vox",
-		"obj_park_block.vox",
-		"obj_path1.vox",
-		"obj_pentagram.vox",
-		"obj_planter1.vox",
-		"obj_planter2.vox",
-		"obj_planter3a.vox",
-		"obj_planter3b.vox",
-		"obj_playgrnd1.vox",
-		"obj_playgrnd2.vox",
-		"obj_playgrnd3.vox",
-		"obj_playgrnd4.vox",
-		"obj_playgrnd5.vox",
-		"obj_policetape.vox",
-		"obj_potty1.vox",
-		"obj_potty2.vox",
-		"obj_potty3.vox",
-		"obj_pumpkin.vox",
-		"obj_rubbish1.vox",
-		"obj_rubbish2.vox",
-		"obj_rubbish3.vox",
-		"obj_rubbish4.vox",
-		"obj_sidewalk1.vox",
-		"obj_sidewalk2.vox",
-		"obj_sidewalk3.vox",
-		"obj_sidewalk4.vox",
-		"obj_sidewalk5.vox",
-		"obj_sign1.vox",
-		"obj_sign2.vox",
-		"obj_sign3.vox",
-		"obj_sign4.vox",
-		"obj_sign5.vox",
-		"obj_sign6.vox",
-		"obj_sign7.vox",
-		"obj_sign8.vox",
-		"obj_sign9.vox",
-		"obj_splatter1.vox",
-		"obj_splatter2.vox",
-		"obj_splatter3.vox",
-		"obj_stage.vox",
-		"obj_statue1.vox",
-		"obj_statue2.vox",
-		"obj_statue3.vox",
-		"obj_stlight1.vox",
-		"obj_stlight2.vox",
-		"obj_stlight3.vox",
-		"obj_store01.vox",
-		"obj_store02.vox",
-		"obj_store03.vox",
-		"obj_store03a.vox",
-		"obj_store04.vox",
-		"obj_store05.vox",
-		"obj_store06.vox",
-		"obj_store07.vox",
-		"obj_store08.vox",
-		"obj_store09.vox",
-		"obj_store10.vox",
-		"obj_store11.vox",
-		"obj_store12.vox",
-		"obj_store13.vox",
-		"obj_store14.vox",
-		"obj_store15.vox",
-		"obj_store16.vox",
-		"obj_store16a.vox",
-		"obj_store16b.vox",
-		"obj_store17.vox",
-		"obj_store17a.vox",
-		"obj_story01.vox",
-		"obj_story01a.vox",
-		"obj_story01b.vox",
-		"obj_story02.vox",
-		"obj_story03.vox",
-		"obj_story03a.vox",
-		"obj_story03b.vox",
-		"obj_story03c.vox",
-		"obj_story03d.vox",
-		"obj_story04.vox",
-		"obj_story04a.vox",
-		"obj_story04b.vox",
-		"obj_story04c.vox",
-		"obj_story04d.vox",
-		"obj_story05.vox",
-		"obj_story05a.vox",
-		"obj_story06.vox",
-		"obj_story06a.vox",
-		"obj_story06b.vox",
-		"obj_story06c.vox",
-		"obj_story06d.vox",
-		"obj_street1.vox",
-		"obj_street2.vox",
-		"obj_stretcher.vox",
-		"obj_table1.vox",
-		"obj_table2.vox",
-		"obj_table3.vox",
-		"obj_table3a.vox",
-		"obj_table3b.vox",
-		"obj_tracks1.vox",
-		"obj_tracks2.vox",
-		"obj_trashcan1.vox",
-		"obj_trashcan2.vox",
-		"obj_trashcan3.vox",
-		"obj_trashcan4.vox",
-		"obj_tree1.vox",
-		"obj_tree1a.vox",
-		"obj_tree1b.vox",
-		"obj_tree1c.vox",
-		"obj_tree2.vox",
-		"obj_tree2a.vox",
-		"obj_tree2b.vox",
-		"obj_tree2c.vox",
-		"obj_tree3.vox",
-		"obj_tree4.vox",
-		"obj_trellis.vox",
-		"obj_trlight1.vox",
-		"obj_trlight2.vox",
-		"obj_wall.vox",
-		"piano.vox",
-		"scene_aliens.vox",
-		"scene_arcade.vox",
-		"scene_army.vox",
-		"scene_bus.vox",
-		"scene_car.vox",
-		"scene_carflip.vox",
-		"scene_checkpoint.vox",
-		"scene_christmas.vox",
-		"scene_church1.vox",
-		"scene_coffee.vox",
-		"scene_corner.vox",
-		"scene_crucifix.vox",
-		"scene_depot.vox",
-		"scene_depot2.vox",
-		"scene_depot3.vox",
-		"scene_fall.vox",
-		"scene_grave.vox",
-		"scene_hazmat.vox",
-		"scene_hazmat2.vox",
-		"scene_headache.vox",
-		"scene_house.vox",
-		"scene_house2.vox",
-		"scene_house3.vox",
-		"scene_house4.vox",
-		"scene_house5.vox",
-		"scene_house6.vox",
-		"scene_house7.vox",
-		"scene_hunt.vox",
-		"scene_lunch.vox",
-		"scene_mechanic.vox",
-		"scene_mechanic2.vox",
-		"scene_mobile.vox",
-		"scene_orgy.vox",
-		"scene_parade.vox",
-		"scene_park.vox",
-		"scene_park2.vox",
-		"scene_park3.vox",
-		"scene_park4.vox",
-		"scene_parked.vox",
-		"scene_protest.vox",
-		"scene_riot.vox",
-		"scene_sacrifice.vox",
-		"scene_ships.vox",
-		"scene_sidewalk.vox",
-		"scene_store.vox",
-		"scene_store10.vox",
-		"scene_store11.vox",
-		"scene_store2.vox",
-		"scene_store3.vox",
-		"scene_store4.vox",
-		"scene_store5.vox",
-		"scene_store6.vox",
-		"scene_store7.vox",
-		"scene_store8.vox",
-		"scene_store9.vox",
-		"scene_sumo.vox",
-		"scene_tentcity.vox",
-		"scene_tentcity2.vox",
-		"scene_theater.vox",
-		"scene_train.vox",
-		"scene_vehicles1.vox",
-		"scene_vehicles2.vox",
-		"scene_zombies.vox",
-		"veh_ambulance.vox",
-		"veh_bus.vox",
-		"veh_cab1.vox",
-		"veh_car1.vox",
-		"veh_car2.vox",
-		"veh_car3.vox",
-		"veh_car4.vox",
-		"veh_car5.vox",
-		"veh_fire.vox",
-		"veh_lunch1.vox",
-		"veh_lunch2.vox",
-		"veh_lunch3.vox",
-		"veh_lunch4.vox",
-		"veh_mini1.vox",
-		"veh_mini2.vox",
-		"veh_mini3.vox",
-		"veh_mini4.vox",
-		"veh_mini5.vox",
-		"veh_police1.vox",
-		"veh_suv1.vox",
-		"veh_suv2.vox",
-		"veh_suv3.vox",
-		"veh_tank1.vox",
-		"veh_train.vox",
-		"veh_train2.vox",
-		"veh_train3.vox",
-		"veh_truck1.vox",
-		"veh_truck2.vox",
-		"veh_truck3.vox",
-		"veh_truck4.vox",
-		"veh_truck5.vox",
-		"veh_truck6.vox",
-		"veh_truck7.vox",
-		"veh_wagon1.vox",
-		"veh_wagon2.vox",
-		"veh_wagon3.vox",
-		"veh_wagon4.vox",
-		""
-	];
+	'use strict';
+
+	var Block = __webpack_require__(303);
+	var THREE = __webpack_require__(306);
+	var Utils = __webpack_require__(307);
+
+	function Chunk(props) {
+	    this.wireframe = false;
+	    this.blockSize = 0.1;
+	    this.chunkSize = 4;
+	    this.chunkSizeX = 0;
+	    this.chunkSizeY = 0;
+	    this.chunkSizeZ = 0;
+	    this.posX = 0;
+	    this.posY = 0;
+	    this.posZ = 0;
+	    this.type = "GenericChunk";
+	    this.activeTriangles = 0;
+	    this.mesh = undefined;
+	    this.blocks = undefined;
+	    this.cid = undefined;
+	    this.world = null;
+
+	    this.isBuilt = false;
+	    this.avgHeight = 0;
+	    Object.assign(this, props);
+	};
+
+	Chunk.prototype.Clone = function () {
+	    var obj = new Chunk();
+
+	    obj.wireframe = this.wireframe;
+	    obj.blockSize = this.blockSize;
+	    obj.chunkSize = this.chunkSize;
+	    obj.chunkSizeX = this.chunkSizeX;
+	    obj.chunkSizeY = this.chunkSizeY;
+	    obj.chunkSizeZ = this.chunkSizeZ;
+	    obj.posX = this.posX;
+	    obj.posY = this.posY;
+	    obj.posZ = this.posZ;
+	    obj.type = this.type;
+	    obj.activeTriangles = this.activeTriangles;
+	    obj.mesh = this.mesh.clone();
+	    obj.cid = this.cid;
+	    obj.avgHeight = this.avgHeight;
+	    obj.blocks = this.blocks;
+
+	    return obj;
+	};
+
+	Chunk.prototype.SetWireFrame = function (val) {
+	    this.wireframe = val;
+	    this.Rebuild();
+	};
+
+	Chunk.prototype.GetActiveTriangles = function () {
+	    return this.activeTriangles;
+	};
+
+	Chunk.prototype.GetAvgHeight = function () {
+	    return this.avgHeight;
+	};
+
+	Chunk.prototype.GetBoundingBox = function () {
+	    var minx = this.posX;
+	    var maxx = this.posX + this.chunkSizeX * this.blockSize / 2;
+	    var miny = this.posY;
+	    var maxy = this.posY + this.chunkSizeY * this.blockSize / 2;
+
+	    // y is actually Z when rotated.
+	    this.box = { 'minx': minx, 'maxx': maxx,
+	        'minz': miny, 'maxz': maxy };
+	};
+
+	Chunk.prototype.Explode = function (pos, scale, world) {
+	    if (scale == undefined) {
+	        scale = 1;
+	    }
+	    this.explodeDelta = 0;
+
+	    // For each block create array with color etc and create a particleEngine 
+	    // with that array. 
+	    var block = undefined;
+	    for (var x = 0; x < this.chunkSizeX; x++) {
+	        for (var y = 0; y < this.chunkSizeY; y++) {
+	            for (var z = 0; z < this.chunkSizeZ; z++) {
+	                if (this.blocks[x][y][z].isActive()) {
+	                    if (Math.random() > 0.85) {
+	                        block = world.blockPool.Get();
+
+	                        if (block != undefined) {
+	                            block.Create2(pos.x + this.blockSize * x / 2, pos.y + this.blockSize * y / 2, pos.z + this.blockSize * z / 2, (this.blockSize - Math.random() * this.blockSize / 2) * scale, this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 2, Math.random() * 180, 3);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	};
+
+	Chunk.prototype.Rebuild = function () {
+	    // Create mesh for each block and merge them to one geometry
+	    // Set each color from block + alpha
+	    if (this.NoOfActiveBlocks() <= 0) {
+	        console.log("No active blocks.");
+	        return;
+	    }
+
+	    var b = 0;
+	    var vertices = [];
+	    var colors = [];
+
+	    // Reset merged blocks
+	    for (var x = 0; x < this.chunkSizeX; x++) {
+	        for (var y = 0; y < this.chunkSizeY; y++) {
+	            for (var z = 0; z < this.chunkSizeZ; z++) {
+	                this.blocks[x][y][z].dls = false;
+	                this.blocks[x][y][z].dts = false;
+	                this.blocks[x][y][z].dfs = false;
+	                this.blocks[x][y][z].drs = false;
+	                this.blocks[x][y][z].dbs = false;
+	            }
+	        }
+	    }
+
+	    var drawBlock = false;
+	    for (var x = 0; x < this.chunkSizeX; x++) {
+	        for (var y = 0; y < this.chunkSizeY; y++) {
+	            for (var z = 0; z < this.chunkSizeZ; z++) {
+	                if (this.blocks[x][y][z].isActive() == true) {
+	                    var sides = 0;
+
+	                    drawBlock = false;
+
+	                    if (y > 0 && y < this.chunkSizeY - 1 && x > 0 && x < this.chunkSizeX - 1 && z > 0 && z < this.chunkSizeZ - 1) {
+	                        if (this.blocks[x - 1][y][z].isActive() && this.blocks[x + 1][y][z].isActive() && this.blocks[x][y][z + 1].isActive() && this.blocks[x][y][z - 1].isActive() && this.blocks[x][y + 1][z].isActive() && this.blocks[x][y - 1][z].isActive()) {
+	                            continue;
+	                        }
+	                    }
+
+	                    // Left side (+X)
+	                    if (x > 0) {
+	                        if (!this.blocks[x - 1][y][z].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+
+	                    if (drawBlock) {
+	                        var countX = 0;
+	                        var countY = 0;
+	                        if (!this.blocks[x][y][z].dls) {
+	                            for (var cx = 0; cx < this.chunkSizeY; cx++) {
+	                                if (y + cx < this.chunkSizeY) {
+	                                    if (this.blocks[x][y + cx][z].isActive() && !this.blocks[x][y + cx][z].dls && this.blocks[x][y + cx][z].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z].b == this.blocks[x][y][z].b) {
+	                                        countX++;
+	                                        var tmpCountY = 0;
+	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
+	                                            if (z + cy < this.chunkSizeZ) {
+	                                                if (this.blocks[x][y + cx][z + cy].isActive() && !this.blocks[x][y + cx][z + cy].dls && this.blocks[x][y + cx][z + cy].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z + cy].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z + cy].b == this.blocks[x][y][z].b) {
+	                                                    tmpCountY++;
+	                                                } else {
+	                                                    break;
+	                                                }
+	                                            }
+	                                        }
+	                                        if (tmpCountY < countY || countY == 0) {
+	                                            countY = tmpCountY;
+	                                        }
+	                                        if (tmpCountY == 0 && countY > countX) {
+	                                            break;
+	                                        }
+	                                    } else {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                            countY--;
+	                            countX--;
+	                            for (var x1 = 0; x1 < countX; x1++) {
+	                                for (var y1 = 0; y1 < countY; y1++) {
+	                                    if (this.blocks[x][y + x1][z + y1].dls) {
+	                                        //countY = y1-1;
+	                                    } else {
+	                                        this.blocks[x][y + x1][z + y1].dls = true;
+	                                    }
+	                                }
+	                            }
+	                            this.blocks[x][y][z].dls = true;
+	                            sides++;
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
+
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize - this.blockSize]);
+
+	                            for (var i = 0; i < 6; i++) {
+	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, this.blocks[x][y][z].a]);
+	                            }
+	                        }
+	                    }
+
+	                    // right side (-X)
+	                    drawBlock = false;
+	                    if (x < this.chunkSizeX - 1) {
+	                        if (!this.blocks[x + 1][y][z].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+
+	                    if (drawBlock) {
+	                        var countX = 0;
+	                        var countY = 0;
+	                        if (!this.blocks[x][y][z].drs) {
+	                            for (var cx = 0; cx < this.chunkSizeY; cx++) {
+	                                if (y + cx < this.chunkSizeY) {
+	                                    if (this.blocks[x][y + cx][z].isActive() && !this.blocks[x][y + cx][z].drs && this.blocks[x][y + cx][z].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z].b == this.blocks[x][y][z].b) {
+	                                        // Check how far we can draw other way
+	                                        countX++;
+	                                        var tmpCountY = 0;
+	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
+	                                            if (z + cy < this.chunkSizeZ) {
+	                                                if (this.blocks[x][y + cx][z + cy].isActive() && !this.blocks[x][y + cx][z + cy].drs && this.blocks[x][y + cx][z + cy].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z + cy].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z + cy].b == this.blocks[x][y][z].b) {
+	                                                    tmpCountY++;
+	                                                } else {
+	                                                    break;
+	                                                }
+	                                            }
+	                                        }
+	                                        if (tmpCountY < countY || countY == 0) {
+	                                            countY = tmpCountY;
+	                                        }
+	                                        if (tmpCountY == 0 && countY > countX) {
+	                                            break;
+	                                        }
+	                                    } else {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                            countX--;
+	                            countY--;
+	                            for (var x1 = 0; x1 < countX; x1++) {
+	                                for (var y1 = 0; y1 < countY; y1++) {
+	                                    if (this.blocks[x][y + x1][z + y1].drs) {
+	                                        //   countY = y1-1;
+	                                    } else {
+	                                        this.blocks[x][y + x1][z + y1].drs = true;
+	                                    }
+	                                }
+	                            }
+
+	                            this.blocks[x][y][z].drs = true;
+	                            sides++;
+	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
+
+	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize - this.blockSize]);
+
+	                            for (var i = 0; i < 6; i++) {
+	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, this.blocks[x][y][z].a]);
+	                            }
+	                        }
+	                    }
+
+	                    // Back side (-Z)   
+	                    drawBlock = false;
+	                    if (z > 0) {
+	                        //this.chunkSize - 1) {
+	                        if (!this.blocks[x][y][z - 1].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+	                    if (drawBlock) {
+	                        sides++;
+	                        vertices.push([x * this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
+	                        vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+
+	                        vertices.push([x * this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
+	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
+	                        for (var i = 0; i < 6; i++) {
+	                            colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 255]);
+	                        }
+	                    }
+
+	                    // Front side (+Z)
+	                    drawBlock = false;
+	                    if (z < this.chunkSizeZ - 1) {
+	                        if (!this.blocks[x][y][z + 1].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+
+	                    if (drawBlock) {
+	                        var countX = 0;
+	                        var countY = 0;
+	                        if (!this.blocks[x][y][z].dfs) {
+	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
+	                                if (x + cx < this.chunkSizeX) {
+	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dfs && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
+	                                        //this.blocks[x+cx][y][z].dfs = true;
+	                                        // Check how far we can draw other way
+	                                        countX++;
+	                                        var tmpCountY = 0;
+	                                        for (var cy = 0; cy < this.chunkSizeY; cy++) {
+	                                            if (y + cy < this.chunkSizeY) {
+	                                                if (this.blocks[x + cx][y + cy][z].isActive() && !this.blocks[x + cx][y + cy][z].dfs && this.blocks[x + cx][y + cy][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y + cy][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y + cy][z].b == this.blocks[x][y][z].b) {
+	                                                    tmpCountY++;
+	                                                } else {
+	                                                    break;
+	                                                }
+	                                            }
+	                                        }
+	                                        if (tmpCountY < countY || countY == 0) {
+	                                            countY = tmpCountY;
+	                                        }
+	                                        if (tmpCountY == 0 && countY > countX) {
+	                                            break;
+	                                        }
+	                                    } else {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                            countX--;
+	                            countY--;
+	                            for (var x1 = 0; x1 < countX; x1++) {
+	                                for (var y1 = 0; y1 < countY; y1++) {
+	                                    if (this.blocks[x + x1][y + y1][z].dfs) {
+	                                        //countY = y1-1;
+	                                    } else {
+	                                        this.blocks[x + x1][y + y1][z].dfs = true;
+	                                    }
+	                                }
+	                            }
+	                            this.blocks[x][y][z].dfs = true;
+	                            sides++;
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize]);
+
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize]);
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize]);
+
+	                            for (var i = 0; i < 6; i++) {
+	                                colors.push([this.blocks[x][y][z].r * shade, this.blocks[x][y][z].g * shade, this.blocks[x][y][z].b * shade, 255]);
+	                            }
+	                        }
+	                    }
+
+	                    // top (+Y) 
+	                    drawBlock = false;
+	                    if (y < this.chunkSizeY - 1) {
+	                        if (!this.blocks[x][y + 1][z].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+
+	                    if (drawBlock) {
+	                        var shade = 0.87;
+	                        var countX = 0;
+	                        var countY = 0;
+	                        if (!this.blocks[x][y][z].dts) {
+	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
+	                                if (x + cx < this.chunkSizeX) {
+	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dts && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
+	                                        countX++;
+	                                        var tmpCountY = 0;
+	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
+	                                            if (z + cy < this.chunkSizeZ) {
+	                                                if (this.blocks[x + cx][y][z + cy].isActive() && !this.blocks[x + cx][y][z + cy].dts && this.blocks[x + cx][y][z + cy].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z + cy].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z + cy].b == this.blocks[x][y][z].b) {
+	                                                    tmpCountY++;
+	                                                } else {
+	                                                    break;
+	                                                }
+	                                            }
+	                                        }
+	                                        if (tmpCountY < countY || countY == 0) {
+	                                            countY = tmpCountY;
+	                                        }
+	                                        if (tmpCountY == 0 && countY > countX) {
+	                                            break;
+	                                        }
+	                                    } else {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                            countX--;
+	                            countY--;
+	                            for (var x1 = 0; x1 < countX; x1++) {
+	                                for (var y1 = 0; y1 < countY; y1++) {
+	                                    if (this.blocks[x + x1][y][z + y1].dts) {
+	                                        //  countY = y1-1;
+	                                    } else {
+	                                        this.blocks[x + x1][y][z + y1].dts = true;
+	                                    }
+	                                }
+	                            }
+
+	                            this.blocks[x][y][z].dts = true;
+	                            sides++;
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
+
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
+
+	                            for (var i = 0; i < 6; i++) {
+	                                colors.push([this.blocks[x][y][z].r * shade, this.blocks[x][y][z].g * shade, this.blocks[x][y][z].b * shade, 255]);
+	                            }
+	                        }
+	                    }
+
+	                    // Bottom (-Y)
+	                    drawBlock = false;
+	                    if (y > 0) {
+	                        if (!this.blocks[x][y - 1][z].isActive()) {
+	                            drawBlock = true;
+	                        }
+	                    } else {
+	                        drawBlock = true;
+	                    }
+
+	                    if (drawBlock) {
+	                        var countX = 0;
+	                        var countY = 0;
+	                        if (!this.blocks[x][y][z].dbs) {
+	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
+	                                if (x + cx < this.chunkSizeX) {
+	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dbs && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
+	                                        countX++;
+	                                        var tmpCountY = 0;
+	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
+	                                            if (z + cy < this.chunkSizeZ) {
+	                                                if (this.blocks[x + cx][y][z + cy].isActive() && !this.blocks[x + cx][y][z + cy].dbs && this.blocks[x + cx][y][z + cy].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z + cy].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z + cy].b == this.blocks[x][y][z].b) {
+	                                                    tmpCountY++;
+	                                                } else {
+	                                                    break;
+	                                                }
+	                                            }
+	                                        }
+	                                        if (tmpCountY < countY || countY == 0) {
+	                                            countY = tmpCountY;
+	                                        }
+	                                        if (tmpCountY == 0 && countY > countX) {
+	                                            break;
+	                                        }
+	                                    } else {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                            countX--;
+	                            countY--;
+	                            for (var x1 = 0; x1 < countX; x1++) {
+	                                for (var y1 = 0; y1 < countY; y1++) {
+	                                    if (this.blocks[x + x1][y][z + y1].dbs) {
+	                                        //  countY = y1-1;
+	                                    } else {
+	                                        this.blocks[x + x1][y][z + y1].dbs = true;
+	                                    }
+	                                }
+	                            }
+
+	                            this.blocks[x][y][z].dbs = true;
+	                            sides++;
+
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
+	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
+
+	                            for (var i = 0; i < 6; i++) {
+	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 255]);
+	                            }
+	                        }
+	                    }
+
+	                    b += 2 * sides;
+	                }
+	            }
+	        }
+	    }
+	    // Create Object
+	    //
+	    var geometry = new THREE.BufferGeometry();
+	    var v = new THREE.BufferAttribute(new Float32Array(vertices.length * 3), 3);
+	    for (var i = 0; i < vertices.length; i++) {
+	        v.setXYZ(i, vertices[i][0], vertices[i][1], vertices[i][2]);
+	        // console.log(i + ", "+ vertices[i][0] + ", "+ vertices[i][1]+ ", "+ vertices[i][2]);
+	    }
+	    geometry.addAttribute('position', v);
+
+	    var c = new THREE.BufferAttribute(new Float32Array(colors.length * 4), 4);
+	    for (var i = 0; i < colors.length; i++) {
+	        c.setXYZW(i, colors[i][0] / 255, colors[i][1] / 255, colors[i][2] / 255, colors[i][3] / 255);
+	        // c.setXYZW( i, Math.random(), Math.random(), Math.random(), Math.random() );
+	    }
+	    geometry.addAttribute('color', c);
+
+	    geometry.computeBoundingBox();
+
+	    // geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -geometry.boundingBox.max.x/2,
+	    //                                                           -geometry.boundingBox.max.z/2,
+	    //                                                           0));
+	    geometry.computeVertexNormals();
+
+	    var material3 = new THREE.MeshLambertMaterial({ vertexColors: THREE.VertexColors, wireframe: this.wireframe });
+
+	    // geometry.center();
+	    var mesh = new THREE.Mesh(geometry, material3);
+	    mesh.rotation.set(-Math.PI / 2, 0, Math.PI);
+
+	    mesh.castShadow = true;
+	    mesh.receiveShadow = true;
+
+	    mesh.position.set(0, 0, 0);
+	    mesh.that = this;
+	    this.mesh = mesh;
+	    this.GetBoundingBox();
+	    this.isBuilt = true;
+	    Utils.Log("VOX Model CREATED TRIANGLES: " + b);
+	};
+
+	Chunk.prototype.Destroy = function () {
+	    var x = (this.mesh.pos.getX() - this.posX) / this.blockSize;
+	    var y = (this.mesh.pos.getY() - this.posY) / this.blockSize;
+
+	    if (x >= 0 && x < this.blocks.length && y >= 0 && y < this.blocks.length) {
+	        if (this.blocks[x][y][z].isActive()) {
+	            this.blocks[x][y][z].setActive(false);
+	            this.Rebuild();
+	            console.log("Destroy block: " + x + ", " + y + ", " + z);
+	            return true;
+	        }
+	    }
+	    return false;
+	};
+
+	Chunk.prototype.ActivateBlock = function (x, y, z, color) {
+	    if (color.a == 0) {
+	        this.blocks[x][y][z].setActive(false);
+	    } else {
+	        this.blocks[x][y][z].setActive(true);
+	    }
+	    this.blocks[x][y][z].r = color.r;
+	    this.blocks[x][y][z].g = color.g;
+	    this.blocks[x][y][z].b = color.b;
+	    this.blocks[x][y][z].a = color.a;
+	};
+
+	Chunk.prototype.Create = function (sizex, sizey, sizez) {
+	    this.chunkSizeX = sizex;
+	    this.chunkSizeY = sizey;
+	    this.chunkSizeZ = sizez;
+	    console.log("Create: " + sizex + ", " + sizey + ", " + sizez);
+	    this.blocks = new Array();
+
+	    for (var x = 0; x < sizex; x++) {
+	        this.blocks[x] = new Array();
+	        for (var y = 0; y < sizey; y++) {
+	            this.blocks[x][y] = new Array();
+	            for (var z = 0; z < sizez; z++) {
+	                this.blocks[x][y][z] = new Block();
+	                this.blocks[x][y][z].Create(false, 0, 0, 0, 0);
+	            }
+	        }
+	    }
+	};
+
+	Chunk.prototype.NoOfActiveBlocks = function () {
+	    var b = 0;
+	    if (this.blocks != undefined) {
+	        for (var x = 0; x < this.chunkSizeX; x++) {
+	            for (var y = 0; y < this.chunkSizeY; y++) {
+	                for (var z = 0; z < this.chunkSizeZ; z++) {
+	                    if (this.blocks[x][y][z].isActive()) {
+	                        b++;
+	                    }
+	                }
+	            }
+	        }
+	    } else {
+	        console.log("UNDEFINED BLOCKS");
+	    }
+	    return b;
+	};
+
+	module.exports = Chunk;
 
 /***/ },
-/* 303 */,
-/* 304 */,
-/* 305 */,
-/* 306 */,
-/* 307 */
+/* 303 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _ = __webpack_require__(304);
+
+	function rgb2hex(rgb) {
+	    rgb = rgb.split(',');
+
+	    function hex(x) {
+	        return ("0" + parseInt(x).toString(16)).slice(-2);
+	    }
+	    return "#" + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+	}
+
+	function Block() {
+	    this.on = false; //active
+	    this.dls = false; //drawnLeftSide // Mark if it's drawn by different block
+	    this.dts = false; //drawnTopSide
+	    this.dfs = false; //drawnFrontSide
+	    this.drs = false; //drawnRightSide
+	    this.dbs = false; //drawnBottomSide
+	    this.a = 0; //alpha
+	    this.r = 0;
+	    this.g = 0;
+	    this.b = 0;
+	};
+
+	Block.prototype.Create = function (isActive, r, g, b, alpha) {
+	    this.on = isActive;
+	    this.a = alpha;
+	    this.r = r;
+	    this.g = g;
+	    this.b = b;
+	};
+
+	Block.prototype.setActive = function (value) {
+	    this.on = value;
+	};
+
+	Block.prototype.isActive = function () {
+	    return this.on;
+	};
+
+	Block.prototype.isEmpty = function () {
+	    return !this.on && !this.dls && !this.dts && !this.dfs && !this.dbs && !this.a && !this.r && !this.g && !this.b;
+	};
+
+	Block.prototype.clean = function () {
+	    var _this = this;
+
+	    var ret = [];
+	    _.each(['on', 'dls', 'dts', 'dfs', 'drs', 'dbs', 'a', 'r', 'g', 'b'], function (key, index) {
+	        if (_this[key]) {
+	            ret[index] = _this[key];
+	        }
+	    });
+
+	    return [this.a, rgb2hex([this.r, this.g, this.b].join(','))];
+
+	    return ret;
+	};
+
+	module.exports = Block;
+
+/***/ },
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -68194,10 +68554,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(308)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(305)(module)))
 
 /***/ },
-/* 308 */
+/* 305 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -68213,853 +68573,7 @@
 
 
 /***/ },
-/* 309 */,
-/* 310 */,
-/* 311 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var VoxelData = __webpack_require__(312);
-	var Chunk = __webpack_require__(313);
-	var fs = __webpack_require__(301);
-
-	var voxColors = [0x00000000, 0xffffffff, 0xffccffff, 0xff99ffff, 0xff66ffff, 0xff33ffff, 0xff00ffff, 0xffffccff, 0xffccccff, 0xff99ccff, 0xff66ccff, 0xff33ccff, 0xff00ccff, 0xffff99ff, 0xffcc99ff, 0xff9999ff, 0xff6699ff, 0xff3399ff, 0xff0099ff, 0xffff66ff, 0xffcc66ff, 0xff9966ff, 0xff6666ff, 0xff3366ff, 0xff0066ff, 0xffff33ff, 0xffcc33ff, 0xff9933ff, 0xff6633ff, 0xff3333ff, 0xff0033ff, 0xffff00ff, 0xffcc00ff, 0xff9900ff, 0xff6600ff, 0xff3300ff, 0xff0000ff, 0xffffffcc, 0xffccffcc, 0xff99ffcc, 0xff66ffcc, 0xff33ffcc, 0xff00ffcc, 0xffffcccc, 0xffcccccc, 0xff99cccc, 0xff66cccc, 0xff33cccc, 0xff00cccc, 0xffff99cc, 0xffcc99cc, 0xff9999cc, 0xff6699cc, 0xff3399cc, 0xff0099cc, 0xffff66cc, 0xffcc66cc, 0xff9966cc, 0xff6666cc, 0xff3366cc, 0xff0066cc, 0xffff33cc, 0xffcc33cc, 0xff9933cc, 0xff6633cc, 0xff3333cc, 0xff0033cc, 0xffff00cc, 0xffcc00cc, 0xff9900cc, 0xff6600cc, 0xff3300cc, 0xff0000cc, 0xffffff99, 0xffccff99, 0xff99ff99, 0xff66ff99, 0xff33ff99, 0xff00ff99, 0xffffcc99, 0xffcccc99, 0xff99cc99, 0xff66cc99, 0xff33cc99, 0xff00cc99, 0xffff9999, 0xffcc9999, 0xff999999, 0xff669999, 0xff339999, 0xff009999, 0xffff6699, 0xffcc6699, 0xff996699, 0xff666699, 0xff336699, 0xff006699, 0xffff3399, 0xffcc3399, 0xff993399, 0xff663399, 0xff333399, 0xff003399, 0xffff0099, 0xffcc0099, 0xff990099, 0xff660099, 0xff330099, 0xff000099, 0xffffff66, 0xffccff66, 0xff99ff66, 0xff66ff66, 0xff33ff66, 0xff00ff66, 0xffffcc66, 0xffcccc66, 0xff99cc66, 0xff66cc66, 0xff33cc66, 0xff00cc66, 0xffff9966, 0xffcc9966, 0xff999966, 0xff669966, 0xff339966, 0xff009966, 0xffff6666, 0xffcc6666, 0xff996666, 0xff666666, 0xff336666, 0xff006666, 0xffff3366, 0xffcc3366, 0xff993366, 0xff663366, 0xff333366, 0xff003366, 0xffff0066, 0xffcc0066, 0xff990066, 0xff660066, 0xff330066, 0xff000066, 0xffffff33, 0xffccff33, 0xff99ff33, 0xff66ff33, 0xff33ff33, 0xff00ff33, 0xffffcc33, 0xffcccc33, 0xff99cc33, 0xff66cc33, 0xff33cc33, 0xff00cc33, 0xffff9933, 0xffcc9933, 0xff999933, 0xff669933, 0xff339933, 0xff009933, 0xffff6633, 0xffcc6633, 0xff996633, 0xff666633, 0xff336633, 0xff006633, 0xffff3333, 0xffcc3333, 0xff993333, 0xff663333, 0xff333333, 0xff003333, 0xffff0033, 0xffcc0033, 0xff990033, 0xff660033, 0xff330033, 0xff000033, 0xffffff00, 0xffccff00, 0xff99ff00, 0xff66ff00, 0xff33ff00, 0xff00ff00, 0xffffcc00, 0xffcccc00, 0xff99cc00, 0xff66cc00, 0xff33cc00, 0xff00cc00, 0xffff9900, 0xffcc9900, 0xff999900, 0xff669900, 0xff339900, 0xff009900, 0xffff6600, 0xffcc6600, 0xff996600, 0xff666600, 0xff336600, 0xff006600, 0xffff3300, 0xffcc3300, 0xff993300, 0xff663300, 0xff333300, 0xff003300, 0xffff0000, 0xffcc0000, 0xff990000, 0xff660000, 0xff330000, 0xff0000ee, 0xff0000dd, 0xff0000bb, 0xff0000aa, 0xff000088, 0xff000077, 0xff000055, 0xff000044, 0xff000022, 0xff000011, 0xff00ee00, 0xff00dd00, 0xff00bb00, 0xff00aa00, 0xff008800, 0xff007700, 0xff005500, 0xff004400, 0xff002200, 0xff001100, 0xffee0000, 0xffdd0000, 0xffbb0000, 0xffaa0000, 0xff880000, 0xff770000, 0xff550000, 0xff440000, 0xff220000, 0xff110000, 0xffeeeeee, 0xffdddddd, 0xffbbbbbb, 0xffaaaaaa, 0xff888888, 0xff777777, 0xff555555, 0xff444444, 0xff222222, 0xff111111];
-
-	function Vox(props) {
-	    this.world = null;
-	    this.colors = [];
-	    this.colors2 = undefined;
-	    this.voxelData = [];
-	    this.blockSize = 0.1;
-	    Object.assign(this, props);
-	    this.chunk = new Chunk({
-	        world: this.world,
-	        blockSize: this.blockSize
-	    });
-	};
-
-	Vox.prototype.getChunk = function () {
-	    return this.chunk;
-	};
-
-	Vox.prototype.getMesh = function () {
-	    return this.chunk.mesh;
-	};
-
-	Vox.prototype.readInt = function (buffer, from) {
-	    return buffer[from] | buffer[from + 1] << 8 | buffer[from + 2] << 16 | buffer[from + 3] << 24;
-	};
-
-	Vox.prototype.proccesVoxData = function (arrayBuffer, callback, name) {
-	    var buffer = new Uint8Array(arrayBuffer);
-	    var voxId = this.readInt(buffer, 0);
-	    var version = this.readInt(buffer, 4);
-	    // TBD: Check version to support
-	    var i = 8;
-	    while (i < buffer.length) {
-	        var subSample = false;
-	        var sizex = 0,
-	            sizey = 0,
-	            sizez = 0;
-	        var id = String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++])) + String.fromCharCode(parseInt(buffer[i++]));
-
-	        var chunkSize = this.readInt(buffer, i) & 0xFF;
-	        i += 4;
-	        var childChunks = this.readInt(buffer, i) & 0xFF;
-	        i += 4;
-
-	        if (id == "SIZE") {
-	            sizex = this.readInt(buffer, i) & 0xFF;
-	            i += 4;
-	            sizey = this.readInt(buffer, i) & 0xFF;
-	            i += 4;
-	            sizez = this.readInt(buffer, i) & 0xFF;
-	            i += 4;
-	            if (sizex > 32 || sizey > 32) {
-	                subSample = true;
-	            }
-	            console.log(this.filename + " => Create VOX Chunk!");
-	            this.chunk.Create(sizex, sizey, sizez);
-	            i += chunkSize - 4 * 3;
-	        } else if (id == "XYZI") {
-	            var numVoxels = Math.abs(this.readInt(buffer, i));
-	            i += 4;
-	            this.voxelData = new Array(numVoxels);
-	            for (var n = 0; n < this.voxelData.length; n++) {
-	                ;
-	                this.voxelData[n] = new VoxelData();
-	                this.voxelData[n].Create(buffer, i, subSample); // Read 4 bytes
-	                i += 4;
-	            }
-	        } else if (id == "RGBA") {
-	            console.log(this.filename + " => Regular color chunk");
-	            this.colors2 = new Array(256);
-	            for (var n = 0; n < 256; n++) {
-	                var r = buffer[i++] & 0xFF;
-	                var g = buffer[i++] & 0xFF;
-	                var b = buffer[i++] & 0xFF;
-	                var a = buffer[i++] & 0xFF;
-	                this.colors2[n] = { 'r': r, 'g': g, 'b': b, 'a': a };
-	            }
-	        } else {
-	            i += chunkSize;
-	        }
-	    }
-
-	    if (this.voxelData == null || this.voxelData.length == 0) {
-	        return null;
-	    }
-
-	    for (var n = 0; n < this.voxelData.length; n++) {
-	        if (this.colors2 == undefined) {
-	            var c = voxColors[Math.abs(this.voxelData[n].color - 1)];
-	            var cRGBA = {
-	                b: (c & 0xff0000) >> 16,
-	                g: (c & 0x00ff00) >> 8,
-	                r: c & 0x0000ff,
-	                a: 1
-	            };
-	            this.chunk.ActivateBlock(this.voxelData[n].x, this.voxelData[n].y, this.voxelData[n].z, cRGBA);
-	        } else {
-	            this.chunk.ActivateBlock(this.voxelData[n].x, this.voxelData[n].y, this.voxelData[n].z, this.colors2[Math.abs(this.voxelData[n].color - 1)]);
-	        }
-	    }
-	    callback(this, this.name);
-	};
-
-	Vox.prototype.onLoadHandler = function (callback, oEvent) {
-	    var oReq = oEvent.currentTarget;
-	    console.log("Loaded model: " + oReq.responseURL);
-
-	    var arrayBuffer = oReq.response;
-	    if (arrayBuffer) {
-	        this.proccesVoxData(arrayBuffer, callback);
-	    }
-	};
-
-	Vox.prototype.LoadModel = function (callback) {
-	    var oReq = new XMLHttpRequest();
-	    oReq.open("GET", this.filename, true);
-	    oReq.responseType = "arraybuffer";
-	    oReq.onload = this.onLoadHandler.bind(this, callback);
-	    oReq.send(null);
-	};
-
-	module.exports = Vox;
-
-/***/ },
-/* 312 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	//==============================================================================
-	// Author: Nergal
-	// http://webgl.nu
-	// Date: 2014-11-17
-	//==============================================================================
-	function VoxelData() {
-	    this.x;
-	    this.y;
-	    this.z;
-	    this.color;
-
-	    VoxelData.prototype.Create = function (buffer, i, subSample) {
-	        this.x = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
-	        this.y = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
-	        this.z = subSample ? buffer[i] & 0xFF / 2 : buffer[i++] & 0xFF;
-	        this.color = buffer[i] & 0xFF;
-	    };
-	}
-	module.exports = VoxelData;
-
-/***/ },
-/* 313 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var Block = __webpack_require__(314);
-	var THREE = __webpack_require__(315);
-	var Utils = __webpack_require__(316);
-
-	function Chunk(props) {
-	    this.wireframe = false;
-	    this.blockSize = 0.1;
-	    this.chunkSize = 4;
-	    this.chunkSizeX = 0;
-	    this.chunkSizeY = 0;
-	    this.chunkSizeZ = 0;
-	    this.posX = 0;
-	    this.posY = 0;
-	    this.posZ = 0;
-	    this.type = "GenericChunk";
-	    this.activeTriangles = 0;
-	    this.mesh = undefined;
-	    this.blocks = undefined;
-	    this.cid = undefined;
-	    this.world = null;
-
-	    this.isBuilt = false;
-	    this.avgHeight = 0;
-	    Object.assign(this, props);
-	};
-
-	Chunk.prototype.Clone = function () {
-	    var obj = new Chunk();
-
-	    obj.wireframe = this.wireframe;
-	    obj.blockSize = this.blockSize;
-	    obj.chunkSize = this.chunkSize;
-	    obj.chunkSizeX = this.chunkSizeX;
-	    obj.chunkSizeY = this.chunkSizeY;
-	    obj.chunkSizeZ = this.chunkSizeZ;
-	    obj.posX = this.posX;
-	    obj.posY = this.posY;
-	    obj.posZ = this.posZ;
-	    obj.type = this.type;
-	    obj.activeTriangles = this.activeTriangles;
-	    obj.mesh = this.mesh.clone();
-	    obj.cid = this.cid;
-	    obj.avgHeight = this.avgHeight;
-	    obj.blocks = this.blocks;
-
-	    return obj;
-	};
-
-	Chunk.prototype.SetWireFrame = function (val) {
-	    this.wireframe = val;
-	    this.Rebuild();
-	};
-
-	Chunk.prototype.GetActiveTriangles = function () {
-	    return this.activeTriangles;
-	};
-
-	Chunk.prototype.GetAvgHeight = function () {
-	    return this.avgHeight;
-	};
-
-	Chunk.prototype.GetBoundingBox = function () {
-	    var minx = this.posX;
-	    var maxx = this.posX + this.chunkSizeX * this.blockSize / 2;
-	    var miny = this.posY;
-	    var maxy = this.posY + this.chunkSizeY * this.blockSize / 2;
-
-	    // y is actually Z when rotated.
-	    this.box = { 'minx': minx, 'maxx': maxx,
-	        'minz': miny, 'maxz': maxy };
-	};
-
-	Chunk.prototype.Explode = function (pos, scale, world) {
-	    if (scale == undefined) {
-	        scale = 1;
-	    }
-	    this.explodeDelta = 0;
-
-	    // For each block create array with color etc and create a particleEngine 
-	    // with that array. 
-	    var block = undefined;
-	    for (var x = 0; x < this.chunkSizeX; x++) {
-	        for (var y = 0; y < this.chunkSizeY; y++) {
-	            for (var z = 0; z < this.chunkSizeZ; z++) {
-	                if (this.blocks[x][y][z].isActive()) {
-	                    if (Math.random() > 0.85) {
-	                        block = world.blockPool.Get();
-
-	                        if (block != undefined) {
-	                            block.Create2(pos.x + this.blockSize * x / 2, pos.y + this.blockSize * y / 2, pos.z + this.blockSize * z / 2, (this.blockSize - Math.random() * this.blockSize / 2) * scale, this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 2, Math.random() * 180, 3);
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-	};
-
-	Chunk.prototype.Rebuild = function () {
-	    // Create mesh for each block and merge them to one geometry
-	    // Set each color from block + alpha
-	    if (this.NoOfActiveBlocks() <= 0) {
-	        console.log("No active blocks.");
-	        return;
-	    }
-
-	    var b = 0;
-	    var vertices = [];
-	    var colors = [];
-
-	    // Reset merged blocks
-	    for (var x = 0; x < this.chunkSizeX; x++) {
-	        for (var y = 0; y < this.chunkSizeY; y++) {
-	            for (var z = 0; z < this.chunkSizeZ; z++) {
-	                this.blocks[x][y][z].dls = false;
-	                this.blocks[x][y][z].dts = false;
-	                this.blocks[x][y][z].dfs = false;
-	                this.blocks[x][y][z].drs = false;
-	                this.blocks[x][y][z].dbs = false;
-	            }
-	        }
-	    }
-
-	    var drawBlock = false;
-	    for (var x = 0; x < this.chunkSizeX; x++) {
-	        for (var y = 0; y < this.chunkSizeY; y++) {
-	            for (var z = 0; z < this.chunkSizeZ; z++) {
-	                if (this.blocks[x][y][z].isActive() == true) {
-	                    var sides = 0;
-
-	                    drawBlock = false;
-
-	                    if (y > 0 && y < this.chunkSizeY - 1 && x > 0 && x < this.chunkSizeX - 1 && z > 0 && z < this.chunkSizeZ - 1) {
-	                        if (this.blocks[x - 1][y][z].isActive() && this.blocks[x + 1][y][z].isActive() && this.blocks[x][y][z + 1].isActive() && this.blocks[x][y][z - 1].isActive() && this.blocks[x][y + 1][z].isActive() && this.blocks[x][y - 1][z].isActive()) {
-	                            continue;
-	                        }
-	                    }
-
-	                    // Left side (+X)
-	                    if (x > 0) {
-	                        if (!this.blocks[x - 1][y][z].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-
-	                    if (drawBlock) {
-	                        var countX = 0;
-	                        var countY = 0;
-	                        if (!this.blocks[x][y][z].dls) {
-	                            for (var cx = 0; cx < this.chunkSizeY; cx++) {
-	                                if (y + cx < this.chunkSizeY) {
-	                                    if (this.blocks[x][y + cx][z].isActive() && !this.blocks[x][y + cx][z].dls && this.blocks[x][y + cx][z].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z].b == this.blocks[x][y][z].b) {
-	                                        countX++;
-	                                        var tmpCountY = 0;
-	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
-	                                            if (z + cy < this.chunkSizeZ) {
-	                                                if (this.blocks[x][y + cx][z + cy].isActive() && !this.blocks[x][y + cx][z + cy].dls && this.blocks[x][y + cx][z + cy].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z + cy].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z + cy].b == this.blocks[x][y][z].b) {
-	                                                    tmpCountY++;
-	                                                } else {
-	                                                    break;
-	                                                }
-	                                            }
-	                                        }
-	                                        if (tmpCountY < countY || countY == 0) {
-	                                            countY = tmpCountY;
-	                                        }
-	                                        if (tmpCountY == 0 && countY > countX) {
-	                                            break;
-	                                        }
-	                                    } else {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                            countY--;
-	                            countX--;
-	                            for (var x1 = 0; x1 < countX; x1++) {
-	                                for (var y1 = 0; y1 < countY; y1++) {
-	                                    if (this.blocks[x][y + x1][z + y1].dls) {
-	                                        //countY = y1-1;
-	                                    } else {
-	                                        this.blocks[x][y + x1][z + y1].dls = true;
-	                                    }
-	                                }
-	                            }
-	                            this.blocks[x][y][z].dls = true;
-	                            sides++;
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
-
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize - this.blockSize]);
-
-	                            for (var i = 0; i < 6; i++) {
-	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, this.blocks[x][y][z].a]);
-	                            }
-	                        }
-	                    }
-
-	                    // right side (-X)
-	                    drawBlock = false;
-	                    if (x < this.chunkSizeX - 1) {
-	                        if (!this.blocks[x + 1][y][z].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-
-	                    if (drawBlock) {
-	                        var countX = 0;
-	                        var countY = 0;
-	                        if (!this.blocks[x][y][z].drs) {
-	                            for (var cx = 0; cx < this.chunkSizeY; cx++) {
-	                                if (y + cx < this.chunkSizeY) {
-	                                    if (this.blocks[x][y + cx][z].isActive() && !this.blocks[x][y + cx][z].drs && this.blocks[x][y + cx][z].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z].b == this.blocks[x][y][z].b) {
-	                                        // Check how far we can draw other way
-	                                        countX++;
-	                                        var tmpCountY = 0;
-	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
-	                                            if (z + cy < this.chunkSizeZ) {
-	                                                if (this.blocks[x][y + cx][z + cy].isActive() && !this.blocks[x][y + cx][z + cy].drs && this.blocks[x][y + cx][z + cy].r == this.blocks[x][y][z].r && this.blocks[x][y + cx][z + cy].g == this.blocks[x][y][z].g && this.blocks[x][y + cx][z + cy].b == this.blocks[x][y][z].b) {
-	                                                    tmpCountY++;
-	                                                } else {
-	                                                    break;
-	                                                }
-	                                            }
-	                                        }
-	                                        if (tmpCountY < countY || countY == 0) {
-	                                            countY = tmpCountY;
-	                                        }
-	                                        if (tmpCountY == 0 && countY > countX) {
-	                                            break;
-	                                        }
-	                                    } else {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                            countX--;
-	                            countY--;
-	                            for (var x1 = 0; x1 < countX; x1++) {
-	                                for (var y1 = 0; y1 < countY; y1++) {
-	                                    if (this.blocks[x][y + x1][z + y1].drs) {
-	                                        //   countY = y1-1;
-	                                    } else {
-	                                        this.blocks[x][y + x1][z + y1].drs = true;
-	                                    }
-	                                }
-	                            }
-
-	                            this.blocks[x][y][z].drs = true;
-	                            sides++;
-	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
-
-	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize, y * this.blockSize + this.blockSize * countX, z * this.blockSize - this.blockSize]);
-
-	                            for (var i = 0; i < 6; i++) {
-	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, this.blocks[x][y][z].a]);
-	                            }
-	                        }
-	                    }
-
-	                    // Back side (-Z)   
-	                    drawBlock = false;
-	                    if (z > 0) {
-	                        //this.chunkSize - 1) {
-	                        if (!this.blocks[x][y][z - 1].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-	                    if (drawBlock) {
-	                        sides++;
-	                        vertices.push([x * this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
-	                        vertices.push([x * this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-
-	                        vertices.push([x * this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
-	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                        vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
-	                        for (var i = 0; i < 6; i++) {
-	                            colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 255]);
-	                        }
-	                    }
-
-	                    // Front side (+Z)
-	                    drawBlock = false;
-	                    if (z < this.chunkSizeZ - 1) {
-	                        if (!this.blocks[x][y][z + 1].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-
-	                    if (drawBlock) {
-	                        var countX = 0;
-	                        var countY = 0;
-	                        if (!this.blocks[x][y][z].dfs) {
-	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
-	                                if (x + cx < this.chunkSizeX) {
-	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dfs && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
-	                                        //this.blocks[x+cx][y][z].dfs = true;
-	                                        // Check how far we can draw other way
-	                                        countX++;
-	                                        var tmpCountY = 0;
-	                                        for (var cy = 0; cy < this.chunkSizeY; cy++) {
-	                                            if (y + cy < this.chunkSizeY) {
-	                                                if (this.blocks[x + cx][y + cy][z].isActive() && !this.blocks[x + cx][y + cy][z].dfs && this.blocks[x + cx][y + cy][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y + cy][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y + cy][z].b == this.blocks[x][y][z].b) {
-	                                                    tmpCountY++;
-	                                                } else {
-	                                                    break;
-	                                                }
-	                                            }
-	                                        }
-	                                        if (tmpCountY < countY || countY == 0) {
-	                                            countY = tmpCountY;
-	                                        }
-	                                        if (tmpCountY == 0 && countY > countX) {
-	                                            break;
-	                                        }
-	                                    } else {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                            countX--;
-	                            countY--;
-	                            for (var x1 = 0; x1 < countX; x1++) {
-	                                for (var y1 = 0; y1 < countY; y1++) {
-	                                    if (this.blocks[x + x1][y + y1][z].dfs) {
-	                                        //countY = y1-1;
-	                                    } else {
-	                                        this.blocks[x + x1][y + y1][z].dfs = true;
-	                                    }
-	                                }
-	                            }
-	                            this.blocks[x][y][z].dfs = true;
-	                            sides++;
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize]);
-
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize + this.blockSize * countY, z * this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize]);
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize]);
-
-	                            for (var i = 0; i < 6; i++) {
-	                                colors.push([this.blocks[x][y][z].r * shade, this.blocks[x][y][z].g * shade, this.blocks[x][y][z].b * shade, 255]);
-	                            }
-	                        }
-	                    }
-
-	                    // top (+Y) 
-	                    drawBlock = false;
-	                    if (y < this.chunkSizeY - 1) {
-	                        if (!this.blocks[x][y + 1][z].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-
-	                    if (drawBlock) {
-	                        var shade = 0.87;
-	                        var countX = 0;
-	                        var countY = 0;
-	                        if (!this.blocks[x][y][z].dts) {
-	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
-	                                if (x + cx < this.chunkSizeX) {
-	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dts && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
-	                                        countX++;
-	                                        var tmpCountY = 0;
-	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
-	                                            if (z + cy < this.chunkSizeZ) {
-	                                                if (this.blocks[x + cx][y][z + cy].isActive() && !this.blocks[x + cx][y][z + cy].dts && this.blocks[x + cx][y][z + cy].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z + cy].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z + cy].b == this.blocks[x][y][z].b) {
-	                                                    tmpCountY++;
-	                                                } else {
-	                                                    break;
-	                                                }
-	                                            }
-	                                        }
-	                                        if (tmpCountY < countY || countY == 0) {
-	                                            countY = tmpCountY;
-	                                        }
-	                                        if (tmpCountY == 0 && countY > countX) {
-	                                            break;
-	                                        }
-	                                    } else {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                            countX--;
-	                            countY--;
-	                            for (var x1 = 0; x1 < countX; x1++) {
-	                                for (var y1 = 0; y1 < countY; y1++) {
-	                                    if (this.blocks[x + x1][y][z + y1].dts) {
-	                                        //  countY = y1-1;
-	                                    } else {
-	                                        this.blocks[x + x1][y][z + y1].dts = true;
-	                                    }
-	                                }
-	                            }
-
-	                            this.blocks[x][y][z].dts = true;
-	                            sides++;
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
-
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize, z * this.blockSize - this.blockSize]);
-
-	                            for (var i = 0; i < 6; i++) {
-	                                colors.push([this.blocks[x][y][z].r * shade, this.blocks[x][y][z].g * shade, this.blocks[x][y][z].b * shade, 255]);
-	                            }
-	                        }
-	                    }
-
-	                    // Bottom (-Y)
-	                    drawBlock = false;
-	                    if (y > 0) {
-	                        if (!this.blocks[x][y - 1][z].isActive()) {
-	                            drawBlock = true;
-	                        }
-	                    } else {
-	                        drawBlock = true;
-	                    }
-
-	                    if (drawBlock) {
-	                        var countX = 0;
-	                        var countY = 0;
-	                        if (!this.blocks[x][y][z].dbs) {
-	                            for (var cx = 0; cx < this.chunkSizeX; cx++) {
-	                                if (x + cx < this.chunkSizeX) {
-	                                    if (this.blocks[x + cx][y][z].isActive() && !this.blocks[x + cx][y][z].dbs && this.blocks[x + cx][y][z].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z].b == this.blocks[x][y][z].b) {
-	                                        countX++;
-	                                        var tmpCountY = 0;
-	                                        for (var cy = 0; cy < this.chunkSizeZ; cy++) {
-	                                            if (z + cy < this.chunkSizeZ) {
-	                                                if (this.blocks[x + cx][y][z + cy].isActive() && !this.blocks[x + cx][y][z + cy].dbs && this.blocks[x + cx][y][z + cy].r == this.blocks[x][y][z].r && this.blocks[x + cx][y][z + cy].g == this.blocks[x][y][z].g && this.blocks[x + cx][y][z + cy].b == this.blocks[x][y][z].b) {
-	                                                    tmpCountY++;
-	                                                } else {
-	                                                    break;
-	                                                }
-	                                            }
-	                                        }
-	                                        if (tmpCountY < countY || countY == 0) {
-	                                            countY = tmpCountY;
-	                                        }
-	                                        if (tmpCountY == 0 && countY > countX) {
-	                                            break;
-	                                        }
-	                                    } else {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                            countX--;
-	                            countY--;
-	                            for (var x1 = 0; x1 < countX; x1++) {
-	                                for (var y1 = 0; y1 < countY; y1++) {
-	                                    if (this.blocks[x + x1][y][z + y1].dbs) {
-	                                        //  countY = y1-1;
-	                                    } else {
-	                                        this.blocks[x + x1][y][z + y1].dbs = true;
-	                                    }
-	                                }
-	                            }
-
-	                            this.blocks[x][y][z].dbs = true;
-	                            sides++;
-
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize + this.blockSize * countY]);
-	                            vertices.push([x * this.blockSize - this.blockSize, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-	                            vertices.push([x * this.blockSize + this.blockSize * countX, y * this.blockSize - this.blockSize, z * this.blockSize - this.blockSize]);
-
-	                            for (var i = 0; i < 6; i++) {
-	                                colors.push([this.blocks[x][y][z].r, this.blocks[x][y][z].g, this.blocks[x][y][z].b, 255]);
-	                            }
-	                        }
-	                    }
-
-	                    b += 2 * sides;
-	                }
-	            }
-	        }
-	    }
-	    // Create Object
-	    //
-	    var geometry = new THREE.BufferGeometry();
-	    var v = new THREE.BufferAttribute(new Float32Array(vertices.length * 3), 3);
-	    for (var i = 0; i < vertices.length; i++) {
-	        v.setXYZ(i, vertices[i][0], vertices[i][1], vertices[i][2]);
-	        // console.log(i + ", "+ vertices[i][0] + ", "+ vertices[i][1]+ ", "+ vertices[i][2]);
-	    }
-	    geometry.addAttribute('position', v);
-
-	    var c = new THREE.BufferAttribute(new Float32Array(colors.length * 4), 4);
-	    for (var i = 0; i < colors.length; i++) {
-	        c.setXYZW(i, colors[i][0] / 255, colors[i][1] / 255, colors[i][2] / 255, colors[i][3] / 255);
-	        // c.setXYZW( i, Math.random(), Math.random(), Math.random(), Math.random() );
-	    }
-	    geometry.addAttribute('color', c);
-
-	    geometry.computeBoundingBox();
-
-	    // geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -geometry.boundingBox.max.x/2,
-	    //                                                           -geometry.boundingBox.max.z/2,
-	    //                                                           0));
-	    geometry.computeVertexNormals();
-
-	    var material3 = new THREE.MeshLambertMaterial({ vertexColors: THREE.VertexColors, wireframe: this.wireframe });
-
-	    // geometry.center();
-	    var mesh = new THREE.Mesh(geometry, material3);
-	    mesh.rotation.set(-Math.PI / 2, 0, 0);
-
-	    mesh.castShadow = true;
-	    mesh.receiveShadow = true;
-
-	    mesh.position.set(0, 0, 0);
-	    mesh.that = this;
-	    this.mesh = mesh;
-	    this.GetBoundingBox();
-	    this.isBuilt = true;
-	    Utils.Log("VOX Model CREATED TRIANGLES: " + b);
-	};
-
-	Chunk.prototype.Destroy = function () {
-	    var x = (this.mesh.pos.getX() - this.posX) / this.blockSize;
-	    var y = (this.mesh.pos.getY() - this.posY) / this.blockSize;
-
-	    if (x >= 0 && x < this.blocks.length && y >= 0 && y < this.blocks.length) {
-	        if (this.blocks[x][y][z].isActive()) {
-	            this.blocks[x][y][z].setActive(false);
-	            this.Rebuild();
-	            console.log("Destroy block: " + x + ", " + y + ", " + z);
-	            return true;
-	        }
-	    }
-	    return false;
-	};
-
-	Chunk.prototype.ActivateBlock = function (x, y, z, color) {
-	    if (color.a == 0) {
-	        this.blocks[x][y][z].setActive(false);
-	    } else {
-	        this.blocks[x][y][z].setActive(true);
-	    }
-	    this.blocks[x][y][z].r = color.r;
-	    this.blocks[x][y][z].g = color.g;
-	    this.blocks[x][y][z].b = color.b;
-	    this.blocks[x][y][z].a = color.a;
-	};
-
-	Chunk.prototype.Create = function (sizex, sizey, sizez) {
-	    this.chunkSizeX = sizex;
-	    this.chunkSizeY = sizey;
-	    this.chunkSizeZ = sizez;
-	    console.log("Create: " + sizex + ", " + sizey + ", " + sizez);
-	    this.blocks = new Array();
-
-	    for (var x = 0; x < sizex; x++) {
-	        this.blocks[x] = new Array();
-	        for (var y = 0; y < sizey; y++) {
-	            this.blocks[x][y] = new Array();
-	            for (var z = 0; z < sizez; z++) {
-	                this.blocks[x][y][z] = new Block();
-	                this.blocks[x][y][z].Create(false, 0, 0, 0, 0);
-	            }
-	        }
-	    }
-	};
-
-	Chunk.prototype.NoOfActiveBlocks = function () {
-	    var b = 0;
-	    if (this.blocks != undefined) {
-	        for (var x = 0; x < this.chunkSizeX; x++) {
-	            for (var y = 0; y < this.chunkSizeY; y++) {
-	                for (var z = 0; z < this.chunkSizeZ; z++) {
-	                    if (this.blocks[x][y][z].isActive()) {
-	                        b++;
-	                    }
-	                }
-	            }
-	        }
-	    } else {
-	        console.log("UNDEFINED BLOCKS");
-	    }
-	    return b;
-	};
-
-	module.exports = Chunk;
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _ = __webpack_require__(307);
-
-	function rgb2hex(rgb) {
-	    rgb = rgb.split(',');
-
-	    function hex(x) {
-	        return ("0" + parseInt(x).toString(16)).slice(-2);
-	    }
-	    return "#" + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
-	}
-
-	function Block() {
-	    this.on = false; //active
-	    this.dls = false; //drawnLeftSide // Mark if it's drawn by different block
-	    this.dts = false; //drawnTopSide
-	    this.dfs = false; //drawnFrontSide
-	    this.drs = false; //drawnRightSide
-	    this.dbs = false; //drawnBottomSide
-	    this.a = 0; //alpha
-	    this.r = 0;
-	    this.g = 0;
-	    this.b = 0;
-	};
-
-	Block.prototype.Create = function (isActive, r, g, b, alpha) {
-	    this.on = isActive;
-	    this.a = alpha;
-	    this.r = r;
-	    this.g = g;
-	    this.b = b;
-	};
-
-	Block.prototype.setActive = function (value) {
-	    this.on = value;
-	};
-
-	Block.prototype.isActive = function () {
-	    return this.on;
-	};
-
-	Block.prototype.isEmpty = function () {
-	    return !this.on && !this.dls && !this.dts && !this.dfs && !this.dbs && !this.a && !this.r && !this.g && !this.b;
-	};
-
-	Block.prototype.clean = function () {
-	    var _this = this;
-
-	    var ret = [];
-	    _.each(['on', 'dls', 'dts', 'dfs', 'drs', 'dbs', 'a', 'r', 'g', 'b'], function (key, index) {
-	        if (_this[key]) {
-	            ret[index] = _this[key];
-	        }
-	    });
-
-	    return [this.a, rgb2hex([this.r, this.g, this.b].join(','))];
-
-	    return ret;
-	};
-
-	module.exports = Block;
-
-/***/ },
-/* 315 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -69419,14 +68933,14 @@
 	module.exports = THREE;
 
 /***/ },
-/* 316 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var THREE = __webpack_require__(315);
+	var THREE = __webpack_require__(306);
 
 	var Utils = {
 	    //KJZ deprecated use Object.rotateOnAxis
@@ -69634,18 +69148,24 @@
 	module.exports = Utils;
 
 /***/ },
-/* 317 */
+/* 308 */
+/***/ function(module, exports) {
+
+	
+
+/***/ },
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(318);
+	module.exports = __webpack_require__(310);
 
 
 /***/ },
-/* 318 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(319),
-	  raf = __webpack_require__(320);
+	var now = __webpack_require__(311),
+	  raf = __webpack_require__(312);
 
 	module.exports = Timer;
 
@@ -69768,7 +69288,7 @@
 
 
 /***/ },
-/* 319 */
+/* 311 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {// return the current time in milliseconds
@@ -69781,7 +69301,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 320 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** requestAnimationFrame polyfill
@@ -69802,7 +69322,7 @@
 	}
 
 	if (!requestAnimationFrame || !cancelAnimationFrame) {
-	  var now = __webpack_require__(319),
+	  var now = __webpack_require__(311),
 	    lastTime = 0, max = Math.max;
 
 	  requestAnimationFrame = function(callback, element) {
@@ -69826,7 +69346,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 321 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*! keydrown - v1.2.3 - 2016-09-24 - http://jeremyckahn.github.com/keydrown */
@@ -70341,6 +69861,501 @@
 
 	} (window));
 
+
+/***/ },
+/* 314 */
+/***/ function(module, exports) {
+
+	module.exports = [
+		"alien_bot1.vox",
+		"alien_bot2.vox",
+		"alien_bot3.vox",
+		"alien_crawl1.vox",
+		"alien_crawl2.vox",
+		"alien_egg1.vox",
+		"alien_egg2.vox",
+		"alien_egg3.vox",
+		"alien_engi1a.vox",
+		"alien_engi1b.vox",
+		"alien_engi1c.vox",
+		"alien_engi2a.vox",
+		"alien_engi2b.vox",
+		"alien_engi2c.vox",
+		"alien_engi2d.vox",
+		"alien_engi3.vox",
+		"alien_eye1a.vox",
+		"alien_eye1b.vox",
+		"alien_eye1c.vox",
+		"alien_infected1.vox",
+		"alien_infected2.vox",
+		"alien_infected3.vox",
+		"alien_lift.vox",
+		"alien_saucer1a.vox",
+		"alien_saucer1b.vox",
+		"alien_saucer1c.vox",
+		"alien_saucer2a.vox",
+		"alien_saucer2b.vox",
+		"alien_saucer2c.vox",
+		"alien_saucer3a.vox",
+		"alien_saucer3b.vox",
+		"alien_saucer3c.vox",
+		"alien_tool1.vox",
+		"alien_tool2.vox",
+		"alien_tool3.vox",
+		"chr_army1.vox",
+		"chr_army1a.vox",
+		"chr_army1b.vox",
+		"chr_army2.vox",
+		"chr_army2a.vox",
+		"chr_army2b.vox",
+		"chr_army3.vox",
+		"chr_army4.vox",
+		"chr_army4a.vox",
+		"chr_base.vox",
+		"chr_beardo1.vox",
+		"chr_beardo2.vox",
+		"chr_beardo3.vox",
+		"chr_beardo4.vox",
+		"chr_beau.vox",
+		"chr_bedroll1.vox",
+		"chr_bedroll2.vox",
+		"chr_bridget.vox",
+		"chr_bro.vox",
+		"chr_brookie.vox",
+		"chr_butcher.vox",
+		"chr_chef.vox",
+		"chr_cop1.vox",
+		"chr_cop2.vox",
+		"chr_costume1.vox",
+		"chr_costume2.vox",
+		"chr_costume3.vox",
+		"chr_costume4.vox",
+		"chr_eskimo.vox",
+		"chr_fatkid.vox",
+		"chr_goth1.vox",
+		"chr_goth2.vox",
+		"chr_goth3.vox",
+		"chr_hazmat1.vox",
+		"chr_hazmat2.vox",
+		"chr_headphones.vox",
+		"chr_hobo1.vox",
+		"chr_hunter1.vox",
+		"chr_hunter2.vox",
+		"chr_janitor.vox",
+		"chr_lady1.vox",
+		"chr_lady2.vox",
+		"chr_lady3.vox",
+		"chr_lady4.vox",
+		"chr_mailman.vox",
+		"chr_mayor.vox",
+		"chr_mechanic.vox",
+		"chr_mike.vox",
+		"chr_mission1.vox",
+		"chr_mission2.vox",
+		"chr_naked1.vox",
+		"chr_naked2.vox",
+		"chr_naked3.vox",
+		"chr_naked4.vox",
+		"chr_naked5.vox",
+		"chr_naked6.vox",
+		"chr_nun.vox",
+		"chr_nurse.vox",
+		"chr_paramedic1.vox",
+		"chr_paramedic2.vox",
+		"chr_ponytail1.vox",
+		"chr_ponytail2.vox",
+		"chr_ponytail3.vox",
+		"chr_priest.vox",
+		"chr_punk.vox",
+		"chr_raver1.vox",
+		"chr_raver2.vox",
+		"chr_raver3.vox",
+		"chr_riotcop.vox",
+		"chr_robot.vox",
+		"chr_scientist.vox",
+		"chr_sign1.vox",
+		"chr_sign2.vox",
+		"chr_sports1.vox",
+		"chr_sports2.vox",
+		"chr_sports3.vox",
+		"chr_sports4.vox",
+		"chr_suit1.vox",
+		"chr_suit2.vox",
+		"chr_suit3.vox",
+		"chr_suit4.vox",
+		"chr_sumo1.vox",
+		"chr_sumo2.vox",
+		"chr_super1.vox",
+		"chr_super2.vox",
+		"chr_super3.vox",
+		"chr_super4.vox",
+		"chr_super5.vox",
+		"chr_thief.vox",
+		"chr_worker1.vox",
+		"chr_worker2.vox",
+		"chr_worker3.vox",
+		"chr_zombie1.vox",
+		"chr_zombie2.vox",
+		"chr_zombie3.vox",
+		"chr_zombie4.vox",
+		"env_crete1a.vox",
+		"env_crete1b.vox",
+		"env_crete1c.vox",
+		"env_crete1d.vox",
+		"env_crete2a.vox",
+		"env_crete2b.vox",
+		"env_crete2c.vox",
+		"env_crete2d.vox",
+		"env_grass1a.vox",
+		"env_grass1b.vox",
+		"env_grass1c.vox",
+		"env_grass1d.vox",
+		"mob_bear.vox",
+		"mob_cat1.vox",
+		"mob_cat2.vox",
+		"mob_cat3.vox",
+		"mob_cat4.vox",
+		"mob_dog1.vox",
+		"mob_dog2.vox",
+		"mob_penguin.vox",
+		"obj_arcade1.vox",
+		"obj_arcade2.vox",
+		"obj_arcade3.vox",
+		"obj_arcade4.vox",
+		"obj_arcade5.vox",
+		"obj_armgate1.vox",
+		"obj_armgate2.vox",
+		"obj_bench1.vox",
+		"obj_bench2.vox",
+		"obj_bench3.vox",
+		"obj_bench4.vox",
+		"obj_bench5.vox",
+		"obj_boxingring.vox",
+		"obj_busstop.vox",
+		"obj_campfire.vox",
+		"obj_candle.vox",
+		"obj_cart1.vox",
+		"obj_cart1a.vox",
+		"obj_cart1b.vox",
+		"obj_cart2.vox",
+		"obj_cart2a.vox",
+		"obj_cart2b.vox",
+		"obj_celltower.vox",
+		"obj_chair1.vox",
+		"obj_chair2.vox",
+		"obj_christmas1.vox",
+		"obj_column1.vox",
+		"obj_column2.vox",
+		"obj_column3.vox",
+		"obj_cone1.vox",
+		"obj_container1.vox",
+		"obj_container2.vox",
+		"obj_container3.vox",
+		"obj_container4.vox",
+		"obj_cross.vox",
+		"obj_crosswalk.vox",
+		"obj_curb1.vox",
+		"obj_curb2.vox",
+		"obj_curb3.vox",
+		"obj_curb4.vox",
+		"obj_curb5.vox",
+		"obj_curb6.vox",
+		"obj_curb7.vox",
+		"obj_curb7a.vox",
+		"obj_curb8.vox",
+		"obj_dogstand.vox",
+		"obj_door1.vox",
+		"obj_door2.vox",
+		"obj_door3.vox",
+		"obj_door4.vox",
+		"obj_driveway1.vox",
+		"obj_driveway2.vox",
+		"obj_driveway3.vox",
+		"obj_fence1.vox",
+		"obj_fence2.vox",
+		"obj_fence3.vox",
+		"obj_fence4.vox",
+		"obj_fence5.vox",
+		"obj_fence6.vox",
+		"obj_fence7.vox",
+		"obj_fire1.vox",
+		"obj_fire2.vox",
+		"obj_fire3.vox",
+		"obj_fire4.vox",
+		"obj_fire5.vox",
+		"obj_fountain.vox",
+		"obj_grave1.vox",
+		"obj_grave2.vox",
+		"obj_grave3.vox",
+		"obj_grave4.vox",
+		"obj_grill.vox",
+		"obj_guitarcase.vox",
+		"obj_halo.vox",
+		"obj_house1.vox",
+		"obj_house1a.vox",
+		"obj_house1b.vox",
+		"obj_house1c.vox",
+		"obj_house2.vox",
+		"obj_house2a.vox",
+		"obj_house2b.vox",
+		"obj_house2c.vox",
+		"obj_house2d.vox",
+		"obj_house3.vox",
+		"obj_house3a.vox",
+		"obj_house3b.vox",
+		"obj_house3c.vox",
+		"obj_house4.vox",
+		"obj_house4a.vox",
+		"obj_house4b.vox",
+		"obj_house4c.vox",
+		"obj_house4d.vox",
+		"obj_house5.vox",
+		"obj_house5a.vox",
+		"obj_house5b.vox",
+		"obj_house5c.vox",
+		"obj_house6.vox",
+		"obj_house6a.vox",
+		"obj_house6b.vox",
+		"obj_house6c.vox",
+		"obj_house6d.vox",
+		"obj_house7.vox",
+		"obj_house7a.vox",
+		"obj_house7b.vox",
+		"obj_house7c.vox",
+		"obj_house8.vox",
+		"obj_house8a.vox",
+		"obj_house8b.vox",
+		"obj_house8c.vox",
+		"obj_hydrant.vox",
+		"obj_mailbox.vox",
+		"obj_mailbox2.vox",
+		"obj_mailbox2a.vox",
+		"obj_mailbox2b.vox",
+		"obj_mushroom1.vox",
+		"obj_mushroom2.vox",
+		"obj_mushroom3.vox",
+		"obj_newsbox1.vox",
+		"obj_newsbox2.vox",
+		"obj_newsbox3.vox",
+		"obj_newsbox4.vox",
+		"obj_park_block.vox",
+		"obj_path1.vox",
+		"obj_pentagram.vox",
+		"obj_planter1.vox",
+		"obj_planter2.vox",
+		"obj_planter3a.vox",
+		"obj_planter3b.vox",
+		"obj_playgrnd1.vox",
+		"obj_playgrnd2.vox",
+		"obj_playgrnd3.vox",
+		"obj_playgrnd4.vox",
+		"obj_playgrnd5.vox",
+		"obj_policetape.vox",
+		"obj_potty1.vox",
+		"obj_potty2.vox",
+		"obj_potty3.vox",
+		"obj_pumpkin.vox",
+		"obj_rubbish1.vox",
+		"obj_rubbish2.vox",
+		"obj_rubbish3.vox",
+		"obj_rubbish4.vox",
+		"obj_sidewalk1.vox",
+		"obj_sidewalk2.vox",
+		"obj_sidewalk3.vox",
+		"obj_sidewalk4.vox",
+		"obj_sidewalk5.vox",
+		"obj_sign1.vox",
+		"obj_sign2.vox",
+		"obj_sign3.vox",
+		"obj_sign4.vox",
+		"obj_sign5.vox",
+		"obj_sign6.vox",
+		"obj_sign7.vox",
+		"obj_sign8.vox",
+		"obj_sign9.vox",
+		"obj_splatter1.vox",
+		"obj_splatter2.vox",
+		"obj_splatter3.vox",
+		"obj_stage.vox",
+		"obj_statue1.vox",
+		"obj_statue2.vox",
+		"obj_statue3.vox",
+		"obj_stlight1.vox",
+		"obj_stlight2.vox",
+		"obj_stlight3.vox",
+		"obj_store01.vox",
+		"obj_store02.vox",
+		"obj_store03.vox",
+		"obj_store03a.vox",
+		"obj_store04.vox",
+		"obj_store05.vox",
+		"obj_store06.vox",
+		"obj_store07.vox",
+		"obj_store08.vox",
+		"obj_store09.vox",
+		"obj_store10.vox",
+		"obj_store11.vox",
+		"obj_store12.vox",
+		"obj_store13.vox",
+		"obj_store14.vox",
+		"obj_store15.vox",
+		"obj_store16.vox",
+		"obj_store16a.vox",
+		"obj_store16b.vox",
+		"obj_store17.vox",
+		"obj_store17a.vox",
+		"obj_story01.vox",
+		"obj_story01a.vox",
+		"obj_story01b.vox",
+		"obj_story02.vox",
+		"obj_story03.vox",
+		"obj_story03a.vox",
+		"obj_story03b.vox",
+		"obj_story03c.vox",
+		"obj_story03d.vox",
+		"obj_story04.vox",
+		"obj_story04a.vox",
+		"obj_story04b.vox",
+		"obj_story04c.vox",
+		"obj_story04d.vox",
+		"obj_story05.vox",
+		"obj_story05a.vox",
+		"obj_story06.vox",
+		"obj_story06a.vox",
+		"obj_story06b.vox",
+		"obj_story06c.vox",
+		"obj_story06d.vox",
+		"obj_street1.vox",
+		"obj_street2.vox",
+		"obj_stretcher.vox",
+		"obj_table1.vox",
+		"obj_table2.vox",
+		"obj_table3.vox",
+		"obj_table3a.vox",
+		"obj_table3b.vox",
+		"obj_tracks1.vox",
+		"obj_tracks2.vox",
+		"obj_trashcan1.vox",
+		"obj_trashcan2.vox",
+		"obj_trashcan3.vox",
+		"obj_trashcan4.vox",
+		"obj_tree1.vox",
+		"obj_tree1a.vox",
+		"obj_tree1b.vox",
+		"obj_tree1c.vox",
+		"obj_tree2.vox",
+		"obj_tree2a.vox",
+		"obj_tree2b.vox",
+		"obj_tree2c.vox",
+		"obj_tree3.vox",
+		"obj_tree4.vox",
+		"obj_trellis.vox",
+		"obj_trlight1.vox",
+		"obj_trlight2.vox",
+		"obj_wall.vox",
+		"piano.vox",
+		"scene_aliens.vox",
+		"scene_arcade.vox",
+		"scene_army.vox",
+		"scene_bus.vox",
+		"scene_car.vox",
+		"scene_carflip.vox",
+		"scene_checkpoint.vox",
+		"scene_christmas.vox",
+		"scene_church1.vox",
+		"scene_coffee.vox",
+		"scene_corner.vox",
+		"scene_crucifix.vox",
+		"scene_depot.vox",
+		"scene_depot2.vox",
+		"scene_depot3.vox",
+		"scene_fall.vox",
+		"scene_grave.vox",
+		"scene_hazmat.vox",
+		"scene_hazmat2.vox",
+		"scene_headache.vox",
+		"scene_house.vox",
+		"scene_house2.vox",
+		"scene_house3.vox",
+		"scene_house4.vox",
+		"scene_house5.vox",
+		"scene_house6.vox",
+		"scene_house7.vox",
+		"scene_hunt.vox",
+		"scene_lunch.vox",
+		"scene_mechanic.vox",
+		"scene_mechanic2.vox",
+		"scene_mobile.vox",
+		"scene_orgy.vox",
+		"scene_parade.vox",
+		"scene_park.vox",
+		"scene_park2.vox",
+		"scene_park3.vox",
+		"scene_park4.vox",
+		"scene_parked.vox",
+		"scene_protest.vox",
+		"scene_riot.vox",
+		"scene_sacrifice.vox",
+		"scene_ships.vox",
+		"scene_sidewalk.vox",
+		"scene_store.vox",
+		"scene_store10.vox",
+		"scene_store11.vox",
+		"scene_store2.vox",
+		"scene_store3.vox",
+		"scene_store4.vox",
+		"scene_store5.vox",
+		"scene_store6.vox",
+		"scene_store7.vox",
+		"scene_store8.vox",
+		"scene_store9.vox",
+		"scene_sumo.vox",
+		"scene_tentcity.vox",
+		"scene_tentcity2.vox",
+		"scene_theater.vox",
+		"scene_train.vox",
+		"scene_vehicles1.vox",
+		"scene_vehicles2.vox",
+		"scene_zombies.vox",
+		"veh_ambulance.vox",
+		"veh_bus.vox",
+		"veh_cab1.vox",
+		"veh_car1.vox",
+		"veh_car2.vox",
+		"veh_car3.vox",
+		"veh_car4.vox",
+		"veh_car5.vox",
+		"veh_fire.vox",
+		"veh_lunch1.vox",
+		"veh_lunch2.vox",
+		"veh_lunch3.vox",
+		"veh_lunch4.vox",
+		"veh_mini1.vox",
+		"veh_mini2.vox",
+		"veh_mini3.vox",
+		"veh_mini4.vox",
+		"veh_mini5.vox",
+		"veh_police1.vox",
+		"veh_suv1.vox",
+		"veh_suv2.vox",
+		"veh_suv3.vox",
+		"veh_tank1.vox",
+		"veh_train.vox",
+		"veh_train2.vox",
+		"veh_train3.vox",
+		"veh_truck1.vox",
+		"veh_truck2.vox",
+		"veh_truck3.vox",
+		"veh_truck4.vox",
+		"veh_truck5.vox",
+		"veh_truck6.vox",
+		"veh_truck7.vox",
+		"veh_wagon1.vox",
+		"veh_wagon2.vox",
+		"veh_wagon3.vox",
+		"veh_wagon4.vox",
+		""
+	];
 
 /***/ }
 /******/ ]);

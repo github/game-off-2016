@@ -603,7 +603,7 @@ Chunk.prototype.Rebuild = function() {
 
   // geometry.center();
    var mesh = new THREE.Mesh( geometry, material3);
-   mesh.rotation.set(-Math.PI/2, 0, 0);
+   mesh.rotation.set(-Math.PI/2, 0, Math.PI);
    
    mesh.castShadow = true;
    mesh.receiveShadow = true;

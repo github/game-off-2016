@@ -6,10 +6,8 @@ const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
 const modelNames = require('./modelNames.json');
 
-
 var sel = document.getElementById('modelSelector');
 var fragment = document.createDocumentFragment();
-
 
 modelNames.forEach(function(modelName) {
     var opt = document.createElement('option');
@@ -69,7 +67,7 @@ window.scene = scene;
 setLights(scene);
 
 const camera = new THREE.PerspectiveCamera(
-        35,         // Field of view
+        75,         // Field of view
         viewWidth / viewHeight,  // Aspect ratio
         0.1,        // Near
         10000       // Far
@@ -78,13 +76,7 @@ const camera = new THREE.PerspectiveCamera(
 
 window.camera = camera;
 camera.position.set( 0, 50, 100 );
-
-var geometry = new THREE.BoxGeometry( 5, 5, 5 );
-var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
-var box = new THREE.Mesh( geometry, material );
-box.voxel = true;
-focus = box;
-scene.add( box );
+camera.lookAt(scene.position);
 
 var textureLoader = new THREE.TextureLoader();
 var texture2 = textureLoader.load( "./assets/textures/crate.gif" );
@@ -103,10 +95,16 @@ mesh1.scale.set( 1000, 1000, 1000 );
 scene.add(mesh1);
 
 
+var geometry = new THREE.BoxGeometry( 5, 5, 5 );
+var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
+var anchor = new THREE.Mesh( geometry, material );
+window.anchor = anchor;
+scene.add( anchor );
+
 renderer.setClearColor( 0xdddddd, 1);
 renderer.render( scene, camera );
 
-
+var helper,mesh;
 function loadModel(modelName){
   const vl = new VoxLoader({
     filename: `./assets/mmmm/vox/${modelName}`,
@@ -120,22 +118,27 @@ function loadModel(modelName){
       }
     });
     vox.getChunk().Rebuild();
-    var mesh = vox.getMesh();
-    mesh.voxel = true;
-    scene.add(mesh);
-    focus = mesh;
+    var vmesh = vox.getMesh();
+    vmesh.voxel = true;
+    scene.add(vmesh);
+
+    // helper = new THREE.BoundingBoxHelper(vmesh, 0xff0000);
+    // helper.update();
+    // // If you want a visible bounding anchor
+    // scene.add(helper); 
+    
+    mesh = vmesh;
+    vmesh.parent = anchor;        
     window.mesh = mesh;
-    camera.lookAt(focus.position);      
+    camera.lookAt(vmesh.position);
+    //cameraFollow();
   });
 }
 
 var zVelocity = 0;
 var xVelocity = 0;
 
-KeyDrown.W.down(() => {
-  zVelocity = -1;
-  focus.rotation.z = Math.PI;
-});
+KeyDrown.W.down(() => {zVelocity = -1;});
 KeyDrown.S.down(() => { zVelocity = 1; });
 KeyDrown.A.down(() => { xVelocity = -1; });
 KeyDrown.D.down(() => { xVelocity = 1; });
@@ -154,16 +157,30 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
+function cameraFollow(){
+  var relativeCameraOffset = new THREE.Vector3(0, 40, 40);
+  var cameraOffset = relativeCameraOffset.applyMatrix4( anchor.matrixWorld );
+  camera.position.x = cameraOffset.x;
+  camera.position.y = cameraOffset.y;
+  camera.position.z = cameraOffset.z;
+}
+window.cameraFollow = cameraFollow;
+
 var ticks = 0;
 var update = function(dt, elapsed){
   ticks++;
   KeyDrown.tick();
-  focus.position.z += dt * zVelocity * 18;
-  focus.position.x += dt * xVelocity * 18;
+  if(mesh){
+    anchor.translateZ(dt * zVelocity * 18);
+    anchor.translateX(dt * xVelocity * 18);
+    //    mesh.position.z += dt * zVelocity * 18;
+    //    mesh.position.x += dt * xVelocity * 18;
+   cameraFollow()
+  }
+  
   // camera.position.x = Math.cos(ticks * 0.004) * 100;
   // camera.position.y = 50;
   // camera.position.z = Math.sin(ticks * 0.004) * 100;
-  //camera.lookAt(focus.position);  
 };
 
 var render = function() {
