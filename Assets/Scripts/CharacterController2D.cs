@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement; // include so we can load new scenes
 public class CharacterController2D : MonoBehaviour {
 
     // player controls
-    [Range(0.0f, 10.0f)] // create a slider in the editor and set limits on moveSpeed
+    [Range(0.0f, 20.0f)] // create a slider in the editor and set limits on moveSpeed
     public float moveSpeed = 5f;
 
     // player health
@@ -16,17 +16,10 @@ public class CharacterController2D : MonoBehaviour {
     [HideInInspector]
     public bool playerCanMove = true;
 
-    // SFXs
-    //public AudioClip coinSFX;
-    //public AudioClip deathSFX;
-    //public AudioClip fallSFX;
-    //public AudioClip jumpSFX;
-    //public AudioClip victorySFX;
 
     // private variables below
 
     // store references to components on the gameObject
-    Transform _transform;
     Rigidbody2D _rigidbody;
 //    Animator _animator;
 //   AudioSource _audio;
@@ -39,12 +32,12 @@ public class CharacterController2D : MonoBehaviour {
     //probably keep this
     void Awake () {
 //        // get a reference to the components we are going to be changing and store a reference for efficiency purposes
-        _transform = GetComponent<Transform> ();
+       //_transform = GetComponent<Transform> ();
 
         _rigidbody = GetComponent<Rigidbody2D> ();
         if (_rigidbody==null) // if Rigidbody is missing
             Debug.LogError("Rigidbody2D component missing from this gameobject");
-		_rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+		_rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
 //        _animator = GetComponent<Animator>();
 //        if (_animator==null) // if Animator is missing
 //            Debug.LogError("Animator component missing from this gameobject");
