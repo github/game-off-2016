@@ -1,95 +1,23 @@
-[gd_scene load_steps=7 format=1]
+[gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://Scenes/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
-[ext_resource path="res://Assets/mytiles.tres" type="TileSet" id=3]
-
-[sub_resource type="CanvasItemMaterial" id=1]
-
-shader/shading_mode = 0
-
-[sub_resource type="ColorRamp" id=2]
-
-offsets = FloatArray( 0, 0.128655, 0.28655, 0.508772, 0.695906, 0.847953, 0.982456 )
-colors = ColorArray( 0, 0.682251, 0.949219, 1, 0, 0, 0, 1, 0.395833, 0.796153, 0.952799, 1, 0.72381, 0.906813, 0.978423, 1, 1, 1, 1, 1, 0.469388, 0.82097, 0.958546, 1, 0, 0.662598, 0.921875, 1 )
-
-[sub_resource type="RectangleShape2D" id=3]
-
-custom_solver_bias = 0.0
-extents = Vector2( 29.5389, 30.9143 )
 
 [node name="Node" type="Node"]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 
 transform/pos = Vector2( 449.188, 299.961 )
-input/pickable = true
-collision/margin = 1.0
-
-[node name="Particles2D" type="Particles2D" parent="Player"]
-
-material/material = SubResource( 1 )
-transform/pos = Vector2( 0, 0.397186 )
-config/amount = 100
-config/lifetime = 4.0
-config/time_scale = 0.8
-config/local_space = false
-params/direction = 270.0
-params/spread = 25.0
-params/linear_velocity = 40.0
-params/spin_velocity = 20.0
-params/orbit_velocity = 0.0
-params/gravity_direction = 0.0
-params/gravity_strength = 9.8
-params/radial_accel = 0.0
-params/tangential_accel = 0.0
-params/damping = 0.0
-params/initial_angle = 0.0
-params/initial_size = 0.5
-params/final_size = 1.0
-params/hue_variation = 1.0
-params/anim_speed_scale = 1.0
-params/anim_initial_pos = 0.0
-randomness/orbit_velocity = 10.0
-randomness/initial_size = -0.495141
-randomness/final_size = 1.0
-color/color = Color( 0, 0.823975, 0.84375, 1 )
-color/color_ramp = SubResource( 2 )
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Player"]
-
-build_mode = 0
-polygon = Vector2Array( -4.6835, -23.1352, -12.201, -10.8975, -11.152, 0.291321, -8.52966, 1.16547, -7.13104, 2.03958, -6.7814, 23.1934, -5.55762, 23.3682, -5.55762, 16.0255, -4.6835, 16.0255, -4.85834, 5.1864, -2.93527, 2.73886, -2.93527, 21.6199, -2.23596, 16.2004, -1.01221, 16.3752, -1.01221, -8.97437, 0.0367432, -8.97437, 0.386414, -13.6946, -1.71149, -15.0932, -2.06116, -17.8904, -1.01221, -18.0652, -1.18701, -21.0373, -2.06116, -21.0373, -2.23596, -22.7855 )
-shape_range = Vector2( 1, 10 )
-trigger = false
 
 [node name="DELETE-WHENEVER-TEST" type="Node2D" parent="."]
 
 transform/pos = Vector2( 109.695, 137.396 )
+transform/scale = Vector2( 1, 1 )
 
 [node name="Sprite2" type="Sprite" parent="DELETE-WHENEVER-TEST"]
 
 transform/pos = Vector2( 9.97229, 361.219 )
 texture = ExtResource( 2 )
-
-[node name="StaticBody2D" type="StaticBody2D" parent="DELETE-WHENEVER-TEST/Sprite2"]
-
-input/pickable = false
-shapes/0/shape = SubResource( 3 )
-shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
-shapes/0/trigger = false
-collision/layers = 1
-collision/mask = 1
-constant_linear_velocity = Vector2( 0, 0 )
-constant_angular_velocity = 0.0
-friction = 1.0
-bounce = 0.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DELETE-WHENEVER-TEST/Sprite2/StaticBody2D"]
-
-shape = SubResource( 3 )
-trigger = false
-_update_shape_index = 0
 
 [node name="Sprite" type="Sprite" parent="DELETE-WHENEVER-TEST"]
 
@@ -114,24 +42,5 @@ texture = ExtResource( 2 )
 
 transform/pos = Vector2( 624.931, 185.042 )
 texture = ExtResource( 2 )
-
-[node name="TileMap" type="TileMap" parent="."]
-
-z/z = -1
-mode = 0
-tile_set = ExtResource( 3 )
-cell/size = Vector2( 50, 50 )
-cell/quadrant_size = 16
-cell/custom_transform = Matrix32( 1, 0, 0, 1, 0, 0 )
-cell/half_offset = 2
-cell/tile_origin = 0
-cell/y_sort = false
-collision/use_kinematic = false
-collision/friction = 1.0
-collision/bounce = 0.0
-collision/layers = 1
-collision/mask = 1
-occluder/light_mask = 1
-tile_data = IntArray( 262151, 0, 262152, 0, 262153, 0, 262154, 0, 327690, 0, 393223, 0, 393226, 0, 458759, 0, 458760, 0, 458761, 0, 458762, 0 )
 
 

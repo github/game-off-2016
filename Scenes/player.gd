@@ -3,13 +3,10 @@ extends KinematicBody2D
 
 const MOTION_SPEED = 140;
 const DASH_SPEED = 10;
-const WALK_SPEED = 200;
 
 var isRunning = false;
 var isDashing = false;
 var zoomMultiplier = 0;
-
-var velocity = Vector2();
 
 func _ready():
 	# Set up animation
@@ -42,25 +39,15 @@ func _process(delta):
 func _fixed_process(delta):
 	var motion = Vector2();
 	if (Input.is_action_pressed("ui_up")):
-		velocity.y = -WALK_SPEED
-	elif (Input.is_action_pressed("ui_down")):
-		velocity.y = WALK_SPEED
-	else:
-		velocity.y = 0
-		
+		motion += Vector2(0, -1);
+	if (Input.is_action_pressed("ui_down")):
+		motion += Vector2(0, 1);
 	if (Input.is_action_pressed("ui_left")):
-		velocity.x = -WALK_SPEED
-	elif (Input.is_action_pressed("ui_right")):
-		velocity.x = WALK_SPEED
-	else:
-		velocity.x = 0
-		
+		motion += Vector2(-1, 0);
+	if (Input.is_action_pressed("ui_right")):
+		motion += Vector2(1, 0);
 	if (Input.is_action_pressed("ui_dash")):
 		isDashing = true;
-	
-	var motion = velocity * delta
-	
-		
 	
 	motion = motion.normalized()*MOTION_SPEED*delta;
 	if (isDashing):
