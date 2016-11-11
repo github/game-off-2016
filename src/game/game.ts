@@ -19,6 +19,14 @@ export class Game {
   get view() { return this._canvas.renderer.view; }
   get currentMap() { return this._map; }
 
+  pause() {
+    this._gameLoop.pause();
+  }
+
+  unpause() {
+    this._gameLoop.unpause();
+  }
+
   constructor() {
     this._gameLoop = new GameLoop();
     this._canvas = new GameCanvas();

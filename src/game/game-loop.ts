@@ -16,6 +16,13 @@ export class GameLoop {
   private _lastTime: number;
   private _stats: Stats;
 
+  pause() {
+    this._paused = true;
+  }
+
+  unpause() {
+    this._paused = false;
+  }
   private _gameLoop(time) {
     let frameInfo = {
       timestamp: time,
