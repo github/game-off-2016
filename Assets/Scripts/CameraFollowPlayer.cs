@@ -15,8 +15,6 @@ public class CameraFollowPlayer : MonoBehaviour {
     private float maxTop;
     private float maxBottom;
 
-    private Vector3 lastPosition;
-
     void Start() {
         maxLeft = mapTileHorizontalUnits * (unitSize * -1f) + horizontalEdgeBuffer;
         maxRight = mapTileHorizontalUnits * unitSize - horizontalEdgeBuffer;
@@ -27,17 +25,24 @@ public class CameraFollowPlayer : MonoBehaviour {
 	void Update () {
         float playerX = PlayerCharacter.position.x;
         float playerY = PlayerCharacter.position.y;
-        Vector3 newPosition = new Vector3(lastPosition.x, lastPosition.y, -10);
 
-        if(playerX >= maxLeft && playerX <= maxRight) {
-            newPosition.x = playerX;
+        if(playerX < maxLeft) {
+            playerX = maxLeft;
         }
 
-        if(playerY >= maxBottom && playerY <= maxTop) {
-            newPosition.y = playerY;
+        if(playerX > maxRight) {
+            playerX = maxRight;
         }
-        
+
+        if(playerY < maxBottom) {
+            playerY = maxBottom;
+        }
+
+        if(playerY > maxTop) {
+            playerY = maxTop;
+        }
+
+        Vector3 newPosition = new Vector3(playerX, playerY, -10);
         transform.position = newPosition;
-        lastPosition = newPosition;
 	}
 }
