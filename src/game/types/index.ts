@@ -1,2 +1,3 @@
 export * from './entity';
-export * from './mapObject';
+export * from './unit';
+export * from './robot';

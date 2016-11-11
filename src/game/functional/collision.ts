@@ -1,6 +1,6 @@
 import {
   IEntity,
-  IMapObject
+  IUnit
 } from '../types';
 import {Map} from '../map';
 import {Rectangle, Circle} from 'pixi.js';
@@ -18,7 +18,7 @@ export function fixOutOfBOunds(map: Map, body: Rectangle): Rectangle {
   return newBody;
 }
 
-export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false): IMapObject {
+export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false): IEntity {
   let tile = map.tileAt(x, y);
   if (tile && !rangedAsWalls && tile.type !== 'block') {
     tile = null;
@@ -26,7 +26,7 @@ export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false): I
   return tile;
 }
 
-export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false): IMapObject {
+export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false): IEntity {
   return wallAt(map, body.right, body.bottom, rangedAsWalls) ||
          wallAt(map, body.left, body.bottom, rangedAsWalls) ||
          wallAt(map, body.right, body.top, rangedAsWalls) ||
@@ -43,9 +43,9 @@ export function rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
   return _rectsCollide(rect1, rect2) || _rectsCollide(rect2, rect1);
 }
 
-export function enemyCollision(map: Map, entity: IEntity): IEntity {
+export function enemyCollision(map: Map, entity: IEntity): IUnit {
   let playerBody = map.player.body;
-  return rectsCollide(entity.body, playerBody) ? map.player : null;
+  return rectsCollide(<Rectangle>entity.body, playerBody) ? map.player : null;
 }
 
 export function moveBody(map: Map, body: Rectangle, dx: number, dy: number): Rectangle {
@@ -56,7 +56,7 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number): Rec
   newBody.y += dy;
   tile = wallCollision(map, newBody, true);
   if (tile !== null) {
-    let tileBody = tile.body;
+    let tileBody = <Rectangle>tile.body;
     if (dy > 0) {
       newBody.y = tileBody.y - newBody.height - 1;
     } else {
@@ -67,7 +67,7 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number): Rec
   newBody.x += dx;
   tile = wallCollision(map, newBody, true);
   if (tile !== null) {
-    let tileBody = tile.body;
+    let tileBody = <Rectangle>tile.body;
     if (dx > 0) {
       newBody.x = tileBody.x - newBody.width - 1;
     } else {

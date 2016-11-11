@@ -1,6 +1,6 @@
 import {Graphics, Rectangle, Point} from 'pixi.js';
 import {Game} from '../game';
-import {IEntity} from '../types';
+import {IEntity, teamType} from '../types';
 import {ITimeEvent} from '../game-loop';
 import {config} from '../../config';
 import {
@@ -12,10 +12,13 @@ import {
 import {Subscription} from 'rxjs/Rx';
 
 export class EnergyBall implements IEntity {
+  get type() { return 'energyBall'; }
+  get team(): teamType { return 'robot'; }
+
   private _speed: Point;
   private _body: Rectangle;
   private _view: Graphics;
-  private config: any;
+  private _config: any;
   private _subscription: Subscription;
 
   set tile(pos: Point) { }
@@ -35,22 +38,13 @@ export class EnergyBall implements IEntity {
 
   get view() { return this._view; }
   get body() { return this._body; }
-  setTarget(entity: IEntity) {
-    let position = this.position;
-    let targetPosition = entity.position;
-    let vectorX = targetPosition.x - position.x;
-    let vectorY = targetPosition.y - position.y;
-    this._speed = normalizeVector(vectorX, vectorY);
-    this._speed.x = this._speed.x * this.config.speed;
-    this._speed.y = this._speed.y * this.config.speed;
-  }
 
   constructor(private _game: Game) {
-    this.config = Object.assign(config.entities.energyBall);
-    this._body = new Rectangle(0, 0, this.config.size, this.config.size);
+    this._config = Object.assign(config.entities.energyBall);
+    this._body = new Rectangle(0, 0, this._config.size, this._config.size);
     const graphics = new Graphics();
     graphics.beginFill(0xFFFFFF);
-    graphics.drawCircle( this.config.size / 2, this.config.size / 2, this.config.size / 2 );
+    graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
     this._view = graphics;
     this._view.position.x = this._body.x;
     this._view.position.y = this._body.y;
@@ -69,7 +63,7 @@ export class EnergyBall implements IEntity {
       enemy
     ) {
       if (enemy) {
-        enemy.hit(this.config.damage);
+        enemy.hit(this._config.damage);
       }
       this._view.destroy();
       this._subscription.unsubscribe();
@@ -79,5 +73,15 @@ export class EnergyBall implements IEntity {
       this._view.position.x = this._body.x;
       this._view.position.y = this._body.y;
     }
+  }
+
+  setTarget(entity: IEntity) {
+    let position = this.position;
+    let targetPosition = entity.position;
+    let vectorX = targetPosition.x - position.x;
+    let vectorY = targetPosition.y - position.y;
+    this._speed = normalizeVector(vectorX, vectorY);
+    this._speed.x = this._speed.x * this._config.speed;
+    this._speed.y = this._speed.y * this._config.speed;
   }
 }

@@ -1,11 +1,22 @@
-import {DisplayObject, Rectangle, Point} from 'pixi.js';
+import {
+  Circle,
+  Rectangle,
+  DisplayObject,
+  Point
+} from 'pixi.js';
+
 import {ITimeEvent} from '../game-loop';
 
+// Anything with a body on the map
+// Entities can collide with other units
+
+export type teamType = 'neutral' | 'hacker' | 'robot';
 export interface IEntity {
-  update: (time: ITimeEvent) => void;
+  team: teamType;
   tile: Point;
   position: Point;
-  hit: (damage: number) => void;
+  update: (time: ITimeEvent) => void;
+  readonly type: string;
+  readonly body: Rectangle | Circle;
   readonly view: DisplayObject;
-  readonly body: Rectangle;
 }

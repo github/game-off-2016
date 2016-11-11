@@ -15,7 +15,8 @@ export const config = {
   entities: {
     player: {
       speed: 2,
-      size: 24
+      size: 24,
+      hackDistance: 20
     },
     ranged: {
       radius: 4,

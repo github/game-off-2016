@@ -1,7 +1,7 @@
 import {config} from '../../config';
 import {Point, Rectangle, Graphics, Circle} from 'pixi.js';
 import {Game} from '../game';
-import {IEntity} from '../types';
+import {IRobot, teamType} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
@@ -9,9 +9,12 @@ import {
   lineOfSight
 } from '../functional';
 
-export class Ranged implements IEntity {
+export class Ranged implements IRobot {
+  get type() { return 'ranged'; }
+  get team(): teamType { return 'robot'; }
+
   private _view: Graphics;
-  private config: any;
+  private _config: any;
   private _body: Rectangle;
   private _range: Circle;
   private _connectLine: Graphics;
@@ -20,7 +23,6 @@ export class Ranged implements IEntity {
 
   get view() { return this._view; }
   get body() { return this._body; }
-  get type() { return 'ranged'; }
 
   set tile(pos: Point) {
     this._body.x = config.tileSize * pos.x;
@@ -42,13 +44,13 @@ export class Ranged implements IEntity {
     private _game: Game
   ) {
     this._state = 'searching';
-    this.config = Object.assign(config.entities.ranged);
-    this._body = new Rectangle(0, 0, this.config.size, this.config.size);
-    this._range = new Circle(0, 0, config.tileSize * this.config.radius );
+    this._config = Object.assign(config.entities.ranged);
+    this._body = new Rectangle(0, 0, this._config.size, this._config.size);
+    this._range = new Circle(0, 0, config.tileSize * this._config.radius );
     this._connectLine = new Graphics();
     const graphics = new Graphics();
     graphics.beginFill(0x00FF00, 0.2);
-    graphics.drawCircle( 0, 0, config.tileSize * this.config.radius );
+    graphics.drawCircle( 0, 0, config.tileSize * this._config.radius );
     graphics.beginFill(0xFF8888);
     graphics.drawCircle( 0, 0, config.tileSize / 2 );
 
@@ -60,6 +62,7 @@ export class Ranged implements IEntity {
     _game.gameLoop$.subscribe(this.update);
   }
 
+  hack() {}
   hit() {}
 
   update(time: ITimeEvent) {
@@ -79,11 +82,11 @@ export class Ranged implements IEntity {
     }
     if (this._state === 'searching' && this._playerInRange()) {
       this._state = 'shooting';
-      this._timer = this.config.shootDelay;
+      this._timer = this._config.shootDelay;
     }
     if (this._state === 'shooting' && this._timer < 0) {
         this._state = 'cooldown';
-        this._timer = this.config.shootCooldown;
+        this._timer = this._config.shootCooldown;
         this._shoot();
     }
     if (this._state === 'cooldown' && this._timer < 0) {

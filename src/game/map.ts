@@ -5,12 +5,14 @@ import {
 } from './entities';
 import {Game} from './game';
 import {config} from '../config';
-import {IMapObject} from './types';
+import {
+  IEntity
+} from './types';
 
 export class Map {
   private _stage: Container;
   private _mapConfig: string[];
-  private _map: IMapObject[][];
+  private _map: IEntity[][];
   private _player: Player;
   private _ranged: Ranged[];
 
@@ -22,6 +24,15 @@ export class Map {
   get width() { return config.tileSize * config.gridWidth; }
   get height() { return config.tileSize * config.gridHeight; }
   get player() { return this._player; }
+
+  unitAt(x: number, y: number): IEntity {
+    for (let ranged of this._ranged) {
+      if (ranged.body.contains(x, y)) {
+        return ranged;
+      }
+    }
+    return null;
+  }
 
   tileAt(x: number, y: number) {
     x = Math.floor(x / config.tileSize);
@@ -43,6 +54,11 @@ export class Map {
           graphics.drawRect(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize);
           this._map[row][tile] = {
             type: 'block',
+            team: 'neutral',
+            set tile(v) {},
+            set position(v) {},
+            update() {},
+            view: null,
             body: new Rectangle(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize)
           };
         }
