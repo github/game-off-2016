@@ -19,7 +19,7 @@ export const config = {
       hackDistance: 20
     },
     ranged: {
-      radius: 4,
+      radius: 32 * 4,
       size: 32,
       shootDelay: 1000,
       shootCooldown: 2000
