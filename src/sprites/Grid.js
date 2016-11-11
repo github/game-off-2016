@@ -5,9 +5,9 @@ export const SIMPLE = 'SIMPLE';
 export const CAPTURED = 'CAPTURED';
 export const ENEMY = 'ENEMY';
 
-const width = 3;
-const defaultColor = 0x0000FF;
-const defaultAlpha = 0.0;
+const EDGE_WIDTH = 3;
+const EDGE_COLOR = 0x555555;
+const EDGE_ALPHA = 0.8;
 
 export default class extends Phaser.Graphics {
 
@@ -16,7 +16,6 @@ export default class extends Phaser.Graphics {
     this.game = game;
     this.anchor.setTo(0.5);
     this.networkGraph = networkGraph;
-    this.lineStyle(width, defaultColor, defaultAlpha);
     this.render();
   }
 
@@ -24,17 +23,7 @@ export default class extends Phaser.Graphics {
     this.clear();
     this.networkGraph.edges().forEach((edge) => {
       let attributes = this.networkGraph.edge(edge);
-      switch(attributes.type) {
-        case CAPTURED:
-          this.lineStyle(width, 0x00FF00, 0.8);
-          break;
-        case ENEMY:
-          this.lineStyle(width, 0xFF0000, 0.8);
-          break;
-        default:
-          this.lineStyle(width, defaultColor, defaultAlpha);
-          break;
-      }
+      this.lineStyle(EDGE_WIDTH, EDGE_COLOR, EDGE_ALPHA);
       let v = this.networkGraph.node(edge.v).server;
       this.moveTo(v.x, v.y);
       let w = this.networkGraph.node(edge.w).server;

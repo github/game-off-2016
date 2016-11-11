@@ -48,7 +48,7 @@ export default class extends Phaser.State {
     });
 
     const locations = this.createServerLocationsInGrid(GRID_COLS, GRID_ROW, { cellPadding: SERVER_PADDING });
-    const servers = [];
+    this.servers = [];
     locations.forEach((location, idx) => {
       let type
       if (idx <= BASE_SERVERS - 1) {
@@ -60,17 +60,16 @@ export default class extends Phaser.State {
       }
       let server = this.createServer(type, location, clickSignal);
       if (server) {
-        servers.push(server);
+        this.servers.push(server);
         this.networkGraph.setNode(server.logic.uuid, {server: server, logic: server.logic});
       }
     });
 
-    servers.forEach((source) => {
-      servers.forEach((target) => {
+    const enemyServers = this.filterServerByTypes(ENEMY)
+    enemyServers.forEach((source) => {
+      enemyServers.forEach((target) => {
         if (target.logic.uuid != source.logic.uuid) {
-          let type = (target.logic.isEnemy() && source.logic.isEnemy()) ? ENEMY_EDGE : SIMPLE;
           this.networkGraph.setEdge(source.logic.uuid, target.logic.uuid, {
-            type,
             distance: distance(source, target)
           });
         }
@@ -106,6 +105,12 @@ export default class extends Phaser.State {
     });
     this.game.add.existing(s);
     return s;
+  }
+
+  filterServerByTypes(...types) {
+    return this.servers.filter((server) => {
+      return types.includes(server.logic.type)
+    })
   }
 
   handleServerClick(server) {
