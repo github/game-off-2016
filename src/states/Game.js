@@ -51,7 +51,6 @@ export default class extends Phaser.State {
         }
       } else {
         if (server != currentServer) { // PICK TARGET (origin already selected)
-          // let path = this.grid.shortestPath(currentServer.logic.uuid, server.logic.uuid);
           let path = [server.logic.uuid]
           let packet, pointPath
           if (this.mode === MODES.build) { // BUILD MODE
@@ -74,7 +73,6 @@ export default class extends Phaser.State {
         target.kill();
       }
     });
-
 
     const locations = this.createServerLocationsInGrid(GRID_COLS, GRID_ROW, { cellPadding: SERVER_PADDING });
     const servers = [];
@@ -106,7 +104,6 @@ export default class extends Phaser.State {
       });
     });
     this.grid.render();
-
   }
 
   createServerLocationsInGrid(gridCols, gridRows, { cellPadding } = { cellPadding: 0 }) {
@@ -152,18 +149,10 @@ export default class extends Phaser.State {
     return [packet, pointPath]
   }
 
+  doesPathIntersectsAnother(origin, target) {
+
+  }
+
   render () {
-    if (__DEV__) {
-      // this.game.debug.spriteInfo(this.mushroom, 32, 32)
-    }
   }
-
-  randomLocation() {
-    return {
-      x: this.game.rnd.integerInRange(serverPadding, this.game.world.width - serverPadding),
-      y: this.game.rnd.integerInRange(serverPadding, this.game.world.height - serverPadding)
-    }
-  }
-
-
 }

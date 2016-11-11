@@ -8,6 +8,7 @@
     "start": "webpack",
     "dev": "webpack",
     "deploy": "webpack --config webpack.production.config.js",
+    "open": "open index.html",
     "test": "standard"
   },
   "license": "ISC",
