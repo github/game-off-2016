@@ -25,7 +25,8 @@ export const config = {
     },
     energyBall: {
       size: 20,
-      speed: 2
+      speed: 2,
+      damage: 10
     }
   }
 };

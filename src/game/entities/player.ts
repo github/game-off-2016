@@ -3,7 +3,7 @@ import {Point, Texture, Sprite, Rectangle} from 'pixi.js';
 import {Game} from '../game';
 import {ITimeEvent} from '../game-loop';
 import {moveBody} from '../functional';
-import {IEntity} from './entity';
+import {IEntity} from '../types';
 
 export class Player implements IEntity {
   private xSpeed: number;
@@ -29,12 +29,6 @@ export class Player implements IEntity {
   set tile(pos: Point) {
     this._body.x = config.tileSize * pos.x + (config.tileSize - this.config.size - 1) / 2;
     this._body.y = config.tileSize * pos.y + (config.tileSize - this.config.size - 1);
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
-  }
-
-  update(time: ITimeEvent) {
-    this._body = this._moveBody(this._body, this.xSpeed * this.config.speed, this.ySpeed * this.config.speed);
     this._view.position.x = this._body.x;
     this._view.position.y = this._body.y;
   }
@@ -65,6 +59,16 @@ export class Player implements IEntity {
       ret[config.keys[key]] = key;
       return ret;
     }, {});
+  }
+
+  hit(damage: number) {
+    console.log(damage);
+  }
+
+  update(time: ITimeEvent) {
+    this._body = this._moveBody(this._body, this.xSpeed * this.config.speed, this.ySpeed * this.config.speed);
+    this._view.position.x = this._body.x;
+    this._view.position.y = this._body.y;
   }
 
   private _updateStateFromKeyboard(e: KeyboardEvent) {

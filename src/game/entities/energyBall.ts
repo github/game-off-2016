@@ -1,9 +1,14 @@
 import {Graphics, Rectangle, Point} from 'pixi.js';
 import {Game} from '../game';
-import {IEntity} from './entity';
+import {IEntity} from '../types';
 import {ITimeEvent} from '../game-loop';
 import {config} from '../../config';
-import {normalizeVector, isOutOfBOunds, wallCollision} from '../functional';
+import {
+  normalizeVector,
+  isOutOfBOunds,
+  wallCollision,
+  enemyCollision
+} from '../functional';
 import {Subscription} from 'rxjs/Rx';
 
 export class EnergyBall implements IEntity {
@@ -54,8 +59,18 @@ export class EnergyBall implements IEntity {
     this._subscription = _game.gameLoop$.subscribe(this.update);
   }
 
+  hit() {}
+
   update(time: ITimeEvent) {
-    if (isOutOfBOunds(this._game.currentMap, this._body) || wallCollision(this._game.currentMap, this._body)) {
+    let enemy = enemyCollision(this._game.currentMap, this);
+    if (
+      isOutOfBOunds(this._game.currentMap, this._body) ||
+      wallCollision(this._game.currentMap, this._body) ||
+      enemy
+    ) {
+      if (enemy) {
+        enemy.hit(this.config.damage);
+      }
       this._view.destroy();
       this._subscription.unsubscribe();
     } else if (this._speed) {

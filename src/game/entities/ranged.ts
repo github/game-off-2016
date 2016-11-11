@@ -1,7 +1,7 @@
 import {config} from '../../config';
 import {Point, Rectangle, Graphics, Circle} from 'pixi.js';
 import {Game} from '../game';
-import {IEntity} from './entity';
+import {IEntity} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
@@ -22,15 +22,6 @@ export class Ranged implements IEntity {
   get body() { return this._body; }
   get type() { return 'ranged'; }
 
-  private _playerInRange(): boolean {
-    return inRange(this._range, this._game.currentMap.player.body) &&
-           lineOfSight(this._game.currentMap,
-             this._range.x, this._range.y,
-             this._game.currentMap.player.body.x + this._game.currentMap.player.body.width / 2,
-             this._game.currentMap.player.body.y + this._game.currentMap.player.body.height / 2
-           );
-  }
-
   set tile(pos: Point) {
     this._body.x = config.tileSize * pos.x;
     this._body.y = config.tileSize * pos.y;
@@ -47,15 +38,29 @@ export class Ranged implements IEntity {
     );
   }
 
-  shoot() {
-    let shoot = new EnergyBall(this._game);
-    shoot.position = new Point(
-      this._body.x + this._body.width / 2,
-      this._body.y + this._body.height / 2
-    );
-    shoot.setTarget(this._game.currentMap.player);
-    this._game.currentMap.view.addChild(shoot.view);
+  constructor(
+    private _game: Game
+  ) {
+    this._state = 'searching';
+    this.config = Object.assign(config.entities.ranged);
+    this._body = new Rectangle(0, 0, this.config.size, this.config.size);
+    this._range = new Circle(0, 0, config.tileSize * this.config.radius );
+    this._connectLine = new Graphics();
+    const graphics = new Graphics();
+    graphics.beginFill(0x00FF00, 0.2);
+    graphics.drawCircle( 0, 0, config.tileSize * this.config.radius );
+    graphics.beginFill(0xFF8888);
+    graphics.drawCircle( 0, 0, config.tileSize / 2 );
+
+    this._view = graphics;
+    this._view.position.x = this._body.x;
+    this._view.position.y = this._body.y;
+
+    this.update = this.update.bind(this);
+    _game.gameLoop$.subscribe(this.update);
   }
+
+  hit() {}
 
   update(time: ITimeEvent) {
     if (this._playerInRange()) {
@@ -79,7 +84,7 @@ export class Ranged implements IEntity {
     if (this._state === 'shooting' && this._timer < 0) {
         this._state = 'cooldown';
         this._timer = this.config.shootCooldown;
-        this.shoot();
+        this._shoot();
     }
     if (this._state === 'cooldown' && this._timer < 0) {
         this._state = 'searching';
@@ -87,25 +92,22 @@ export class Ranged implements IEntity {
     this._timer -= time.delta;
   }
 
-  constructor(
-    private _game: Game
-  ) {
-    this._state = 'searching';
-    this.config = Object.assign(config.entities.ranged);
-    this._body = new Rectangle(0, 0, this.config.size, this.config.size);
-    this._range = new Circle(0, 0, config.tileSize * this.config.radius );
-    this._connectLine = new Graphics();
-    const graphics = new Graphics();
-    graphics.beginFill(0x00FF00, 0.2);
-    graphics.drawCircle( 0, 0, config.tileSize * this.config.radius );
-    graphics.beginFill(0xFF8888);
-    graphics.drawCircle( 0, 0, config.tileSize / 2 );
+  private _shoot() {
+    let shoot = new EnergyBall(this._game);
+    shoot.position = new Point(
+      this._body.x + this._body.width / 2,
+      this._body.y + this._body.height / 2
+    );
+    shoot.setTarget(this._game.currentMap.player);
+    this._game.currentMap.view.addChild(shoot.view);
+  }
 
-    this._view = graphics;
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
-
-    this.update = this.update.bind(this);
-    _game.gameLoop$.subscribe(this.update);
+  private _playerInRange(): boolean {
+    return inRange(this._range, this._game.currentMap.player.body) &&
+           lineOfSight(this._game.currentMap,
+             this._range.x, this._range.y,
+             this._game.currentMap.player.body.x + this._game.currentMap.player.body.width / 2,
+             this._game.currentMap.player.body.y + this._game.currentMap.player.body.height / 2
+           );
   }
 }

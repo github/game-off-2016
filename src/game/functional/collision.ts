@@ -1,11 +1,15 @@
+import {
+  IEntity,
+  IMapObject
+} from '../types';
 import {Map} from '../map';
 import {Rectangle, Circle} from 'pixi.js';
 
-export function isOutOfBOunds(map: Map, body: Rectangle) {
+export function isOutOfBOunds(map: Map, body: Rectangle): boolean {
   return body.x < 0 || body.y < 0 || body.right > map.width || body.bottom > map.height;
 }
 
-export function fixOutOfBOunds(map: Map, body: Rectangle) {
+export function fixOutOfBOunds(map: Map, body: Rectangle): Rectangle {
   let newBody = body.clone();
   if (newBody.x < 0) { newBody.x = 0; }
   if (newBody.y < 0) { newBody.y = 0; }
@@ -14,7 +18,7 @@ export function fixOutOfBOunds(map: Map, body: Rectangle) {
   return newBody;
 }
 
-export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false) {
+export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false): IMapObject {
   let tile = map.tileAt(x, y);
   if (tile && !rangedAsWalls && tile.type !== 'block') {
     tile = null;
@@ -22,14 +26,29 @@ export function wallAt(map: Map, x: number, y: number, rangedAsWalls = false) {
   return tile;
 }
 
-export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false) {
+export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false): IMapObject {
   return wallAt(map, body.right, body.bottom, rangedAsWalls) ||
          wallAt(map, body.left, body.bottom, rangedAsWalls) ||
          wallAt(map, body.right, body.top, rangedAsWalls) ||
          wallAt(map, body.left, body.top, rangedAsWalls);
 }
 
-export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
+function _rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
+  return rect1.contains(rect2.left, rect2.top) ||
+         rect1.contains(rect2.left, rect2.bottom) ||
+         rect1.contains(rect2.right, rect2.top) ||
+         rect1.contains(rect2.right, rect2.bottom);
+}
+export function rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
+  return _rectsCollide(rect1, rect2) || _rectsCollide(rect2, rect1);
+}
+
+export function enemyCollision(map: Map, entity: IEntity): IEntity {
+  let playerBody = map.player.body;
+  return rectsCollide(entity.body, playerBody) ? map.player : null;
+}
+
+export function moveBody(map: Map, body: Rectangle, dx: number, dy: number): Rectangle {
   let newBody = body.clone();
   let tile;
 
@@ -58,7 +77,7 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number) {
   return fixOutOfBOunds(map, newBody);
 }
 
-export function inRange(range: Circle, body: Rectangle) {
+export function inRange(range: Circle, body: Rectangle): boolean {
   return range.contains(body.left, body.bottom) ||
          range.contains(body.right, body.bottom) ||
          range.contains(body.left, body.top) ||

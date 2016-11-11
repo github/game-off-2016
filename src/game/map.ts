@@ -5,11 +5,7 @@ import {
 } from './entities';
 import {Game} from './game';
 import {config} from '../config';
-
-interface IMapObject {
-  readonly body: Rectangle;
-  readonly type: string;
-}
+import {IMapObject} from './types';
 
 export class Map {
   private _stage: Container;
