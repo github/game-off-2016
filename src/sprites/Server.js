@@ -4,7 +4,7 @@ let borderSize = 5;
 let size = 35 + borderSize;
 export default class extends Phaser.Graphics {
 
-  constructor ({ game, x, y, logic, clickSignal  }) {
+  constructor ({ game, x, y, logic, clickSignal }) {
     super(game, x, y);
 
     this.game = game;
@@ -25,14 +25,16 @@ export default class extends Phaser.Graphics {
 
     this.events.onInputOver.add((game, pointer) => {
       this.tint = 0xCCCCCC;
+      clickSignal.dispatch(this, 'over');
     });
 
     this.events.onInputOut.add((game, pointer) => {
       this.tint = 0xFFFFFF;
+      clickSignal.dispatch(this, 'out');
     });
 
     this.events.onInputDown.add(() => {
-      clickSignal.dispatch(this);
+      clickSignal.dispatch(this, 'click');
     });
   }
 

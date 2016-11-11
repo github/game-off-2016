@@ -1,4 +1,2 @@
-- Change mode (deploy/build)
-- Slow packets down (build should be slower).
-- Don't allow to build edges that cross other edges.
-- Enemy expansion.
+- Better UI for selection / indications with paths.
+- Don't allow cross-edges (highlight blocker).

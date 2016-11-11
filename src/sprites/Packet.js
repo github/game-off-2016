@@ -13,22 +13,6 @@ export default class extends Phaser.Graphics {
     this.beginFill(color || 0x000000);
     this.drawCircle(0, 0, size);
     this.endFill();
-
-  }
-
-  sendTo (dst) {
-    this.game.add.tween(this).to(
-      {
-        x: dst.x,
-        y: dst.y
-      },
-      500, // TODO: (yon) Need to calc time based on distance / speed
-      Phaser.Easing.Linear.None,
-      true
-    ).onComplete.add(() => {
-      dst.hit();
-      this.destroy();
-    });
   }
 
   sendAlongPath(pointPath, server) {
