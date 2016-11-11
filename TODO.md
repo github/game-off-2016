@@ -1,2 +1,3 @@
 - Better UI for selection / indications with paths.
 - Don't allow cross-edges (highlight blocker).
+- Build edges as packet is moving.

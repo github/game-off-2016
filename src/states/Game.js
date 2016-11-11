@@ -6,7 +6,7 @@ import Server from '../sprites/Server'
 import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
-import {distance} from '../utils'
+import { distance, doLinesIntersect } from '../utils'
 import times from 'times-loop'
 
 const GRID_COLS = 3
@@ -129,13 +129,18 @@ export default class extends Phaser.State {
         let packet, pointPath
         if (this.mode === MODES.build) { // BUILD MODE
           // COLOR EDGES AS CAPTURED
-          path.reduce((last, current) => {
-            let e = this.networkGraph.edge({v: last, w: current});
-            this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
-            return current;
-          }, this.currentServer.logic.uuid);
-          this.grid.render();
-          [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+          const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
+          if (intersection) {
+            console.log(intersection)
+          } else {
+            path.reduce((last, current) => {
+              let e = this.networkGraph.edge({v: last, w: current});
+              this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
+              return current;
+            }, this.currentServer.logic.uuid);
+            this.grid.render();
+            [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+          }
         } else if ((this.mode === MODES.deploy) && (this.networkGraph.hasEdge(server, this.currentServer))) { // DEPLOY MODE
           [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
         }
@@ -170,8 +175,25 @@ export default class extends Phaser.State {
     return [packet, pointPath]
   }
 
-  doesPathIntersectsAnother(origin, target) {
-
+  doesEdgeIntersectWithAnother(origin, target) {
+    let x0 = origin.x
+    let y0 = origin.y
+    let x1 = target.x
+    let y1 = target.y
+    return this.networkGraph.edges().find((edge) => {
+      let v = this.networkGraph.node(edge.v).server
+      let w = this.networkGraph.node(edge.w).server
+      let edgeX0 = v.x
+      let edgeY0 = v.y
+      let edgeX1 = w.x
+      let edgeY1 = w.y
+      let intersection = doLinesIntersect(x0, y0, x1, y1, edgeX0, edgeY0, edgeX1, edgeY1)
+      if (intersection) {
+        return edge
+      } else {
+        return false
+      }
+    })
   }
 
   render () {

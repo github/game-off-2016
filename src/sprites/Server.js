@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 
 let borderSize = 5;
 let size = 35 + borderSize;
-export default class extends Phaser.Graphics {
 
+export default class extends Phaser.Graphics {
   constructor ({ game, x, y, logic, clickSignal }) {
     super(game, x, y);
 
@@ -43,7 +43,7 @@ export default class extends Phaser.Graphics {
     this.logic.updateTimers(dt)
     if (this.logic.isPacketCreator()) {
       const additionalPackets = this.logic.getPacketsToBeCreated()
-      this.logic.addPackets(additionalPackets)
+      if (additionalPackets > 0) this.createPackets(additionalPackets)
     }
 
     if (this.logic.packets > 0 || this.logic.isPacketCreator()) {
@@ -51,6 +51,12 @@ export default class extends Phaser.Graphics {
     } else {
       this.packetsCountText.text = ""
     }
+  }
+
+  createPackets(packets) {
+    this.logic.addPackets(packets)
+    var t = this.game.add.tween(this.scale).to({ x: 1.1, y: 1.1 }, 100, 'Linear', true, 0, 0, true)
+
   }
 
   hit() {
