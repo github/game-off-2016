@@ -28,7 +28,13 @@ public class RoomNavigationManager : MonoBehaviour {
         bool spawnCharacterOnLeftOfDoor = isDoorOnRight(connectedDoorPosition);
 
         // position player slightly off of door's location
-        PlayerGameObject.transform.localPosition = new Vector3(connectedDoorPosition.x - 2, connectedDoorPosition.y, 0); // TODO calculate proper position using spawnCharacterOnLeft
+        float characterOffsetX = 2f;
+
+        if (spawnCharacterOnLeftOfDoor) {
+            characterOffsetX *= -1;
+        }
+
+        PlayerGameObject.transform.localPosition = new Vector3(connectedDoorPosition.x + characterOffsetX, connectedDoorPosition.y, 0);
     }
 
     // assumes that a valid ID is provided, if not bad things will happen
