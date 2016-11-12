@@ -6,7 +6,7 @@ import {
   Circle
 } from 'pixi.js';
 import {Game} from '../game';
-import {IRobot, teamType} from '../types';
+import {IEntity, IRobot, teamType} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
@@ -23,19 +23,21 @@ export class Ranged implements IRobot {
   private _view: Graphics;
   private _config: any;
   private _body: Rectangle;
-  private _range: Circle;
-  private _connectLine: Graphics;
+  private _fov: Circle;
   private _state: 'searching' | 'shooting' | 'cooldown';
   private _timer: number;
+  private _target: IEntity;
 
   get view() { return this._view; }
   get body() { return this._body; }
   get team(): teamType { return 'robot'; }
+  get fov() { return this._fov; }
+  get target() { return this._target; }
   get position() { return rectToPoint(this._body); }
 
   set tile(pos: Point) {
     this._body = tileToRect(pos, this._config.size, this._config.size);
-    this._range = tileToCircle(pos, this._config.radius);
+    this._fov = tileToCircle(pos, this._config.radius);
     this._updateView();
   }
 
@@ -45,14 +47,10 @@ export class Ranged implements IRobot {
     this._config = Object.assign(config.entities.ranged);
     this._state = 'searching';
 
-    this._connectLine = new Graphics();
     const graphics = new Graphics();
-    graphics.beginFill(0x00FF00, 0.2);
-    graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.radius );
     graphics.beginFill(0xFF8888);
     graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
     this._view = graphics;
-    this._game.currentMap.view.addChild(this._connectLine);
 
     this.tile = new Point();
     this._updateView();
@@ -65,17 +63,9 @@ export class Ranged implements IRobot {
 
   update(time: ITimeEvent) {
     if (this._playerInRange()) {
-      let player = this._game.currentMap.player;
-      this._connectLine.clear();
-      this._connectLine.lineStyle(1, 0x00FF00, 1);
-      this._connectLine.moveTo(
-        this.position.x,
-        this.position.y
-      );
-      this._connectLine.lineTo(player.position.x, player.position.y);
-      this._connectLine.lineWidth = 3;
+      this._target = this._game.currentMap.player;
     } else {
-      this._connectLine.clear();
+      this._target = null;
     }
     if (this._state === 'searching' && this._playerInRange()) {
       this._state = 'shooting';
@@ -101,13 +91,13 @@ export class Ranged implements IRobot {
     let shoot = new EnergyBall(this._game);
     shoot.position = this.position;
     shoot.setTarget(this._game.currentMap.player);
-    this._game.currentMap.view.addChild(shoot.view);
+    this._game.currentMap.addEntity(shoot);
   }
 
   private _playerInRange(): boolean {
-    return inRange(this._range, this._game.currentMap.player.body) &&
+    return inRange(this._fov, this._game.currentMap.player.body) &&
            lineOfSight(this._game.currentMap,
-             this._range.x, this._range.y,
+             this._fov.x, this._fov.y,
              this._game.currentMap.player.position.x,
              this._game.currentMap.player.position.y
            );

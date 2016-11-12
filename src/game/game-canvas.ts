@@ -58,7 +58,7 @@ export class GameCanvas {
     this.stage.scale.y = this.scale;
   }
 
-  paint() {
+  render() {
     this.renderer.render(this.stage);
   }
 

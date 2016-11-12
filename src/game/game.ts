@@ -13,6 +13,7 @@ export class Game {
 
   get mainLoop$() { return this._gameLoop.main$; }
   get gameLoop$() { return this._gameLoop.game$; }
+  get preRenderLoop$() { return this._gameLoop.preRender$; }
   get renderLoop$() { return this._gameLoop.render$; }
   get keyPress$() { return this._keyboard.keyPress$; }
 
@@ -37,6 +38,6 @@ export class Game {
   }
 
   start() {
-    this._gameLoop.render$.subscribe(e => this._canvas.paint());
+    this._gameLoop.render$.subscribe(e => this._canvas.render());
   }
 }

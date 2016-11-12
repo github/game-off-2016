@@ -4,6 +4,8 @@ export const config = {
   gridHeight: 15,
   roundScale: true,
   minScale: 0.5,
+  drawBodies: true,
+  drawView: true,
   keys: {
     'up': 38,
     'right': 39,

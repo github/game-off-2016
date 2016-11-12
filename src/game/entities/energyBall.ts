@@ -80,6 +80,7 @@ export class EnergyBall implements IEntity {
   }
 
   destroy() {
+    this._game.currentMap.removeEntity(this);
     this._view.destroy();
     this._subscription.unsubscribe();
   }
