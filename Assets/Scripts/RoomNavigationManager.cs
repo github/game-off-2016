@@ -19,8 +19,7 @@ public class RoomNavigationManager : MonoBehaviour {
 
         // spawn connectedRoom and save reference
         activeRoomPrefab = Instantiate(GetRoomPrefabById(connectedRoomId));
-
-        // place player near connected door
+        
         // find position of connected door
         Vector3 connectedDoorPosition = GetDoorPosition(connectedDoorId);
 
@@ -38,7 +37,6 @@ public class RoomNavigationManager : MonoBehaviour {
     }
 
     // assumes that a valid ID is provided, if not bad things will happen
-    // TODO how can this be done safer, or throw an error if no room is found with the given ID?
     GameObject GetRoomPrefabById(int id) {
         // loop through all the room prefabs
         foreach(GameObject room in RoomPrefabs) {
@@ -51,8 +49,6 @@ public class RoomNavigationManager : MonoBehaviour {
     }
 
     // assumes that a valid ID is provided, if not bad things will happen
-    // TODO how can this be done safer, or throw an error if no room is found with the given ID?
-    // TODO perhaps change roomDetail's Door array into an array of DoorDetails rather than GameObjects
     Vector3 GetDoorPosition(int doorId) {
         Vector3 doorPosition = Vector3.zero;
 
