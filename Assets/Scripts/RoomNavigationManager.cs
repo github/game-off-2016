@@ -40,16 +40,14 @@ public class RoomNavigationManager : MonoBehaviour {
     // assumes that a valid ID is provided, if not bad things will happen
     // TODO how can this be done safer, or throw an error if no room is found with the given ID?
     GameObject GetRoomPrefabById(int id) {
-        GameObject roomPrefab = new GameObject();
-
         // loop through all the room prefabs
         foreach(GameObject room in RoomPrefabs) {
             if(room.GetComponent<RoomDetails>().Id == id) {
-                roomPrefab = room;
+                return room;
             }
         }
 
-        return roomPrefab;
+        return new GameObject();
     }
 
     // assumes that a valid ID is provided, if not bad things will happen
