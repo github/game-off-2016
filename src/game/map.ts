@@ -6,7 +6,8 @@ import {
 } from 'pixi.js';
 import {
   Player,
-  Ranged
+  Ranged,
+  Wall
 } from './entities';
 import {Game} from './game';
 import {config} from '../config';
@@ -19,7 +20,6 @@ export class Map {
   private _mapConfig: string[];
   private _map: IEntity[][];
   private _player: Player;
-  private _ranged: Ranged[];
   private _entities: IEntity[];
 
   private _stage: Container;
@@ -40,9 +40,9 @@ export class Map {
   get player() { return this._player; }
 
   unitAt(x: number, y: number): IEntity {
-    for (let ranged of this._ranged) {
-      if (ranged.body.contains(x, y)) {
-        return ranged;
+    for (let entity of this._entities) {
+      if (entity.body.contains(x, y)) {
+        return entity;
       }
     }
     return null;
@@ -87,31 +87,31 @@ export class Map {
   }
 
   addEntity(entity: IEntity) {
-    this._viewLayer.addChild(entity.view);
     this._entities.push(entity);
+    if (config.drawView) {
+      this._viewLayer.addChild(entity.view);
+    }
   }
 
   removeEntity(entity: IEntity) {
-    this._viewLayer.removeChild(entity.view);
     const index = this._entities.indexOf(entity);
     if (index > -1) {
       this._entities.splice(index, 1);
+    }
+    if (config.drawView) {
+      this._viewLayer.removeChild(entity.view);
     }
   }
 
   loadLevel(level: any) {
     this._mapConfig = level.map;
     this._map = Array.apply(null, Array(config.gridHeight)).map(() => []);
-    this._ranged = [];
     this._entities = [];
 
     this._stage = new Container();
-    const graphics = new Graphics();
-    graphics.beginFill(0xFFFF88);
     if (config.drawView) {
       this._viewLayer = new Container();
       this._stage.addChild(this._viewLayer);
-      this._viewLayer.addChild(graphics);
     }
 
     if (config.drawBodies) {
@@ -121,38 +121,28 @@ export class Map {
 
     for (let row = 0; row < this._mapConfig.length; row += 1) {
       for (let tile = 0; tile < this._mapConfig[row].length; tile += 1) {
+        let entity: IEntity = null;
         if (this._mapConfig[row][tile] === 'X') {
-          graphics.drawRect(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize);
-          this._map[row][tile] = {
-            type: 'block',
-            team: 'neutral',
-            set tile(v) {},
-            set position(v) {},
-            update() {},
-            view: null,
-            body: new Rectangle(config.tileSize * tile, config.tileSize * row, config.tileSize, config.tileSize)
-          };
+          entity = new Wall(this._game);
+          this._map[row][tile] = entity;
         }
 
         if (this._mapConfig[row][tile] === 'T') {
-          const ranged = new Ranged(this._game);
-          ranged.tile = new Point(tile, row);
-          this._ranged.push(ranged);
-          this._map[row][tile] = ranged;
-          this._entities.push(ranged);
-          if (config.drawView) {
-            this._viewLayer.addChild(ranged.view);
-          }
+          entity = new Ranged(this._game);
+          this._map[row][tile] = entity;
         } else if (this._mapConfig[row][tile] === 'P') {
-          const player = new Player(this._game);
-          player.tile = new Point(tile, row);
-          this._player = player;
-          this._entities.push(player);
+          entity = new Player(this._game);
+          this._player = <Player>entity;
+        }
+        if (entity) {
+          entity.tile = new Point(tile, row);
+          this._entities.push(entity);
           if (config.drawView) {
-            this._viewLayer.addChild(player.view);
+            this._viewLayer.addChild(entity.view);
           }
         }
       }
     }
   }
+
 }
