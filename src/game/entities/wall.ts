@@ -28,7 +28,7 @@ export class Wall implements IEntity {
     private _game: Game
   ) {
     const graphics = new Graphics();
-    graphics.beginFill(0xFFFF88);
+    graphics.beginFill(0xE3E238);
     graphics.drawRect( 0, 0, config.tileSize, config.tileSize );
     this._view = graphics;
 

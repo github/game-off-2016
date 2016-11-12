@@ -1,6 +1,6 @@
 import {Graphics, Rectangle, Point} from 'pixi.js';
 import {Game} from '../game';
-import {IEntity, teamType} from '../types';
+import {IEntity, IUnit, teamType} from '../types';
 import {ITimeEvent} from '../game-loop';
 import {config} from '../../config';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../functional';
 import {Subscription} from 'rxjs/Rx';
 
-export class EnergyBall implements IEntity {
+export class EnergyBall implements IUnit {
   get type() { return 'energyBall'; }
 
   private _speed: Point;
@@ -24,6 +24,7 @@ export class EnergyBall implements IEntity {
 
   get view() { return this._view; }
   get body() { return this._body; }
+  get hitbox() { return this._body; }
   get team(): teamType { return 'robot'; }
   get position() { return rectToPoint(this._body); }
 

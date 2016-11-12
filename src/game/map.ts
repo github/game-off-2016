@@ -1,8 +1,7 @@
 import {
   Graphics,
   Container,
-  Point,
-  Rectangle
+  Point
 } from 'pixi.js';
 import {
   Player,
@@ -39,9 +38,9 @@ export class Map {
   get height() { return config.tileSize * config.gridHeight; }
   get player() { return this._player; }
 
-  unitAt(x: number, y: number): IEntity {
+  unitAt(point: Point, team?: string): IEntity {
     for (let entity of this._entities) {
-      if (entity.body.contains(x, y)) {
+      if (entity.body.contains(point.x, point.y) && (!team || entity.team === team)) {
         return entity;
       }
     }
@@ -59,8 +58,8 @@ export class Map {
     for (let entity of this._entities) {
       let fov = (<IUnit>entity).fov;
       if (fov) {
-        this._bodyLayer.beginFill(0xAA7722, 0.2);
-        this._bodyLayer.lineStyle(1, 0xAA7722, 0.8);
+        this._bodyLayer.beginFill(0xFFFF00, 0.2);
+        this._bodyLayer.lineStyle(1, 0xFFFF00, 0.8);
         this._bodyLayer.drawShape(fov);
       }
     }
@@ -77,11 +76,16 @@ export class Map {
       let target = (<IUnit>entity).target;
       if (target) {
         this._bodyLayer.lineStyle(1, 0x00FFFF, 0.8);
-        this._bodyLayer.moveTo(
-          entity.position.x,
-          entity.position.y
-        );
+        this._bodyLayer.moveTo(entity.position.x, entity.position.y);
         this._bodyLayer.lineTo(target.position.x, target.position.y);
+      }
+    }
+    for (let entity of this._entities) {
+      let hitbox = (<IUnit>entity).hitbox;
+      if (hitbox) {
+        this._bodyLayer.beginFill(0xFF2222, 0.2);
+        this._bodyLayer.lineStyle(1, 0xFF2222, 0.8);
+        this._bodyLayer.drawShape(hitbox);
       }
     }
   }

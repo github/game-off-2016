@@ -5,7 +5,7 @@ import {
   Sprite,
   Rectangle,
   Container,
-  Graphics
+  Circle
 } from 'pixi.js';
 import {Game} from '../game';
 import {ITimeEvent} from '../game-loop';
@@ -15,7 +15,7 @@ import {
   tileToRect,
   reverseKeys
 } from '../functional';
-import {IUnit, teamType} from '../types';
+import {IRobot, IUnit, teamType} from '../types';
 
 export class Player implements IUnit {
   get type() { return 'hacker'; }
@@ -30,10 +30,10 @@ export class Player implements IUnit {
   private _hackingPoint: Point;
   private _hackingPointX: number;
   private _hackingPointY: number;
-  private _hackingView: Graphics;
 
   get view() { return this._view; }
   get body() { return this._body; }
+  get hitbox() { return new Circle(this._hackingPoint.x, this._hackingPoint.y, 3); }
   get team(): teamType { return 'hacker'; }
   get position() { return rectToPoint(this._body); }
 
@@ -55,11 +55,6 @@ export class Player implements IUnit {
     this._view.addChild(sprite);
     this._keyMap = reverseKeys(config.keys);
 
-    this._hackingView = new Graphics();
-    this._hackingView.beginFill(0xFF0000, 0.8);
-    this._hackingView.drawCircle(0, 0, 3);
-    this._view.addChild(this._hackingView);
-
     this.tile = new Point();
 
     _game.keyPress$.subscribe(e => this._updateStateFromKeyboard(e));
@@ -75,13 +70,15 @@ export class Player implements IUnit {
     let point = this.position;
     this._hackingPoint = new Point(point.x + this._hackingPointX, point.y + this._hackingPointY);
     this._updateView();
+    let robot = this._game.currentMap.unitAt(this._hackingPoint, 'robot');
+    if (robot && robot.type === 'ranged') {
+      (<IRobot>robot).hack(this._config.hackSpeed * time.delta / 1000);
+    }
   }
 
   private _updateView() {
     this._view.position.x = this._body.x;
     this._view.position.y = this._body.y;
-    this._hackingView.x = this._hackingPointX + this._body.width / 2;
-    this._hackingView.y = this._hackingPointY + this._body.height / 2;
   }
 
   private _moveBody(body: Rectangle, dx: number, dy: number): Rectangle {

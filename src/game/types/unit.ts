@@ -6,5 +6,6 @@ import {IEntity} from './Entity';
 export interface IUnit extends IEntity {
   hit: (damage: number) => void;
   fov?: IShape;
+  hitbox?: IShape;
   target?: IEntity;
 }

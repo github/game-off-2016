@@ -4,7 +4,7 @@ export const config = {
   gridHeight: 15,
   roundScale: true,
   minScale: 0.5,
-  drawBodies: true,
+  drawBodies: false,
   drawView: true,
   keys: {
     'up': 38,
@@ -18,13 +18,15 @@ export const config = {
     player: {
       speed: 2,
       size: 24,
-      hackDistance: 20
+      hackDistance: 20,
+      hackSpeed: 10
     },
     ranged: {
       radius: 32 * 4,
       size: 32,
       shootDelay: 1000,
-      shootCooldown: 2000
+      shootCooldown: 2000,
+      hackMeter: 50
     },
     energyBall: {
       size: 20,

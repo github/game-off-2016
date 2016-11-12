@@ -3,7 +3,8 @@ import {
   Point,
   Rectangle,
   Graphics,
-  Circle
+  Circle,
+  Container
 } from 'pixi.js';
 import {Game} from '../game';
 import {IEntity, IRobot, teamType} from '../types';
@@ -16,21 +17,26 @@ import {
   tileToRect,
   tileToCircle
 } from '../functional';
+import {HackMeter} from '../ui';
 
 export class Ranged implements IRobot {
   get type() { return 'ranged'; }
 
-  private _view: Graphics;
+  private _view: Container;
   private _config: any;
   private _body: Rectangle;
   private _fov: Circle;
   private _state: 'searching' | 'shooting' | 'cooldown';
   private _timer: number;
   private _target: IEntity;
+  private _hackMeter: number;
+  private _hackMeterView: HackMeter;
+  private _team: teamType;
+  private _graphics: Graphics;
 
   get view() { return this._view; }
   get body() { return this._body; }
-  get team(): teamType { return 'robot'; }
+  get team(): teamType { return this._team; }
   get fov() { return this._fov; }
   get target() { return this._target; }
   get position() { return rectToPoint(this._body); }
@@ -46,11 +52,16 @@ export class Ranged implements IRobot {
   ) {
     this._config = Object.assign(config.entities.ranged);
     this._state = 'searching';
+    this._team = 'robot';
+    this._hackMeter = 0;
 
-    const graphics = new Graphics();
-    graphics.beginFill(0xFF8888);
-    graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
-    this._view = graphics;
+    this._graphics = new Graphics();
+    this._graphics.beginFill(0xA2A0E5);
+    this._graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
+    this._view = new Container();
+    this._view.addChild(this._graphics);
+    this._hackMeterView = new HackMeter();
+    this._view.addChild(this._hackMeterView.view);
 
     this.tile = new Point();
     this._updateView();
@@ -58,16 +69,28 @@ export class Ranged implements IRobot {
     _game.gameLoop$.subscribe(e => this.update(e));
   }
 
-  hack() {}
+  hack(value: number) {
+    this._hackMeter += value;
+    if (this._hackMeter >= this._config.hackMeter) {
+      this._hackMeter = 0;
+      this._team = 'hacker';
+      this._state = 'searching';
+      this._graphics.clear();
+      this._graphics.beginFill(0x63DAE6);
+      this._graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
+    }
+    this._hackMeterView.setProgress(this._hackMeter / this._config.hackMeter);
+  }
+
   hit() {}
 
   update(time: ITimeEvent) {
-    if (this._playerInRange()) {
+    if (this._team !== 'hacker' && this._playerInRange()) {
       this._target = this._game.currentMap.player;
     } else {
       this._target = null;
     }
-    if (this._state === 'searching' && this._playerInRange()) {
+    if (this._state === 'searching' && this._target) {
       this._state = 'shooting';
       this._timer = this._config.shootDelay;
     }

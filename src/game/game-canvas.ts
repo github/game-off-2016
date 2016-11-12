@@ -74,7 +74,7 @@ export class GameCanvas {
     this.stage.scale.y = this.scale;
     const graphics = new Graphics();
     this.stage.addChild(graphics);
-    graphics.beginFill(0x1099bb);
+    graphics.beginFill(0x538247);
     graphics.drawRect(0, 0, this.width, this.height);
 
     this.resizeCanvas();
