@@ -4,5 +4,4 @@
 - Send multiple packets to build if needing more.
 - Build edges as packet is moving.
 - Building takes more time.
-- Better UI for current server and targets.
-- Marching ants lines.
+- Put arrows in paths -> Drag them to remove.

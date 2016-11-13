@@ -38,16 +38,13 @@ export default class extends Phaser.Graphics {
 
     this.events.onInputOver.add((game, pointer) => {
       this.tint = OVER_INDICATION_COLOR
-      clickSignal.dispatch(this, 'over');
     });
 
     this.events.onInputOut.add((game, pointer) => {
       this.removeIndicators()
-      clickSignal.dispatch(this, 'out', pointer);
     });
 
     this.events.onInputDown.add((game, pointer) => {
-      clickSignal.dispatch(this, 'click', pointer);
     });
 
     this.events.onDragStart.add((game, pointer) => {
