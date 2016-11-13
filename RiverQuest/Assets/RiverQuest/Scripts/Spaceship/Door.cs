@@ -1,68 +1,47 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using RiverQuest.Controller;
+using UnityEngine;
 
 namespace RiverQuest.Spaceship
 {
-    public class Door : MonoBehaviour
+    [RequireComponent(typeof(Animator))]
+    public class Door : MonoBehaviour, IActivatable
     {
-        public Room Room1;
-        public Room Room2;
+        [SerializeField]
+        public bool IsOpen { get; private set; }
 
-        public bool IsOpen;
+        private Animator _animator;
+        private OxygenTransfer _o2transfer;
 
-        private float _timeSinceOpen;
-        private static float TimePerQxygenExchange = 0.5f;
-
-        public void Start()
+        public void Awake()
         {
-            if (Room1 == null && Room2 == null) throw new Exception("No room set for door " + name + ".");
+            _animator = GetComponent<Animator>();
+            _o2transfer = GetComponent<OxygenTransfer>();
+            SetOpen(false);
         }
 
-        // Update is called once per frame
-        public void FixedUpdate()
+        public void SetOpen(bool isOpen)
         {
-            if(IsOpen)
-            {
-                ExchangeOxygen(Time.fixedDeltaTime);
-            }
+            IsOpen = isOpen;
+            _animator.SetBool("IsOpen", IsOpen);
+            _animator.SetTrigger("Activated");
+
+            if (_o2transfer != null) _o2transfer.IsOpen = IsOpen;
         }
 
-        private void ExchangeOxygen(float seconds)
+        public void Highlight()
         {
-            _timeSinceOpen += seconds;
+            GetComponent<MeshRenderer>().material.color = Color.red;
+        }
 
-            if(_timeSinceOpen < TimePerQxygenExchange)
-            {
-                return;
-            }
+        public void Unhighlight()
+        {
+            GetComponent<MeshRenderer>().material.color = Color.white;
+        }
 
-            _timeSinceOpen -= TimePerQxygenExchange;
-
-            if(Room1 == null)
-            {
-                Room2.Oxygen--;
-                return;
-            }
-
-            if(Room2 == null)
-            {
-                Room1.Oxygen--;
-                return;
-            }
-
-            if (Room1.Oxygen == Room2.Oxygen) return;
-
-            if(Room1.Oxygen > Room2.Oxygen)
-            {
-                Room1.Oxygen--;
-                Room2.Oxygen++;
-            }
-            else
-            {
-                Room1.Oxygen++;
-                Room2.Oxygen--;
-            }
+        public void Activate(MultiPadController controller)
+        {
+            SetOpen(!IsOpen);
         }
     }
 }

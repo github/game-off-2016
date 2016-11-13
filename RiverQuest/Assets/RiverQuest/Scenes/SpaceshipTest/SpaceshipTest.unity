@@ -470,7 +470,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4000012706185338, guid: fe8846ae736002748a440a296e35438f, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4000012138327764, guid: fe8846ae736002748a440a296e35438f, type: 2}
       propertyPath: m_LocalRotation.x
@@ -587,6 +587,9 @@ GameObject:
   - 65: {fileID: 997727298}
   - 23: {fileID: 997727297}
   - 114: {fileID: 997727300}
+  - 95: {fileID: 997727301}
+  - 114: {fileID: 997727302}
+  - 65: {fileID: 997727303}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -669,6 +672,46 @@ MonoBehaviour:
   Room1: {fileID: 394763211}
   Room2: {fileID: 1558550798}
   IsOpen: 0
+--- !u!95 &997727301
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997727295}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 158172f38592379449488142469d0eb9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &997727302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997727295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c70f9b11be2334ea29814dbad10dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &997727303
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997727295}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1264363833
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,7 +1114,7 @@ Transform:
   - {fileID: 1264363834}
   - {fileID: 182115250}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!1 &1703686465
 GameObject:
   m_ObjectHideFlags: 0

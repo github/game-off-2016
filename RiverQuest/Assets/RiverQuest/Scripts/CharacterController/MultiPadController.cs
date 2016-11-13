@@ -4,6 +4,13 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace RiverQuest.Controller
 {
+    public interface IActivatable
+    {
+        void Highlight();
+        void Unhighlight();
+        void Activate(MultiPadController controller);
+    }
+
     [RequireComponent(typeof(ThirdPersonCharacter))]
     public class MultiPadController : MonoBehaviour
     {
@@ -15,6 +22,7 @@ namespace RiverQuest.Controller
         private Vector3 m_Move;
         private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 
+        private IActivatable _closeActivatable;
 
         private void Start()
         {
@@ -40,10 +48,31 @@ namespace RiverQuest.Controller
             if (!m_Jump)
             {
                 m_Jump = CrossPlatformInputManager.GetButtonDown("Jump " + JoystickNumber);
+                if(!m_Jump && _closeActivatable != null && CrossPlatformInputManager.GetButtonDown("Activate " + JoystickNumber))
+                {
+                    _closeActivatable.Activate(this);
+                }
             }
         }
 
+        public void OnTriggerEnter(Collider c)
+        {
+            _closeActivatable = c.GetComponent<IActivatable>();
 
+            if (_closeActivatable == null) return;
+
+            _closeActivatable.Highlight();
+        }
+        public void OnTriggerExit(Collider c)
+        {
+            _closeActivatable = c.GetComponent<IActivatable>();
+
+            if (_closeActivatable == null) return;
+
+            _closeActivatable.Unhighlight();
+
+            _closeActivatable = null;
+        }
         // Fixed update is called in sync with physics
         private void FixedUpdate()
         {
