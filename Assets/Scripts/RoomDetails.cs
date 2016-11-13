@@ -4,7 +4,7 @@ using UnityEngine;
 public class RoomDetails : MonoBehaviour {
     public int HorizontalSize;
     public int VerticalSize;
-    public List<GameObject> Doors;
+    private List<GameObject> Doors;
 
     void Start() {
         int doorIndex = 0;
@@ -17,5 +17,9 @@ public class RoomDetails : MonoBehaviour {
                 doorIndex++;
             }
         }
+    }
+
+    public List<GameObject> GetDoors() {
+        return Doors;
     }
 }
