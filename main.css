@@ -1,0 +1,70 @@
+canvas {
+    display: block;
+    background: #151515;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid white;
+}  
+
+a{
+	text-decoration: none;
+}
+
+a:link {
+	color:#000000;
+}
+
+a:visited {
+	color:#000000;
+}
+
+body{
+    background-image: url("background.png");
+} 
+
+main{
+	font-family:Impact;
+    float:left;
+    width: 70%;
+    padding: 1em;
+    border-style:solid;
+    border-width:5px;
+    border-color: #222222;
+    background-image: url("otherbackground.png");
+}
+
+header {
+	font-family:Impact;
+    margin-bottom:1.5%;
+    text-align: center;
+    border-style:solid;
+    border-width:5px;
+    border-color: #222222;
+    padding: 0;
+    background-image: url("otherbackground.png")
+}
+
+section{
+	margin: 2.5px;
+    border-style:solid;
+    border-width:5px;
+    border-color: #222222;
+    background-image: url("sectionbackground.png");
+    padding :1%;
+}
+
+aside{
+	font-family:Impact;
+	text-align:center;
+    margin-left:75%;
+    border-style:solid;
+    border-width:5px;
+    border-color: #222222;
+    background-image: url("otherbackground.png");
+    padding: 1em;
+}
+
+h{
+    font-size:2.3em;
+    font-weight:bold;
+}
