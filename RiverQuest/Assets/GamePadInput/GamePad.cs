@@ -78,7 +78,7 @@ namespace GamepadInput
         }
 
         public override void Randomize()
-        {
+        { 
             var values = Enum.GetValues(typeof(GamePad.Direction));
             var randomTrigger = (GamePad.Direction)values.GetValue(UnityEngine.Random.Range(0, values.Length));
             Name = randomTrigger.ToString();
