@@ -5,6 +5,7 @@
 	var upcoming_words = []
 	var current_word 
 	var current_letter = 0
+	var typed_word = ""
 	document.addEventListener('DOMContentLoaded', init, false);
   
     function init(){
@@ -48,16 +49,21 @@
 	function draw(){
 		context.clearRect(0,0,width,height)
 		context.fillStyle = "#555555"
-		context.textAlign = "center"
-		context.font = "112px Arial"
-		context.fillText(current_word,width/2,height/2)
+		context.font = "40px Arial"
+		context.fillText(current_word,50,height - 70)
+		for (var i = 1; i < 10; i += 1){
+			context.fillText(upcoming_words[i],50,height - 20 - (50*(i+1)))
+		}
+		context.fillStyle = "#ffffff"
+		context.fillText(typed_word,50,height - 70)
 	}
 	
 	function controls(event){
 		keycode = event.keyCode
-		letter = String.fromCharCode(keycode)
-		if (letter.toLowerCase() == current_word.substring(current_letter,current_letter+1)){
+		letter = String.fromCharCode(keycode).toLowerCase()
+		if (letter == current_word.substring(current_letter,current_letter+1)){
 			current_letter += 1
+			typed_word += letter
 		}
 	}
 	
@@ -66,6 +72,7 @@
 		upcoming_words.push(words[getRandomNumber(0,67724)].toLowerCase())
 		current_word = upcoming_words[0]
 		current_letter = 0
+		typed_word = ""
 	}
 	
     function getRandomNumber(min, max) {
