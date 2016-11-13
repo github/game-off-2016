@@ -22,11 +22,13 @@ public:
 		Vector2<Sint32> m_size; // difference of highest x and y with lowest x and y
 		std::vector<Vector2<Sint32>> m_vertices;
 		std::vector<Uint16> m_triangles; // Vertex indices
+		bool m_texOffset;
 
-		WorldObject(std::string p_name, Uint16 p_interactionType)
+		WorldObject(std::string p_name, Uint16 p_interactionType, bool p_texOffset)
 		{
 			m_name = p_name;
 			m_interactionType = p_interactionType;
+			m_texOffset = p_texOffset;
 		}
 
 		void moveVertex(Uint16 p_loc, Vector2<Sint32> p_vertex)
@@ -150,6 +152,7 @@ public:
 	void deleteVertex();
 	Uint16 addWorldObject(Uint8 p_layer, WorldObject p_object, Texture p_texture);
 	WorldObject& getWorldObject(Uint8 p_layer, Uint16 p_index);
+	WorldObject& getSelectedWorldObject();
 	Uint16 getWorldObjectSize(Uint8 p_layer);
 	void removeWorldObject(Uint8 p_layer, Uint16 p_index);
 

@@ -72,8 +72,8 @@ public:
 		m_pos = p_pos;
 		m_size = p_size;
 		m_colorTheme = m_colorThemes[p_colorTheme];
-		m_panelMain = new Panel("", "", {0, 0}, p_size, 0, true, LTexture::getInstance().loadImage("gui\\BarRect.png"), COMPONENT_TEXTURE_STYLE_SCALE);
-		m_panelSub = new Panel("", "", {0, 0}, {0, 0}, 0, true, LTexture::getInstance().loadImage("gui\\BarRoundDrop.png"), COMPONENT_TEXTURE_STYLE_SCALE);
+		m_panelMain = new Panel("", "", {0, 0}, p_size, 0, true, LTexture::getInstance().loadImage("gui\\BarUnderline.png"), COMPONENT_TEXTURE_STYLE_SCALE);
+		m_panelSub = new Panel("", "", {0, 0}, {0, 0}, 0, true, LTexture::getInstance().loadImage("gui\\BarDrop.png"), COMPONENT_TEXTURE_STYLE_SCALE);
 
 		m_slideCounter = 0;
 	}
@@ -196,6 +196,12 @@ public:
 				}
 				w += Sint16(m_buttonsMain.m_buttons[i].m_name.length() * 16 + 32);
 			}
+		}
+		if((p_interactFlags & 1) == 0)
+		{
+			if(p_mousePos.x > m_pos.x && p_mousePos.x < m_pos.x + m_size.x &&
+				p_mousePos.y > m_pos.y && p_mousePos.y < m_pos.y + m_size.y)
+				p_interactFlags += 1;
 		}
 	}
 	void update(GLfloat p_deltaUpdate)

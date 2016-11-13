@@ -74,12 +74,10 @@ protected:
 	bool m_showGrid;
 
 	CToolbar* m_toolbarMenu;
-	Container* m_guiAll, *m_guiTop;
-	ContainerPanel* m_guiLeft, *m_guiRight;
+	Container* m_guiAll, *m_guiTop, *m_guiLeft;
+	Container* m_guiLeftLayer, *m_guiLeftDetail;
 	Container* m_guiLeftGround, *m_guiLeftWorld, *m_guiLeftSky, *m_guiLeftStamp;
-	Container* m_guiRightGround, *m_guiRightWorld, *m_guiRightSky, *m_guiRightStamp;
-	Container* m_guiRightWorldSwitch, *m_guiRightWorldPortal;
-	CTileSet* m_tileSetGround, *m_tileSetWorld, *m_tileSetEntity, *m_tileSetSky, *m_tileSetStamps;
+	Container* m_guiLeftWorldSwitch;
 	CList *m_listStamps;
 	CButtonRadio* m_selectLayer;
 

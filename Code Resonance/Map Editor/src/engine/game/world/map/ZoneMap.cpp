@@ -53,7 +53,8 @@ void ZoneMap::addVertex(Vector2<Sint32> p_vertex)
 		m_worldObjects[m_selected[0]][m_selected[1]].insertVertex(p_vertex, m_selected[2] + 1);
 	else
 		m_worldObjects[m_selected[0]][m_selected[1]].addVertex(p_vertex);
-	m_selected[2] = min(m_selected[2] + 1, m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size() - 1);
+	m_selected[2] = min(m_selected[2] + 1, Sint16(m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size() - 1));
+	m_heldVertex = m_selected[2];
 }
 bool ZoneMap::objectIsSelected()
 {
@@ -67,7 +68,7 @@ Sint16 ZoneMap::grabVertex(Vector2<Sint32> p_mouse)
 	{
 		for(Uint16 i = 0; i < m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size(); i++)
 		{
-			_curr = (m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[i] - p_mouse).getLength();
+			_curr = Sint16((m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[i] - p_mouse).getLength());
 			if((m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[i] - p_mouse).getLength() < _close)
 			{
 				_selected = i;
@@ -91,7 +92,14 @@ Sint16 ZoneMap::highlightObject(Sint8 p_layer, Vector2<Sint32> p_point)
 	GLfloat dot00, dot01, dot02, dot11, dot12;
 	GLfloat u, v;
 	GLfloat invDenom;
-	GLfloat _tArea, _area1, _area2, _area3;
+
+	if(m_heldVertex != -1)
+	{
+		m_highlight[0] = m_selected[0];
+		m_highlight[1] = m_selected[1];
+		m_highlight[2] = m_selected[2];
+	}
+
 	for(Uint16 i = 0; i < m_worldObjects[p_layer].size(); i++)
 	{
 		for(Uint16 j = 0; j < m_worldObjects[p_layer][i].m_triangles.size() / 3; j++)
@@ -135,7 +143,6 @@ bool ZoneMap::selectObject(Sint8 p_layer, Vector2<Sint32> p_point)
 	GLfloat dot00, dot01, dot02, dot11, dot12;
 	GLfloat u, v;
 	GLfloat invDenom;
-	GLfloat _tArea, _area1, _area2, _area3;
 	for(Uint16 i = 0; i < m_worldObjects[p_layer].size(); i++)
 	{
 		for(Uint16 j = 0; j < m_worldObjects[p_layer][i].m_triangles.size() / 3; j++)
@@ -185,6 +192,7 @@ bool ZoneMap::selectObject(Sint8 p_layer, Vector2<Sint32> p_point)
 void ZoneMap::deselect()
 {
 	m_selected[0] = -1; m_selected[1] = -1; m_selected[2] = -1;
+	m_heldVertex = -1;
 }
 void ZoneMap::deleteVertex()
 {
@@ -194,8 +202,13 @@ void ZoneMap::deleteVertex()
 		m_selected[2]--;
 		if(m_selected[2] < 0)
 		{
-			m_worldObjects[m_selected[0]].erase(m_worldObjects[m_selected[0]].begin() + m_selected[1]);
-			deselect();
+			if(m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.empty())
+			{
+				m_worldObjects[m_selected[0]].erase(m_worldObjects[m_selected[0]].begin() + m_selected[1]);
+				deselect();
+			}
+			else
+				m_selected[2] = 0;
 		}
 	}
 }
@@ -222,6 +235,12 @@ ZoneMap::WorldObject& ZoneMap::getWorldObject(Uint8 p_layer, Uint16 p_index)
 {
 	return m_worldObjects[p_layer][p_index];
 }
+ZoneMap::WorldObject& ZoneMap::getSelectedWorldObject()
+{
+	if(objectIsSelected())
+		return m_worldObjects[m_selected[0]][m_selected[1]];
+	return WorldObject("", 0, false);
+}
 Uint16 ZoneMap::getWorldObjectSize(Uint8 p_layer)
 {
 	return Uint16(m_worldObjects[p_layer].size());
@@ -238,8 +257,10 @@ void ZoneMap::update(Vector2<Sint32> p_mousePos)
 		m_worldObjects[m_selected[0]][m_selected[1]].moveVertex(m_heldVertex, p_mousePos);
 	}
 }
+#include <stdlib.h>
 void ZoneMap::render(Vector2<Sint32> p_camPos)
 {
+	Vector2<Sint32> _texOffset;
 	glPushMatrix();
 	{
 		glScalef(Globals::getInstance().m_zoom, Globals::getInstance().m_zoom, 1);
@@ -251,6 +272,11 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 			{
 				for(Uint16 i = 0; i < m_worldObjects[0].size(); i++)
 				{
+					// Offset value to subract back to origin
+					if(!m_worldObjects[0][i].m_texOffset)
+						_texOffset = {};
+					else
+						_texOffset = m_worldObjects[0][i].m_vertices[0];
 					glBindTexture(GL_TEXTURE_2D, m_textures[m_worldObjects[0][i].m_texture].getId());
 					glColor3f(0.8f, 0.8f, 0.8f);
 					glBegin(GL_TRIANGLES);
@@ -259,7 +285,8 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 						{
 							if(j < m_worldObjects[0][i].m_triangles.size())
 							{
-								glTexCoord2f(GLfloat(m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].x - m_worldObjects[0][i].m_vertices[0].x) / m_textures[m_worldObjects[0][i].m_texture].getSize().x, GLfloat(m_worldObjects[0][i].m_vertices[0].y - m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].y) / m_textures[m_worldObjects[0][i].m_texture].getSize().y);
+								glTexCoord2f(GLfloat(m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].x - _texOffset.x) / m_textures[m_worldObjects[0][i].m_texture].getSize().x,
+									GLfloat(m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].y - _texOffset.y) / m_textures[m_worldObjects[0][i].m_texture].getSize().y);
 								glVertex2f(GLfloat(m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].x), GLfloat(m_worldObjects[0][i].m_vertices[m_worldObjects[0][i].m_triangles[j]].y));
 							}
 						}
@@ -297,7 +324,7 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 					}
 					glEnd();
 
-					glColor3f(0, 1, 0);
+					glColor3f(1, 0, 0);
 					glBegin(GL_QUADS);
 					Vector2<Sint32> v;
 					for(Uint16 j = 0; j < m_worldObjects[0][i].m_vertices.size(); j++)
@@ -314,7 +341,18 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 				if(m_selected[0] == 0 && m_selected[1] >= 0 && m_selected[2] >= 0)
 				{
 					Vector2<Sint32> v = m_worldObjects[0][m_selected[1]].m_vertices[m_selected[2]];
-					glColor3f(1, 0, 0);
+					Vector2<Sint32> vn;
+					if(m_selected[2] == m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size() - 1)
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[0];
+					else
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[m_selected[2] + 1];
+					glColor3f(0, 1, 0);
+					glBegin(GL_LINES);
+					{
+						glVertex2f(GLfloat(v.x), GLfloat(v.y));
+						glVertex2f(GLfloat(vn.x), GLfloat(vn.y));
+					}
+					glEnd();
 					glBegin(GL_QUADS);
 					{
 						glVertex2f(GLfloat(v.x - 2), GLfloat(v.y - 2));
@@ -332,6 +370,10 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 			{
 				for(Uint16 i = 0; i < m_worldObjects[1].size(); i++)
 				{
+					if(!m_worldObjects[1][i].m_texOffset)
+						_texOffset = {};
+					else
+						_texOffset = m_worldObjects[1][i].m_vertices[0];
 					glBindTexture(GL_TEXTURE_2D, m_textures[m_worldObjects[1][i].m_texture].getId());
 					glColor3f(1, 1, 1);
 					glBegin(GL_TRIANGLES);
@@ -340,7 +382,8 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 						{
 							if(j < m_worldObjects[1][i].m_triangles.size())
 							{
-								glTexCoord2f(GLfloat(m_worldObjects[1][i].m_vertices[0].x - m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].x) / m_textures[m_worldObjects[1][i].m_texture].getSize().x, GLfloat(m_worldObjects[1][i].m_vertices[0].y - m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].y) / m_textures[m_worldObjects[1][i].m_texture].getSize().y);
+								glTexCoord2f(GLfloat(m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].x - _texOffset.x) / m_textures[m_worldObjects[1][i].m_texture].getSize().x,
+									GLfloat(m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].y - _texOffset.y) / m_textures[m_worldObjects[1][i].m_texture].getSize().y);
 								glVertex2f(GLfloat(m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].x), GLfloat(m_worldObjects[1][i].m_vertices[m_worldObjects[1][i].m_triangles[j]].y));
 							}
 						}
@@ -378,7 +421,7 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 					}
 					glEnd();
 
-					glColor3f(0, 1, 0);
+					glColor3f(1, 0, 0);
 					glBegin(GL_QUADS);
 					Vector2<Sint32> v;
 					for(Uint16 j = 0; j < m_worldObjects[1][i].m_vertices.size(); j++)
@@ -395,7 +438,18 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 				if(m_selected[0] == 1 && m_selected[1] >= 0 && m_selected[2] >= 0)
 				{
 					Vector2<Sint32> v = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[m_selected[2]];
-					glColor3f(1, 0, 0);
+					Vector2<Sint32> vn;
+					if(m_selected[2] == m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size() - 1)
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[0];
+					else
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[m_selected[2] + 1];
+					glColor3f(0, 1, 0);
+					glBegin(GL_LINES);
+					{
+						glVertex2f(GLfloat(v.x), GLfloat(v.y));
+						glVertex2f(GLfloat(vn.x), GLfloat(vn.y));
+					}
+					glEnd();
 					glBegin(GL_QUADS);
 					{
 						glVertex2f(GLfloat(v.x - 2), GLfloat(v.y - 2));
@@ -413,6 +467,10 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 			{
 				for(Uint16 i = 0; i < m_worldObjects[2].size(); i++)
 				{
+					if(!m_worldObjects[2][i].m_texOffset)
+						_texOffset = {};
+					else
+						_texOffset = m_worldObjects[2][i].m_vertices[0];
 					glBindTexture(GL_TEXTURE_2D, m_textures[m_worldObjects[2][i].m_texture].getId());
 					glColor3f(0.8f, 0.8f, 0.8f);
 					glBegin(GL_TRIANGLES);
@@ -421,7 +479,8 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 						{
 							if(j < m_worldObjects[2][i].m_triangles.size())
 							{
-								glTexCoord2f(GLfloat(m_worldObjects[2][i].m_vertices[0].x - m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].x) / m_textures[m_worldObjects[2][i].m_texture].getSize().x, GLfloat(m_worldObjects[2][i].m_vertices[0].y - m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].y) / m_textures[m_worldObjects[2][i].m_texture].getSize().y);
+								glTexCoord2f(GLfloat(m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].x - _texOffset.x) / m_textures[m_worldObjects[2][i].m_texture].getSize().x,
+									GLfloat(m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].y - _texOffset.y) / m_textures[m_worldObjects[2][i].m_texture].getSize().y);
 								glVertex2f(GLfloat(m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].x), GLfloat(m_worldObjects[2][i].m_vertices[m_worldObjects[2][i].m_triangles[j]].y));
 							}
 						}
@@ -459,7 +518,7 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 					}
 					glEnd();
 
-					glColor3f(0, 1, 0);
+					glColor3f(1, 0, 0);
 					glBegin(GL_QUADS);
 					Vector2<Sint32> v;
 					for(Uint16 j = 0; j < m_worldObjects[2][i].m_vertices.size(); j++)
@@ -476,7 +535,18 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 				if(m_selected[0] == 2 && m_selected[1] >= 0 && m_selected[2] >= 0)
 				{
 					Vector2<Sint32> v = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[m_selected[2]];
-					glColor3f(1, 0, 0);
+					Vector2<Sint32> vn;
+					if(m_selected[2] == m_worldObjects[m_selected[0]][m_selected[1]].m_vertices.size() - 1)
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[0];
+					else
+						vn = m_worldObjects[m_selected[0]][m_selected[1]].m_vertices[m_selected[2] + 1];
+					glColor3f(0, 1, 0);
+					glBegin(GL_LINES);
+					{
+						glVertex2f(GLfloat(v.x), GLfloat(v.y));
+						glVertex2f(GLfloat(vn.x), GLfloat(vn.y));
+					}
+					glEnd();
 					glBegin(GL_QUADS);
 					{
 						glVertex2f(GLfloat(v.x - 2), GLfloat(v.y - 2));
@@ -487,10 +557,26 @@ void ZoneMap::render(Vector2<Sint32> p_camPos)
 					glEnd();
 				}
 			}
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glColor3f(1, 0, 0);
+			glBegin(GL_LINES);
+			{
+				glVertex2f(p_camPos.x - 2000, 0);
+				glVertex2f(p_camPos.x + 2000, 0);
+			}
+			glEnd();
+
+			glColor3f(0, 1, 0);
+			glBegin(GL_LINES);
+			{
+				glVertex2f(0, p_camPos.y - 2000);
+				glVertex2f(0, p_camPos.y + 2000);
+			}
+			glEnd();
 		}
 		glPopMatrix();
-
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if(m_grid)
 		{
@@ -548,7 +634,7 @@ void ZoneMap::save(std::string p_zoneName)
 
 		//Name
 		FileExt::writeChar(_file, Sint8(m_zoneName.length()));
-		for(Sint16 i = 0; i < m_zoneName.length(); i++)
+		for(Sint16 i = 0; i < Sint16(m_zoneName.length()); i++)
 			FileExt::writeChar(_file, m_zoneName[i]);
 		//Texture
 		FileExt::writeShort(_file, Sint16(m_textures.size()));
@@ -564,10 +650,11 @@ void ZoneMap::save(std::string p_zoneName)
 
 		//Background
 		FileExt::writeInt(_file, Sint32(m_worldObjects[0].size()));
-		for(Sint32 i = 0; i < m_worldObjects[0].size(); i++)
+		for(Sint32 i = 0; i < Sint16(m_worldObjects[0].size()); i++)
 		{
 			FileExt::writeChar(_file, Sint8(m_worldObjects[0][i].m_texture));
 			FileExt::writeChar(_file, Sint8(m_worldObjects[0][i].m_interactionType));
+			FileExt::writeChar(_file, Sint8(m_worldObjects[0][i].m_texOffset));
 			FileExt::writeShort(_file, Sint16(m_worldObjects[0][i].m_vertices.size()));
 			for(Sint16 j = 0; j < Sint16(m_worldObjects[0][i].m_vertices.size()); j++)
 			{
@@ -578,10 +665,11 @@ void ZoneMap::save(std::string p_zoneName)
 
 		//Middle
 		FileExt::writeInt(_file, Sint32(m_worldObjects[1].size()));
-		for(Sint32 i = 0; i < m_worldObjects[1].size(); i++)
+		for(Sint32 i = 0; i < Sint16(m_worldObjects[1].size()); i++)
 		{
 			FileExt::writeChar(_file, Sint8(m_worldObjects[1][i].m_texture));
 			FileExt::writeChar(_file, Sint8(m_worldObjects[1][i].m_interactionType));
+			FileExt::writeChar(_file, Sint8(m_worldObjects[1][i].m_texOffset));
 			FileExt::writeShort(_file, Sint16(m_worldObjects[1][i].m_vertices.size()));
 			for(Sint16 j = 0; j < Sint16(m_worldObjects[1][i].m_vertices.size()); j++)
 			{
@@ -593,10 +681,11 @@ void ZoneMap::save(std::string p_zoneName)
 
 		//Foreground
 		FileExt::writeInt(_file, Sint32(m_worldObjects[2].size()));
-		for(Sint32 i = 0; i < m_worldObjects[2].size(); i++)
+		for(Sint32 i = 0; i < Sint16(m_worldObjects[2].size()); i++)
 		{
 			FileExt::writeChar(_file, Sint8(m_worldObjects[2][i].m_texture));
 			FileExt::writeChar(_file, Sint8(m_worldObjects[2][i].m_interactionType));
+			FileExt::writeChar(_file, Sint8(m_worldObjects[2][i].m_texOffset));
 			FileExt::writeShort(_file, Sint16(m_worldObjects[2][i].m_vertices.size()));
 			for(Sint16 j = 0; j < Sint16(m_worldObjects[2][i].m_vertices.size()); j++)
 			{
@@ -667,6 +756,7 @@ bool ZoneMap::load(std::string p_zoneName)
 
 		//Body
 
+		Sint8 _texOffset = 0;
 		Sint8 _interactionType = 0;
 		Sint8 _texture = 0;
 		Sint32 x, y;
@@ -678,7 +768,8 @@ bool ZoneMap::load(std::string p_zoneName)
 		{
 			_texture = FileExt::readChar(_data, _index);
 			_interactionType = FileExt::readChar(_data, _index);
-			m_worldObjects[0].push_back(WorldObject("", _interactionType));
+			_texOffset = FileExt::readChar(_data, _index);
+			m_worldObjects[0].push_back(WorldObject("", _interactionType, (_texOffset == 1))); // TODO: m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")
 			m_worldObjects[0][m_worldObjects[0].size() - 1].m_texture = _texture;
 			m_selected[1] = i; m_selected[2] = 0;
 			_v2 = FileExt::readShort(_data, _index);
@@ -697,7 +788,8 @@ bool ZoneMap::load(std::string p_zoneName)
 		{
 			_texture = FileExt::readChar(_data, _index);
 			_interactionType = FileExt::readChar(_data, _index);
-			m_worldObjects[1].push_back(WorldObject("", _interactionType));
+			_texOffset = FileExt::readChar(_data, _index);
+			m_worldObjects[1].push_back(WorldObject("", _interactionType, (_texOffset == 1))); // TODO: m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")
 			m_worldObjects[1][m_worldObjects[1].size() - 1].m_texture = _texture;
 			m_selected[1] = i; m_selected[2] = 0;
 			_v2 = FileExt::readShort(_data, _index);
@@ -716,7 +808,8 @@ bool ZoneMap::load(std::string p_zoneName)
 		{
 			_texture = FileExt::readChar(_data, _index);
 			_interactionType = FileExt::readChar(_data, _index);
-			m_worldObjects[2].push_back(WorldObject("", _interactionType));
+			_texOffset = FileExt::readChar(_data, _index);
+			m_worldObjects[2].push_back(WorldObject("", _interactionType, (_texOffset == 1))); // TODO: m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")
 			m_worldObjects[2][m_worldObjects[2].size() - 1].m_texture = _texture;
 			m_selected[1] = i; m_selected[2] = 0;
 			_v2 = FileExt::readShort(_data, _index);

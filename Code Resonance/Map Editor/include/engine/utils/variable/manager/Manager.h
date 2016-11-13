@@ -3,8 +3,8 @@
 #include "..\..\Utilities.h"
 #include <vector>
 
-template< class T >
-class Manager : public Singleton< Manager< T > >
+template<class T>
+class Manager : public Singleton<Manager<T>>
 {
 public:
 	Manager()
@@ -33,7 +33,7 @@ public:
 		return m_unitList.at(p_guid);
 	}
 
-	std::vector< T > getUnitList()
+	std::vector<T> getUnitList()
 	{
 		return m_unitList;
 	}
@@ -47,14 +47,14 @@ public:
 	}
 
 protected:
-	std::vector< T > m_unitList;
+	std::vector<T> m_unitList;
 };
 
 
 
 
-template< class T >
-class ManagerEntity : public Singleton< ManagerEntity< T > >
+template<class T>
+class ManagerEntity : public Singleton<ManagerEntity<T>>
 {
 public:
 	ManagerEntity()

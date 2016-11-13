@@ -215,6 +215,29 @@
     <None Include="ILU.dll" />
     <None Include="ILUT.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\texture\Background.png" />
+    <Image Include="res\texture\BinaryBrick.png" />
+    <Image Include="res\texture\Fontsheet.png" />
+    <Image Include="res\texture\GlitchBrick.png" />
+    <Image Include="res\texture\Grid.png" />
+    <Image Include="res\texture\gui\BarDrop.png" />
+    <Image Include="res\texture\gui\BarFlat.png" />
+    <Image Include="res\texture\gui\BarFlatRound.png" />
+    <Image Include="res\texture\gui\BarRect.png" />
+    <Image Include="res\texture\gui\BarRound.png" />
+    <Image Include="res\texture\gui\BarRoundDrop.png" />
+    <Image Include="res\texture\gui\BarUnderline.png" />
+    <Image Include="res\texture\gui\CheckboxOff.png" />
+    <Image Include="res\texture\gui\CheckboxOn.png" />
+    <Image Include="res\texture\Invisible.png" />
+    <Image Include="res\texture\NoGrid.png" />
+    <Image Include="res\texture\SlantBrick.png" />
+    <Image Include="res\texture\Stone.png" />
+    <Image Include="res\texture\Transparent.png" />
+    <Image Include="res\texture\Trash.png" />
+    <Image Include="res\texture\Visible.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

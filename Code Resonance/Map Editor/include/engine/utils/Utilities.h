@@ -52,14 +52,15 @@ namespace Math
 		return (a + threshold > b && a - threshold < b);
 	}
 	//True if ccw, False if cw or not a triangle
-	static bool orientation(const std::vector<Vector2<Sint32>>& p)
+	static bool orientation(const std::vector<Vector2<GLfloat>>& p)
 	{
 		return ((p[1].x - p[0].x) * (p[2].y - p[0].y) -
 			(p[2].x - p[0].x) * (p[1].y - p[0].y)) > 0;
 	}
-	static bool inTriangle(const Vector2<Sint32>& V, const Vector2<Sint32>& A,
-		const Vector2<Sint32>& B, const Vector2<Sint32>& C)
+	static bool inTriangle(const Vector2<GLfloat>& p_V, const Vector2<GLfloat>& p_A,
+		const Vector2<Sint32>& p_B, const Vector2<Sint32>& p_C)
 	{
+		Vector2<GLfloat> V = p_V, A = p_A, B = p_B, C = p_C;
 		GLfloat _denom = GLfloat((B.y - C.y) * (A.x - C.x) + (C.x - B.x) * (A.y - C.y));
 		if(compf(_denom, 0.0f)) return true;
 		_denom = 1 / _denom;
@@ -88,7 +89,7 @@ namespace Math
 			return _triangles;
 		}
 
-		Vector2<Sint32> _left = p_polygon[0];
+		Vector2<GLfloat> _left = p_polygon[0];
 		Sint32 index = 0;
 
 		for(Sint32 i = 0; i < Sint32(p_polygon.size()); ++i)
@@ -101,7 +102,7 @@ namespace Math
 			}
 		}
 
-		std::vector<Vector2<Sint32>> _tri;
+		std::vector<Vector2<GLfloat>> _tri;
 		_tri.push_back(p_polygon[(index > 0) ? index - 1 : p_polygon.size() - 1]);
 		_tri.push_back(p_polygon[index]);
 		_tri.push_back(p_polygon[(index < Sint32(p_polygon.size()) - 1) ? index + 1 : 0]);
@@ -128,7 +129,7 @@ namespace Math
 				Uint16 p = Uint16((index > 0) ? index - 1 : p_polygon.size() - 1);
 				Uint16 n = Uint16((index < Sint16(p_polygon.size()) - 1) ? index + 1 : 0);
 
-				std::vector<Vector2<Sint32>> tri{p_polygon[p], i, p_polygon[n]};
+				std::vector<Vector2<GLfloat>> tri{p_polygon[p], i, p_polygon[n]};
 				if(orientation(tri) != ccw)
 				{
 					_reflex.emplace_back(index);
@@ -195,7 +196,7 @@ namespace Math
 
 		if(p_polygon.size() < 3) return p_polygon;
 
-		Vector2<Sint32> _left = p_polygon[0];
+		Vector2<GLfloat> _left = p_polygon[0];
 		Sint32 index = 0;
 
 		for(Sint32 i = 0; i < Sint32(p_polygon.size()); ++i)
@@ -208,7 +209,7 @@ namespace Math
 			}
 		}
 
-		std::vector<Vector2<Sint32>> _tri;
+		std::vector<Vector2<GLfloat>> _tri;
 		_tri.push_back(p_polygon[(index > 0) ? index - 1 : p_polygon.size() - 1]);
 		_tri.push_back(p_polygon[index]);
 		_tri.push_back(p_polygon[(index < Sint32(p_polygon.size()) - 1) ? index + 1 : 0]);
@@ -229,7 +230,7 @@ namespace Math
 				Uint16 p = Uint16((index > 0) ? index - 1 : p_polygon.size() - 1);
 				Uint16 n = Uint16((index < Sint16(p_polygon.size()) - 1) ? index + 1 : 0);
 				
-				std::vector<Vector2<Sint32>> tri{p_polygon[p], i, p_polygon[n]};
+				std::vector<Vector2<GLfloat>> tri{p_polygon[p], i, p_polygon[n]};
 				if(orientation(tri) != ccw)
 				{
 					_reflex.emplace_back(index);
@@ -301,12 +302,12 @@ public:
 			return std::string(std::to_string(n)).substr(0, std::string(std::to_string(n)).find('.', 0) + p_decimalPlaces + (p_decimalPlaces > 0 ? 1 : 0));
 		}
 		catch(...) {
-			std::cout << "Warning: Arg passed to Util::numToString( T n ) was not a number." << std::endl;;
+			std::cout << "Error: Arg passed to Util::numToString(T) was not a number." << std::endl;;
 		}
 		return "0";
 	}
 
-	template< class T >
+	template<class T>
 	static std::string stringToNum(T s)
 	{
 		std::string save = "";

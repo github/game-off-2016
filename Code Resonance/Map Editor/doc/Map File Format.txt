@@ -1,0 +1,52 @@
+Code Resonance Map File Format
+
+Header:
+--Name
+	Sint8 MapNameLength
+	Sint8* MapName
+--Texture
+	Sint16 TextureCount
+	Texture*
+	{
+		Sint8 TextureNameLength
+		Sint8* TextureName --Loaded from res\\texture
+	}
+
+Body:
+	
+--Background
+	Sint32 ObjectCount
+	Object*
+	{
+		Sint8 textureId
+		Sint8 interactionType
+		Sint8 textureOffset
+		Sint16 vertexCount
+		Sint32[2]* vertex
+	}
+	
+--Middle
+	Sint32 ObjectCount
+	Object*
+	{
+		Sint8 textureId
+		Sint8 interactionType
+		Sint8 textureOffset
+		Sint16 vertexCount
+		Sint32[2]* vertex
+	}
+	
+--Foreground
+	Sint32 ObjectCount
+	Object*
+	{
+		Sint8 textureId
+		Sint8 interactionType
+		Sint8 textureOffset
+		Sint16 vertexCount
+		Sint32[2]* vertex
+	}
+
+Notes:
+* - array previously specified
+

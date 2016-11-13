@@ -181,10 +181,10 @@ public:
 		m_borderThickness = 1;
 		m_texType = 0;
 	}
-	CButtonToggle(std::string p_compName, std::string p_title, Texture p_buttonTex, Vector2<Sint32> p_pos, Vector2<Sint32> p_size, Sint32 p_fontSize, Sint8 p_colorTheme, Sint8 p_state = 0)
+	CButtonToggle(std::string p_compName, Texture p_buttonTex, Vector2<Sint32> p_pos, Vector2<Sint32> p_size, Sint32 p_fontSize, Sint8 p_colorTheme, Sint8 p_state = 0)
 	{
 		m_compName = p_compName;
-		m_title = p_title;
+		m_title = "";
 		m_buttonTex[0] = p_buttonTex;
 		m_pos = p_pos;
 		m_size = p_size;
@@ -194,10 +194,10 @@ public:
 		m_borderThickness = 1;
 		m_texType = 1;
 	}
-	CButtonToggle(std::string p_compName, std::string p_title, Texture p_activeTex, Texture p_inactiveTex, Vector2<Sint32> p_pos, Vector2<Sint32> p_size, Sint32 p_fontSize, Sint8 p_colorTheme, Sint8 p_state = 0)
+	CButtonToggle(std::string p_compName, Texture p_activeTex, Texture p_inactiveTex, Vector2<Sint32> p_pos, Vector2<Sint32> p_size, Sint32 p_fontSize, Sint8 p_colorTheme, Sint8 p_state = 0)
 	{
 		m_compName = p_compName;
-		m_title = p_title;
+		m_title = "";
 		m_buttonTex[0] = p_activeTex;
 		m_buttonTex[1] = p_inactiveTex;
 		m_pos = p_pos;
@@ -260,6 +260,8 @@ public:
 			glTranslatef(GLfloat(m_size.x / 2), GLfloat(m_size.y / 2), 0);
 			if(m_texType != 0)
 			{
+				glPushMatrix();
+				{
 					glColor3f(1, 1, 1);
 					if(m_selected != 0 || m_texType == 1)
 						glBindTexture(GL_TEXTURE_2D, m_buttonTex[0].getId());
@@ -281,8 +283,9 @@ public:
 						else glVertex2f(-GLfloat(m_buttonTex[1].getSize().x) / 2, GLfloat(m_buttonTex[1].getSize().y) / 2);
 					}
 					glEnd();
+				}
+				glPopMatrix();
 			}
-
 			m_colorTheme.m_text.useColor();
 			Font::getInstance().setFontSize(m_fontSize);
 			Font::getInstance().setAlignment(ALIGN_CENTER);

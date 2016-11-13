@@ -1,18 +1,2 @@
-﻿  ZoneMap.cpp
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(56): warning C4018: '<': signed/unsigned mismatch
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(56): warning C4267: '=': conversion from 'size_t' to 'Sint16', possible loss of data
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(70): warning C4244: '=': conversion from 'float' to 'Sint16', possible loss of data
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(94): warning C4101: '_area2': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(94): warning C4101: '_area3': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(94): warning C4101: '_tArea': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(94): warning C4101: '_area1': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(138): warning C4101: '_area2': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(138): warning C4101: '_area3': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(138): warning C4101: '_tArea': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(138): warning C4101: '_area1': unreferenced local variable
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(551): warning C4018: '<': signed/unsigned mismatch
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(567): warning C4018: '<': signed/unsigned mismatch
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(581): warning C4018: '<': signed/unsigned mismatch
-c:\users\nick\documents\github\game-off-2016\code resonance\map editor\src\engine\game\world\map\zonemap.cpp(596): warning C4018: '<': signed/unsigned mismatch
-  Map Editor.vcxproj -> C:\Users\Nick\Documents\GitHub\game-off-2016\Code Resonance\Map Editor\bin\Debug\Map Editor.exe
+﻿  Map Editor.vcxproj -> C:\Users\Nick\Documents\GitHub\game-off-2016\Code Resonance\Map Editor\bin\Debug\Map Editor.exe
   Map Editor.vcxproj -> C:\Users\Nick\Documents\GitHub\game-off-2016\Code Resonance\Map Editor\bin\Debug\Map Editor.pdb (Partial PDB)

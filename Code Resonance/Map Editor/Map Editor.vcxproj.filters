@@ -232,4 +232,69 @@
     <None Include="ILU.dll" />
     <None Include="ILUT.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\texture\gui\BarDrop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarFlat.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarFlatRound.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarRect.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarRound.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarRoundDrop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\BarUnderline.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\CheckboxOff.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\gui\CheckboxOn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Background.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\BinaryBrick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Fontsheet.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\GlitchBrick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Grid.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Invisible.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\NoGrid.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\SlantBrick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Stone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Transparent.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Trash.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\Visible.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

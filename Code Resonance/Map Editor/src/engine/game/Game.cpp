@@ -23,16 +23,21 @@ bool Game::init()
 
 	m_guiAll = new Container("CONTAINER_ALL", Globals::getInstance().m_screenSize / -2, Globals::getInstance().m_screenSize, true);
 	m_guiPause = new Container("CONTAINER_PAUSE", {0, 0}, Globals::getInstance().m_screenSize, false);
-	m_guiTop = new Container("CONTAINER_TOP", {0, 0}, {Globals::getInstance().m_screenSize.x, 32}, true);
-	m_guiLeft = new ContainerPanel("CONTAINER_LEFT", "Layers", {16, 64}, {266, 149}, 0, true, LTexture::getInstance().loadImage("gui\\BarFlatRound.png"), COMPONENT_TEXTURE_STYLE_SCALE);
-	m_guiRight = new ContainerPanel("CONTAINER_RIGHT", "Pallet", {16, 32}, {288, 640}, 0, true, LTexture::getInstance().loadImage("gui\\BarFlatRound.png"), COMPONENT_TEXTURE_STYLE_SCALE);
+	m_guiTop = new Container("CONTAINER_TOP", {0, 0}, {Globals::getInstance().m_screenSize.x, 24}, true);
+	m_guiLeft = new Container("CONTAINER_LEFT", {0, 24}, {272, Globals::getInstance().m_screenSize.y - 24}, true);
+	m_guiLeftLayer = new Container("CONTAINER_LEFT_LAYER", {0, 0}, {m_guiLeft->getSize().x, 100}, true);
+	m_guiLeftDetail = new Container("CONTAINER_LEFT_DETAIL", {0, m_guiLeftLayer->getSize().y}, {m_guiLeft->getSize().x, m_guiLeft->getSize().y - 266}, true);
 
 	m_guiAll->addComponent(m_guiPause, PANEL_ALIGN_TOP_LEFT)->setPriorityLayer(5);
 	m_guiPause->addComponent(new Panel("PANEL_BG", "", {0, 0}, Globals::getInstance().m_screenSize, 4, true), PANEL_ALIGN_CENTER);
 	m_guiAll->addComponent(m_guiLeft, PANEL_ALIGN_TOP_LEFT);
-	m_guiAll->addComponent(m_guiRight, PANEL_ALIGN_TOP_RIGHT);
+	m_guiLeft->addComponent(m_guiLeftLayer, PANEL_ALIGN_TOP_LEFT);
+	m_guiLeft->addComponent(m_guiLeftDetail, PANEL_ALIGN_TOP_LEFT);
 	m_guiAll->addComponent(m_guiTop, PANEL_ALIGN_TOP_LEFT)->setPriorityLayer(4);
 
+
+	m_guiLeftLayer->addComponent(new Panel("PANEL_LAYER", "", Vector2<Sint32>(0, 0), Vector2<Sint32>(m_guiLeft->getSize().x, 100), 0, true, LTexture::getInstance().loadImage("gui\\BarDrop.png"), COMPONENT_TEXTURE_STYLE_SCALE));
+	m_guiLeftDetail->addComponent(new Panel("PANEL_PALLET", " ", Vector2<Sint32>(0, 0), Vector2<Sint32>(m_guiLeft->getSize().x, m_guiLeft->getSize().y - m_guiLeftLayer->getSize().y), 0, true, LTexture::getInstance().loadImage("gui\\BarDrop.png"), COMPONENT_TEXTURE_STYLE_SCALE));
 
 
 
@@ -73,8 +78,8 @@ bool Game::init()
 			Game::getInstance().m_showGrid = !Game::getInstance().m_showGrid;
 		});
 		m_toolbarMenu->addButton("View", "Toggle Overlay", []() {
-			Game::getInstance().m_guiLeft->setVisible(!Game::getInstance().m_guiLeft->isVisible());
-			Game::getInstance().m_guiRight->setVisible(!Game::getInstance().m_guiRight->isVisible());
+			Game::getInstance().m_guiLeftLayer->setVisible(!Game::getInstance().m_guiLeftLayer->isVisible());
+			Game::getInstance().m_guiLeftDetail->setVisible(!Game::getInstance().m_guiLeftDetail->isVisible());
 		});
 	}
 	m_toolbarMenu->addButton("", "Help");
@@ -85,82 +90,65 @@ bool Game::init()
 
 
 
-	m_selectLayer = new CButtonRadio("RADIO_LAYER", "Layer", {0, 24}, {264, 200}, 1);
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_GROUND", "Ground", {0, 0}, {264, 24}, 16, 1));
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_WORLD", "World", {0, 25}, {264, 24}, 16, 1));
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_SKY", "Sky", {0, 50}, {264, 24}, 16, 1));
-	m_selectLayer->addButton(new CButtonToggle("RBUTTON_STAMPS", "Stamps", {0, 75}, {264, 24}, 16, 1));
-	m_guiLeft->addComponent(m_selectLayer, PANEL_ALIGN_TOP);
+	m_selectLayer = new CButtonRadio("RADIO_LAYER", "Layer", {0, 0}, {m_guiLeft->getSize().x, 200}, 1);
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_GROUND", "Ground", {0, 0}, {m_selectLayer->getSize().x, 24}, 16, 1));
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_WORLD", "World", {0, 25}, {m_selectLayer->getSize().x, 24}, 16, 1));
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_SKY", "Sky", {0, 50}, {m_selectLayer->getSize().x, 24}, 16, 1));
+	m_selectLayer->addButton(new CButtonToggle("RBUTTON_DISABLED", "DISABLED", {0, 75}, {m_selectLayer->getSize().x, 24}, 16, 1)); // RBUTTON_STAMPS
+	m_guiLeftLayer->addComponent(m_selectLayer, PANEL_ALIGN_TOP);
 
-	m_guiLeft->addComponent(new CButtonToggle("BUTTON_GROUND_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
-		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 24}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
-	m_guiLeft->addComponent(new CButtonToggle("BUTTON_WORLD_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
-		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 49}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
-	m_guiLeft->addComponent(new CButtonToggle("BUTTON_SKY_VISIBLE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Visible.png")),
-		MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Invisible.png")), {-120, 74}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
+	m_guiLeftLayer->addComponent(new CButtonToggle("BUTTON_GROUND_VISIBLE", LTexture::getInstance().getImage("gui\\Visible.png"),
+		LTexture::getInstance().getImage("gui\\Invisible.png"), {-(m_selectLayer->getSize().x - 24) / 2, 0}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
+	m_guiLeftLayer->addComponent(new CButtonToggle("BUTTON_WORLD_VISIBLE", LTexture::getInstance().getImage("gui\\Visible.png"),
+		LTexture::getInstance().getImage("gui\\Invisible.png"), {-(m_selectLayer->getSize().x - 24) / 2, 25}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
+	m_guiLeftLayer->addComponent(new CButtonToggle("BUTTON_SKY_VISIBLE", LTexture::getInstance().getImage("gui\\Visible.png"),
+		LTexture::getInstance().getImage("gui\\Invisible.png"), {-(m_selectLayer->getSize().x - 24) / 2, 50}, {24, 24}, 16, 1, 1), PANEL_ALIGN_TOP);
 
-
-
-	m_guiRightGround = new Container("CONTAINER_RIGHT_GROUND", {0, 0}, {288, 640}, true);
-	m_guiRightWorld = new Container("CONTAINER_RIGHT_WORLD", {0, 0}, {288, 640}, false);
-	m_guiRightSky = new Container("CONTAINER_RIGHT_SKY", {0, 0}, {288, 640}, false);
-	m_guiRightStamp = new Container("CONTAINER_RIGHT_STAMP", {0, 0}, {288, 640}, false);
-
-	m_guiRight->addComponent(m_guiRightGround);
-	m_guiRight->addComponent(m_guiRightWorld);
-	m_guiRight->addComponent(m_guiRightSky);
-	m_guiRight->addComponent(m_guiRightStamp);
-
-	m_guiRightWorldSwitch = new Container("CONTAINER_RIGHT_WORLD_SWITCH", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
-	m_guiRightWorldPortal = new Container("CONTAINER_RIGHT_WORLD_PORTAL", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
-
-	m_guiRightWorld->addComponent(m_guiRightWorldSwitch);
-	m_guiRightWorld->addComponent(m_guiRightWorldPortal);
+	m_guiLeftDetail->addComponent(new CButtonToggle("BUTTON_TEXTURE_OFFSET", LTexture::getInstance().getImage("gui\\CheckboxOn.png"), 
+		LTexture::getInstance().getImage("gui\\CheckboxOff.png"), {8, 32}, {16, 16}, 16, 1, 0));
+	m_guiLeftDetail->addComponent(new CText("TEXT_TEXTURE_OFFSET", "Tex. Offset", {40, 32}, {16, 16}, 16, Alignment::ALIGN_LEFT, Color(0, 0, 0, 255)));
 
 
 
-	//m_guiRightGround->addComponent(new TextField("TEXTFIELD_STAMP_NAME", "Stamp1", Vector2<Sint32>(16, 324), Vector2<Sint32>(16, 1), 16, 1));
+	m_guiLeftGround = new Container("CONTAINER_RIGHT_GROUND", {0, 0}, {m_guiLeft->getSize().x, 640}, true);
+	m_guiLeftWorld = new Container("CONTAINER_RIGHT_WORLD", {0, 0}, {m_guiLeft->getSize().x, 640}, false);
+	m_guiLeftSky = new Container("CONTAINER_RIGHT_SKY", {0, 0}, {m_guiLeft->getSize().x, 640}, false);
+	m_guiLeftStamp = new Container("CONTAINER_RIGHT_STAMP", {0, 0}, {m_guiLeft->getSize().x, 640}, false);
 
-	m_guiRightWorld->addComponent(new TextField("TEXTFIELD_OBJECT_NAME", "Object Name", Vector2<Sint32>(16, 204), Vector2<Sint32>(16, 1), 16, 1));
+	m_guiLeftDetail->addComponent(m_guiLeftGround);
+	m_guiLeftDetail->addComponent(m_guiLeftWorld);
+	m_guiLeftDetail->addComponent(m_guiLeftSky);
+	m_guiLeftDetail->addComponent(m_guiLeftStamp);
 
-	m_guiRightWorldPortal->addComponent(new TextField("TEXTFIELD_PORTAL", "Destination Zone", {8, 416}, {17, 1}, 16, 1));
-	m_guiRightWorldPortal->addComponent(new CCounter("COUNTER_PORTAL_X", "X:", {0, 440}, {0, 500}, 1, 0));
-	m_guiRightWorldPortal->addComponent(new CCounter("COUNTER_PORTAL_Y", "Y:", {0, 460}, {0, 500}, 1, 0));
+	m_guiLeftWorldSwitch = new Container("CONTAINER_RIGHT_WORLD_SWITCH", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
 
-	m_guiRightWorld->addComponent(new CDropDown("DROPDOWN_INTERACT", "Interaction Type", {0, 296}, {264, 32}, 16, 1), PANEL_ALIGN_TOP);
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->addItem("None");
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->addItem("Solid");
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->addItem("Switch");
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->addItem("Solid Switch");
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->addItem("Portal");
-	m_guiRightWorld->findComponent("DROPDOWN_INTERACT")->setPriorityLayer(5);
-
-	m_guiRightWorldSwitch->addComponent(new CCounter("COUNTER_SWITCH_FREQUENCY", "Freq.", {0, 440}, {0, 255}, 1, 0));
-
-	m_guiRightWorld->addComponent(new CButton("BUTTON_DELETE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Trash.png")), {0, 0}, {32, 32}, 16, 1), PANEL_ALIGN_BOTTOM_LEFT);
+	m_guiLeftWorld->addComponent(m_guiLeftWorldSwitch);
 
 
+	
+	m_guiLeftWorld->addComponent(new TextField("TEXTFIELD_OBJECT_NAME", "Object Name", Vector2<Sint32>(0, 204), Vector2<Sint32>(16, 1), 16, 1), PANEL_ALIGN_TOP);
 
-	m_guiRightStamp->addComponent(new TextField("TEXTFIELD_STAMP_NAME", "Stamp Name", Vector2<Sint32>(8, 20), Vector2<Sint32>(17, 1), 16, 1));
+	m_guiLeftWorld->addComponent(new CDropDown("DROPDOWN_INTERACT", "Interaction Type", {0, 296}, {264, 32}, 16, 1), PANEL_ALIGN_TOP);
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->addItem("None");
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->addItem("Solid");
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->addItem("Switch");
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->addItem("Solid Switch");
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->addItem("Portal");
+	m_guiLeftWorld->findComponent("DROPDOWN_INTERACT")->setPriorityLayer(5);
 
-	m_guiRightStamp->addComponent(new CButtonToggle("BUTTON_USE_GROUND", "Use Ground", Vector2<Sint32>(0, 360), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
-	m_guiRightStamp->addComponent(new CButtonToggle("BUTTON_USE_WORLD", "Use World", Vector2<Sint32>(0, 400), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
-	m_guiRightStamp->addComponent(new CButtonToggle("BUTTON_USE_ENTITY", "Use Entity", Vector2<Sint32>(0, 440), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
-	m_guiRightStamp->addComponent(new CButtonToggle("BUTTON_USE_SKY", "Use Sky", Vector2<Sint32>(0, 480), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
-
-	m_guiRightStamp->addComponent(new CButton("BUTTON_DELETE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Trash.png")), {0, 0}, {32, 32}, 16, 1), PANEL_ALIGN_BOTTOM_LEFT);
+	m_guiLeftWorldSwitch->addComponent(new CCounter("COUNTER_SWITCH_FREQUENCY", "Freq.", {0, 440}, {0, 255}, 1, 0));
 
 
 
-	m_guiLeftGround = new Container("CONTAINER_LEFT_GROUND", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, true);
-	m_guiLeftWorld = new Container("CONTAINER_LEFT_WORLD", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
-	m_guiLeftSky = new Container("CONTAINER_LEFT_SKY", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
-	m_guiLeftStamp = new Container("CONTAINER_LEFT_STAMP", {0, 0}, {288, Globals::getInstance().m_screenSize.y}, false);
+	m_guiLeftStamp->addComponent(new TextField("TEXTFIELD_STAMP_NAME", "Stamp Name", Vector2<Sint32>(8, 20), Vector2<Sint32>(17, 1), 16, 1));
 
-	m_guiLeft->addComponent(m_guiLeftGround);
-	m_guiLeft->addComponent(m_guiLeftWorld);
-	m_guiLeft->addComponent(m_guiLeftSky);
-	m_guiLeft->addComponent(m_guiLeftStamp);
+	m_guiLeftStamp->addComponent(new CButtonToggle("BUTTON_USE_GROUND", "Use Ground", Vector2<Sint32>(0, 360), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
+	m_guiLeftStamp->addComponent(new CButtonToggle("BUTTON_USE_WORLD", "Use World", Vector2<Sint32>(0, 400), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
+	m_guiLeftStamp->addComponent(new CButtonToggle("BUTTON_USE_ENTITY", "Use Entity", Vector2<Sint32>(0, 440), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
+	m_guiLeftStamp->addComponent(new CButtonToggle("BUTTON_USE_SKY", "Use Sky", Vector2<Sint32>(0, 480), Vector2<Sint32>(264, 32), 16, 1), PANEL_ALIGN_TOP)->setState(1);
+
+	m_guiLeftStamp->addComponent(new CButton("BUTTON_DELETE", "", MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("Trash.png")), {0, 0}, {32, 32}, 16, 1), PANEL_ALIGN_BOTTOM_LEFT);
+
 
 
 
@@ -250,12 +238,9 @@ bool Game::init()
 	m_listStamps = new CList("LIST_STAMPS", "Stamp List", {16, 208}, {256, 4}, 32, Texture(), 1);
 	m_listStamps->addItem({"None", 0});
 	m_stamps.push_back(Stamp());
-	m_guiRightStamp->addComponent(m_listStamps);
+	m_guiLeftStamp->addComponent(m_listStamps);
 
-	m_tileSetStamps = new CTileSet("TILESET_WORLD", "TODO: Preview", {0, 88}, {256, 256}, 32, Texture(), 1);
-	m_guiRightStamp->addComponent(m_tileSetStamps, PANEL_ALIGN_TOP);
-
-	m_guiTop->addComponent(new CText("TEXT_POS", "1", {0, 0}, {100, 100}, 16, ALIGN_LEFT, Color(255, 255, 255, 255)));
+	m_guiTop->addComponent(new CText("TEXT_POS", "1", {m_guiLeft->getPosition().x + m_guiLeft->getSize().x, 24}, {100, 100}, 16, ALIGN_LEFT, Color(255, 255, 255, 255)))->setPriorityLayer(-1);
 
 	m_selectStart = {-1, -1};
 
@@ -315,6 +300,7 @@ void Game::input()
 		m_zoneMap->deselect();
 	if(Globals::getInstance().m_keyStates[GLFW_KEY_BACKSPACE] == 1)
 		m_zoneMap->deleteVertex();
+	Globals::getInstance().m_keyStates[GLFW_KEY_LEFT_SHIFT];
 
 	if((_rValue & 2) != 2 && Globals::getInstance().m_keyStates[GLFW_KEY_G] == 1)
 		m_showGrid = !m_showGrid;
@@ -341,26 +327,30 @@ void Game::input()
 	{
 		if(!m_zoneMap->objectIsSelected())
 		{
-			if(!m_zoneMap->selectObject(m_selectLayer->getSelectedButton(), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos))
+			if(!m_zoneMap->selectObject(Sint8(m_selectLayer->getSelectedButton()), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos))
 			{
 				switch(m_selectLayer->getSelectedButton())
 				{
 				case 0:
-					m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("SlantBrick.png")));
+					m_zoneMap->addWorldObject(0, ZoneMap::WorldObject("", 1, m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")->isSelected()), LTexture::getInstance().getImage("Concrete.png"));
 					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
 					break;
 				case 1:
-					m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("BinaryBrick.png")));
+					m_zoneMap->addWorldObject(1, ZoneMap::WorldObject("", 1, m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")->isSelected()), LTexture::getInstance().getImage("Stone.png"));
 					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
 					break;
 				case 2:
-					m_zoneMap->addWorldObject(2, ZoneMap::WorldObject("", 1), MTexture::getInstance().getUnit(LTexture::getInstance().loadImage("GlitchBrick.png")));
+					m_zoneMap->addWorldObject(2, ZoneMap::WorldObject("", 1, m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")->isSelected()), LTexture::getInstance().getImage("Rocks.png"));
 					m_zoneMap->addVertex((Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos));
 					break;
 				case 3:
 					// Do stampy things
 					break;
 				}
+			}
+			else
+			{
+				m_guiLeftDetail->findComponent("BUTTON_TEXTURE_OFFSET")->setState(m_zoneMap->getSelectedWorldObject().m_texOffset);
 			}
 		}
 		else
@@ -371,7 +361,7 @@ void Game::input()
 	else if(m_rmbDown && (_rValue & 1) == 0)
 		m_camPos = m_camPos + (Vector2<GLfloat>(m_mouseBuffer) - Vector2<GLfloat>(_mousePos)) / Globals::getInstance().m_zoom;
 
-	m_zoneMap->highlightObject(m_selectLayer->getSelectedButton(), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos);
+	m_zoneMap->highlightObject(Sint8(m_selectLayer->getSelectedButton()), Vector2<GLfloat>(_mousePos) / Globals::getInstance().m_zoom + m_camPos);
 
 	m_mouseBuffer = _mousePos;
 	m_mouseInArea = ((_rValue & 1) == 0
@@ -382,9 +372,9 @@ void Game::input()
 	else if(Globals::getInstance().m_mouseScroll < 0)
 		Globals::getInstance().m_zoom /= powf(1.01f, -GLfloat(Globals::getInstance().m_mouseScroll));
 
-	m_zoneMap->setLayerVisible(0, m_guiLeft->findComponent("BUTTON_GROUND_VISIBLE")->isSelected() != 0);
-	m_zoneMap->setLayerVisible(1, m_guiLeft->findComponent("BUTTON_WORLD_VISIBLE")->isSelected() != 0);
-	m_zoneMap->setLayerVisible(2, m_guiLeft->findComponent("BUTTON_SKY_VISIBLE")->isSelected() != 0);
+	m_zoneMap->setLayerVisible(0, m_guiLeftLayer->findComponent("BUTTON_GROUND_VISIBLE")->isSelected() != 0);
+	m_zoneMap->setLayerVisible(1, m_guiLeftLayer->findComponent("BUTTON_WORLD_VISIBLE")->isSelected() != 0);
+	m_zoneMap->setLayerVisible(2, m_guiLeftLayer->findComponent("BUTTON_SKY_VISIBLE")->isSelected() != 0);
 }
 
 void Game::update()
@@ -415,19 +405,15 @@ void Game::update()
 		{
 		case 0:
 			m_guiLeftGround->setVisible(true);
-			m_guiRightGround->setVisible(true);
 			break;
 		case 1:
 			m_guiLeftWorld->setVisible(true);
-			m_guiRightWorld->setVisible(true);
 			break;
 		case 2:
 			m_guiLeftSky->setVisible(true);
-			m_guiRightSky->setVisible(true);
 			break;
 		case 3:
 			m_guiLeftStamp->setVisible(true);
-			m_guiRightStamp->setVisible(m_listStamps->getSelectedItem() != 0);
 			break;
 		}
 
@@ -435,19 +421,15 @@ void Game::update()
 		{
 		case 0:
 			m_guiLeftGround->setVisible(false);
-			m_guiRightGround->setVisible(false);
 			break;
 		case 1:
 			m_guiLeftWorld->setVisible(false);
-			m_guiRightWorld->setVisible(false);
 			break;
 		case 2:
 			m_guiLeftSky->setVisible(false);
-			m_guiRightSky->setVisible(false);
 			break;
 		case 3:
 			m_guiLeftStamp->setVisible(false);
-			m_guiRightStamp->setVisible(false);
 			m_selectStart = {-1, -1};
 			break;
 		}

@@ -8,7 +8,7 @@ struct Color
 {
 	unsigned char r, g, b, a;
 
-	Color( unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0 )
+	Color(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0)
 	{
 		this->r = r;
 		this->g = g;
@@ -16,20 +16,20 @@ struct Color
 		this->a = a;
 	}
 
-	void useColor( GLfloat p_mod = 1.f )
+	void useColor(GLfloat p_mod = 1.f)
 	{
-		glColor4f( GLfloat( r ) / 255.f * p_mod, GLfloat( g ) / 255.f * p_mod, GLfloat( b ) / 255.f * p_mod, GLfloat( a ) / 255.f );
+		glColor4f(GLfloat(r) / 255.f * p_mod, GLfloat(g) / 255.f * p_mod, GLfloat(b) / 255.f * p_mod, GLfloat(a) / 255.f);
 	}
 
 	Vector4< GLfloat > normalize()
 	{
 		return Vector4< GLfloat >
 		{
-			GLfloat( r ) / 255.f, GLfloat( g ) / 255.f, GLfloat( b ) / 255.f, GLfloat( a ) / 255.f
+			GLfloat(r) / 255.f, GLfloat(g) / 255.f, GLfloat(b) / 255.f, GLfloat(a) / 255.f
 		};
 	}
 
-	void operator=( Color color )
+	void operator=(Color color)
 	{
 		r = color.r;
 		g = color.g;
@@ -37,56 +37,58 @@ struct Color
 		a = color.a;
 	}
 
-	unsigned char sub( int a, int b )
+	unsigned char sub(int a, int b)
 	{
-		return unsigned char( fmax( a - b, 0 ) );
-	}
-	
-	unsigned char add( int a, int b )
-	{
-		return unsigned char( fmin( a + b, 255 ) );
+		return unsigned char(fmax(a - b, 0));
 	}
 
-	Color operator/( GLfloat value )
+	unsigned char add(int a, int b)
 	{
-		return Color( unsigned char( GLfloat( r ) / value ),
-			unsigned char( GLfloat( g ) / value ),
-			unsigned char( GLfloat( b ) / value ),
-			a );
+		return unsigned char(fmin(a + b, 255));
 	}
 
-	void operator/=( float value )
+	Color operator/(GLfloat value)
 	{
-		r = unsigned char( float( r ) / value );
-		g = unsigned char( float( g ) / value );
-		b = unsigned char( float( b ) / value );
+		return Color(unsigned char(GLfloat(r) / value),
+			unsigned char(GLfloat(g) / value),
+			unsigned char(GLfloat(b) / value),
+			a);
 	}
 
-	Color operator*( float v )
+	void operator/=(float value)
 	{
-		return Color( unsigned char( r * v ), unsigned char( g * v ), unsigned char( b * v ), a );
+		r = unsigned char(float(r) / value);
+		g = unsigned char(float(g) / value);
+		b = unsigned char(float(b) / value);
 	}
 
-	Color operator+( Color c )
+	Color operator*(float v)
 	{
-			return Color( c.r >= 0 ? add( r, c.r ) : sub( r, c.r ), c.g >= 0 ? add( g, c.g ) : sub( g, c.g ), c.b >= 0 ? add( b, c.b ) : sub( b, c.b ), c.a >= 0 ? add( a, c.a ) : sub( a, c.a ) );
+		return Color(unsigned char(r * v), unsigned char(g * v), unsigned char(b * v), a);
 	}
-	Color operator+( unsigned char v )
+
+	Color operator+(Color c)
 	{
-		if( v >= 0 )
-			return Color( add( r, v ), add( g, v), add( b, v ), a );
+		return Color(c.r >= 0 ? add(r, c.r) : sub(r, c.r), c.g >= 0 ? add(g, c.g) : sub(g, c.g), c.b >= 0 ? add(b, c.b) : sub(b, c.b), c.a >= 0 ? add(a, c.a) : sub(a, c.a));
+	}
+	Color operator+(unsigned char v)
+	{
+		if(v >= 0)
+			return Color(add(r, v), add(g, v), add(b, v), a);
 		else
-			return Color( sub( r, v ), sub( g, v), sub( b, v ), a );
+			return Color(sub(r, v), sub(g, v), sub(b, v), a);
 	}
 
-	Color operator-( int v )
+	Color operator-(int v)
 	{
-		if( v >= 0 )
-			return Color( sub( r, v ), sub( g, v), sub( b, v ), a );
+		if(v >= 0)
+			return Color(sub(r, v), sub(g, v), sub(b, v), a);
 		else
-			return Color( add( r, v ), add( g, v), add( b, v ), a );
+			return Color(add(r, v), add(g, v), add(b, v), a);
 	}
 
-	bool operator==( Color c ) const
-	{ return ( r == c.r && g == c.g && b == c.b && a == c.a ); }
+	bool operator==(Color c) const
+	{
+		return (r == c.r && g == c.g && b == c.b && a == c.a);
+	}
 };
