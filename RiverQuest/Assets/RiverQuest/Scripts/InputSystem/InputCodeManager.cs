@@ -13,11 +13,11 @@ namespace RiverQuest.InputSystem
         public class PlayerInputTask
         {
             public GamePad.Index PlayerIndex;
-            public Action OnStepCompleted;
-            public Action OnSequenceCompleted;
+            public Action<AbstractInput> OnStepCompleted;
+            public Action<CodeSquence> OnSequenceCompleted;
             public CodeSquence Sequence;
 
-            public PlayerInputTask(GamePad.Index index, Action stepCompleted, Action sequenceCompleted, CodeSquence sequence)
+            public PlayerInputTask(GamePad.Index index, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, CodeSquence sequence)
             {
                 PlayerIndex = index;
                 OnStepCompleted = stepCompleted;
@@ -27,15 +27,15 @@ namespace RiverQuest.InputSystem
 
             public bool Next()
             {
-                var next = Sequence.Next();
+                var next = Sequence.NextStep();
 
                 if (next)
                 {
-                    OnStepCompleted();
+                    OnStepCompleted(Sequence.Current);
                 }
                 else
                 {
-                    OnSequenceCompleted();
+                    OnSequenceCompleted(Sequence);
                 }
 
                 return next;
@@ -52,7 +52,7 @@ namespace RiverQuest.InputSystem
                 return input == Current;
             }
 
-            public bool Next()
+            public bool NextStep()
             {
                 var idx = Sequence.IndexOf(Current);
                 if (Sequence.Count > idx + 1)
@@ -67,6 +67,8 @@ namespace RiverQuest.InputSystem
 
         public void CheckInput()
         {
+            var remove = new List<KeyValuePair<GamePad.Index, PlayerInputTask>>();
+
             foreach (var kvp in _activeInputSequences)
             {
                 var task = kvp.Value;
@@ -96,13 +98,18 @@ namespace RiverQuest.InputSystem
                     var done = !task.Next();
                     if(done)
                     {
-                        _activeInputSequences.Remove(task.PlayerIndex);
+                        remove.Add(kvp);                        
                     }
                 }
             }
+
+            foreach(var kvp in remove)
+            {
+                _activeInputSequences.Remove(kvp.Key);
+            }
         }
 
-        public void StartInputSequence(GamePad.Index player, Action stepCompleted, Action sequenceCompleted, int length)
+        public void StartInputSequence(GamePad.Index player, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, int length)
         {
             var seq = new PlayerInputTask(player, stepCompleted, sequenceCompleted, InputCodeGenerator.GetCodeSequence(length, false));
             _activeInputSequences.Add(player, seq);

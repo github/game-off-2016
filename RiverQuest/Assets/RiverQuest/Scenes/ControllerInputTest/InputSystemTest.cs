@@ -10,9 +10,15 @@ namespace RiverQuest.InputSystem
 
         private void Update()
         {
-            if (GamePad.GetButtonUp(GamePad.Button.Start, GamePad.Index.One))
+            if (Input.GetKeyUp(KeyCode.Space))
             {
-                Manager.StartInputSequence(GamePad.Index.One, () => { Debug.Log("STEP COMPLETE"); }, () => { Debug.Log("ALL COMPLETE"); }, 10);
+                Manager.StartInputSequence(GamePad.Index.One, nextStep => 
+                {
+                    Debug.Log("STEP COMPLETE, NEXT " + nextStep.Name);
+                }, seq => 
+                {
+                    Debug.Log("SEQ OF LENGTH " + seq.Sequence.Count + " COMPLETE");
+                }, 10);
             }
         }
     }

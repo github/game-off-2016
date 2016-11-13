@@ -33,6 +33,8 @@ namespace RiverQuest.InputSystem
                 seq.Sequence.Add(entry);
             }
 
+            seq.Current = seq.Sequence[0];
+
             return seq;
         }
 
