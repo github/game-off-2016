@@ -33,6 +33,8 @@
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "graphlib": "^2.1.1",
+    "line-circle-collision": "^1.1.3",
+    "lodash": "^4.16.6",
     "phaser": "^2.6.2",
     "random-item": "^1.0.0",
     "times-loop": "^2.0.0",

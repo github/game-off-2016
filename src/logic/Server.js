@@ -6,7 +6,8 @@ export const CAPTURED = "CAPTURED";
 export const ENEMY = "ENEMY";
 export const ENEMY_CAPTURED = "ENEMY_CAPTURED";
 
-export const BASE_PACKET_CREATION_RATE = 2500;
+export const BASE_PACKET_CREATION_RATE = 1500;
+export const PACKETS_TO_UPGRADE = 25
 
 export default class {
   constructor(type) {
@@ -29,6 +30,9 @@ export default class {
 
     this.packets += count
     this.packetCreationTimer -= count * BASE_PACKET_CREATION_RATE
+    if (this.canUpgrade()) {
+      this.upgrade()
+    }
   }
 
   subtractPackets(count) {
@@ -41,23 +45,28 @@ export default class {
 
   color() {
     switch (this.type) {
-      case BASE: return 0x00DD00;
-      case CAPTURED: return 0x00FFAA;
-      case NEUTRAL: return 0xAAAAAA;
-      case ENEMY: return 0xDD0000;
-      case ENEMY_CAPTURED: return 0xFF4400;
+    case BASE: return 0x00DD00;
+    case CAPTURED: return 0x00FFAA;
+    case NEUTRAL: return 0xAAAAAA;
+    case ENEMY: return 0xDD0000;
+    case ENEMY_CAPTURED: return 0xFF4400;
     }
   }
 
   canSendPacket() {
-    return this.packets > 0 && !this.isEnemy()
+    switch (this.type) {
+    case CAPTURED: return true
+    case BASE: return true
+    default: return false
+    }
   }
 
   canTransportPacket() {
     switch (this.type) {
-      case NEUTRAL: return true
-      case BASE: return true
-      default: return false
+    case NEUTRAL: return true
+    case BASE: return true
+    case CAPTURED: return true
+    default: return false
     }
   }
 
@@ -67,24 +76,34 @@ export default class {
     }
 
     switch (this.type) {
-      case NEUTRAL:
-        this.type = CAPTURED;
-        return
+    case NEUTRAL:
+      this.type = CAPTURED;
+      return
     }
   }
 
   isEnemy() {
     switch (this.type) {
-      case ENEMY: return true;
-      case ENEMY_CAPTURED: return true;
-      default: return false;
+    case ENEMY: return true;
+    case ENEMY_CAPTURED: return true;
+    default: return false;
     }
   }
 
   isPacketCreator() {
     switch (this.type) {
-      case BASE: return true;
-      default: return false;
+    case BASE: return true;
+    default: return false;
     }
+  }
+
+  canUpgrade() {
+    return this.type === CAPTURED && this.packets >= PACKETS_TO_UPGRADE
+  }
+
+  upgrade() {
+    this.subtractPackets(PACKETS_TO_UPGRADE)
+    this.packetCreationTimer = 0
+    this.type = BASE
   }
 }

@@ -1,30 +1,26 @@
 /* globals __DEV__ */
+import _ from 'lodash'
 import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
-import Server from '../sprites/Server'
+import Server, { BASE_SERVER_SIZE } from '../sprites/Server'
 import EnemyPacket from '../sprites/EnemyPacket'
 import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
-import { distance, doLinesIntersect } from '../utils'
+import { distance, doLinesIntersect, doesLineIntersectsWithCircle } from '../utils'
 import times from 'times-loop'
 
 const GRID_COLS = 3
 const GRID_ROW = 4
 const SERVER_PADDING = 25
 const STAGE_PADDING = 75
+const SNAP_RANGE = 3
 
 const BASE_SERVERS = 1
 const ENEMY_SERVERS = 3
 
-const MODES = {
-  build: 'BUILD',
-  deploy: 'DEPLOY'
-}
-
 export default class extends Phaser.State {
-  init () {}
   preload () {
     this.networkGraph = new Graphlib.Graph({directed: false});
     window.networkGraph = this.networkGraph;
@@ -32,7 +28,6 @@ export default class extends Phaser.State {
   }
 
   create () {
-    this.mode = MODES.build
     this.grid = new Grid({ game, networkGraph: this.networkGraph })
     this.game.add.existing(this.grid)
     this.currentServer = null
@@ -40,11 +35,11 @@ export default class extends Phaser.State {
     window.g = this.grid;
 
     let clickSignal = new Phaser.Signal();
-    clickSignal.add((server, eventType) => {
+    clickSignal.add((server, eventType, pointer) => {
       switch (eventType) {
-      case 'click': return this.handleServerClick(server)
-      case 'over': return this.handleServerOver(server)
-      case 'out': return this.handleServerOut(server)
+      case 'dragStart': return this.handleServerDragStart(server, pointer)
+      case 'dragUpdate': return this.handleServerDragUpdate(server, pointer)
+      case 'dragStop': return this.handleServerDragStop(server, pointer)
       }
     });
 
@@ -116,68 +111,69 @@ export default class extends Phaser.State {
     })
   }
 
-  handleServerClick(server) {
-    if (this.currentServer == null) { // PICK ORIGIN
-      if (server.canSendPacket()){
-        this.currentServer = server;
-        this.currentTarget = new Target({
-          game,
-          source: server
-        });
-        game.add.existing(this.currentTarget);
-      }
-    } else {
-      if (server != this.currentServer) { // PICK TARGET (origin already selected)
-        let path = [server.logic.uuid]
-        let packet, pointPath
-        if (this.mode === MODES.build) { // BUILD MODE
-          // COLOR EDGES AS CAPTURED
-          const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
-          if (intersection) {
-            console.log(intersection)
-          } else {
-            path.reduce((last, current) => {
-              let e = this.networkGraph.edge({v: last, w: current});
-              this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
-              return current;
-            }, this.currentServer.logic.uuid);
-            this.grid.render();
-            [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-          }
-        } else if ((this.mode === MODES.deploy) && (this.networkGraph.hasEdge(server, this.currentServer))) { // DEPLOY MODE
-          [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-        }
-        if (packet) { // SEND PACKET IF POSSIBLE
-          packet.sendAlongPath(pointPath, server);
-        }
-      }
-      this.currentServer = null; // DESELECT AFTER CLICK (TODO (shay): determine if this is the behavior we want)
-      this.currentTarget.kill();
+  handleServerDragStart(server, pointer) {
+    if (server.canSendPacket()) {
+      this.currentServer = server
     }
   }
 
-  handleServerOver(server) {
+  handleServerDragUpdate(origin, target) {
+    if (!this.currentServer) return
+    let intersections
+    this.servers.forEach((server) => { if (server !== origin) server.removeIndicators() })
+    const snappedServer = this.findClosestSnappedServer(origin, target)
+    if (snappedServer) {
+      if (this.networkGraph.hasEdge(origin.logic.uuid, snappedServer.logic.uuid)) {
+        this.mode = 'deploy'
+      } else { // BUILD
+        intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
+        if (intersections.length === 0) {
+          this.mode = 'build'
+        }
+      }
+      snappedServer.snapIndication()
+      this.currentTarget = target = snappedServer
+    } else {
+      this.mode = null
+      this.currentTarget = null
+    }
 
+    this.grid.render({
+      drag: { origin, target },
+      intersections: intersections || [],
+      mode: this.mode
+    })
   }
 
-  handleServerOut(server) {
-
+  handleServerDragStop(server, pointer) {
+    this.grid.render()
+    let path, packet, pointPath;
+    if (this.mode === 'build') {
+      path = [this.currentTarget.logic.uuid]
+      path.reduce((last, current) => {
+        let e = this.networkGraph.edge({v: last, w: current});
+        this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
+        return current;
+      }, this.currentServer.logic.uuid);
+      this.grid.render();
+      this.sendPacketOnPath(this.currentServer, path, this.mode)
+    } else if (this.mode === 'deploy' && server.canSendPacket() && this.currentTarget) {
+      this.sendPacketOnPath(this.currentServer, [this.currentTarget.logic.uuid], this.mode)
+    }
+    this.mode = this.currentServer = this.currentTarget = undefined
+    this.grid.render()
   }
 
-  sendPacketOnPath(originServer, path) {
+  sendPacketOnPath(originServer, path, type = 'deploy') {
     let packet = new Packet({game: this.game, src: originServer});
     this.game.add.existing(packet);
     var pointPath = this.grid.pointPath(path);
     originServer.logic.subtractPackets(1)
-    return [packet, pointPath]
+    packet.sendAlongPath(pointPath, this.networkGraph.node(path[0]).server, type);
   }
 
-  doesEdgeIntersectWithAnother(origin, target) {
-    let x0 = origin.x
-    let y0 = origin.y
-    let x1 = target.x
-    let y1 = target.y
-    return this.networkGraph.edges().find((edge) => {
+  doesEdgeIntersectWithOthers(x0, y0, x1, y1) {
+    return this.networkGraph.edges().filter((edge) => {
       let v = this.networkGraph.node(edge.v).server
       let w = this.networkGraph.node(edge.w).server
       let edgeX0 = v.x
@@ -193,6 +189,12 @@ export default class extends Phaser.State {
     })
   }
 
-  render () {
+  findClosestSnappedServer(origin, target) {
+    const snappedServers = this.servers.filter((server) => {
+      return doesLineIntersectsWithCircle(origin, target, server, (BASE_SERVER_SIZE + SNAP_RANGE) / window.devicePixelRatio) && (server !== origin)
+    })
+    return _.min(snappedServers, (server) => {
+      return distance(server, origin)
+    })
   }
 }

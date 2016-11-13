@@ -15,8 +15,7 @@ export default class extends Phaser.Graphics {
     this.drawCircle(0, 0, size);
     this.endFill();
 
-    this.patrol();
-
+    setTimeout(this.patrol.bind(this), 2500) // doesnt work on construction.
   }
 
   chooseTarget() {

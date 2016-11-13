@@ -1,3 +1,5 @@
+import lineCircleCollision from 'line-circle-collision'
+
 export const centerGameObjects = (objects) => {
   objects.forEach(function (object) {
     object.anchor.setTo(0.5)
@@ -14,6 +16,26 @@ export const distance = (source, target) => {
   var dx = source.x - target.x;
   var dy = source.y - target.y;
   return Math.sqrt(dx * dx + dy * dy);
+}
+
+export function drawDahsedLine(target, x, y, x1, y1, dashArray) {
+  const dashCount = dashArray.length;
+  target.moveTo(x, y);
+  const dx = (x1-x), dy = (y1-y);
+  const slope = dx ? dy/dx : 1e15;
+  let distRemaining = Math.sqrt( dx*dx + dy*dy );
+  let dashIndex=0, draw=true;
+  while (distRemaining>=0.1){
+    var dashLength = dashArray[dashIndex++%dashCount];
+    if (dashLength > distRemaining) dashLength = distRemaining;
+    var xStep = Math.sqrt( dashLength*dashLength / (1 + slope*slope) );
+    if (dx<0) xStep = -xStep;
+    x += xStep
+    y += slope*xStep;
+    target[draw ? 'lineTo' : 'moveTo'](x,y);
+    distRemaining -= dashLength;
+    draw = !draw;
+  }
 }
 
 export function doLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -44,4 +66,8 @@ export function doLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     }
   }
   return true;
+}
+
+export function doesLineIntersectsWithCircle(a, b, c, r) {
+  return lineCircleCollision([a.x, a.y], [b.x, b.y], [c.x, c.y], r)
 }
