@@ -77,7 +77,7 @@ export default class extends Phaser.Graphics {
 
   createPackets(packets) {
     this.logic.addPackets(packets)
-    var t = this.game.add.tween(this.scale).to({ x: 1.1, y: 1.1 }, 100, 'Linear', true, 0, 0, true)
+    this.game.add.tween(this.scale).to({ x: 1.1, y: 1.1 }, 100, 'Linear', true, 0, 0, true)
   }
 
   snapIndication() {

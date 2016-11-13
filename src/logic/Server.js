@@ -6,7 +6,8 @@ export const CAPTURED = "CAPTURED";
 export const ENEMY = "ENEMY";
 export const ENEMY_CAPTURED = "ENEMY_CAPTURED";
 
-export const BASE_PACKET_CREATION_RATE = 2500;
+export const BASE_PACKET_CREATION_RATE = 1500;
+export const PACKETS_TO_UPGRADE = 25
 
 export default class {
   constructor(type) {
@@ -29,6 +30,9 @@ export default class {
 
     this.packets += count
     this.packetCreationTimer -= count * BASE_PACKET_CREATION_RATE
+    if (this.canUpgrade()) {
+      this.upgrade()
+    }
   }
 
   subtractPackets(count) {
@@ -61,6 +65,7 @@ export default class {
     switch (this.type) {
     case NEUTRAL: return true
     case BASE: return true
+    case CAPTURED: return true
     default: return false
     }
   }
@@ -90,5 +95,15 @@ export default class {
     case BASE: return true;
     default: return false;
     }
+  }
+
+  canUpgrade() {
+    return this.type === CAPTURED && this.packets >= PACKETS_TO_UPGRADE
+  }
+
+  upgrade() {
+    this.subtractPackets(PACKETS_TO_UPGRADE)
+    this.packetCreationTimer = 0
+    this.type = BASE
   }
 }
