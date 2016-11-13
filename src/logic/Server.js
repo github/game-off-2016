@@ -50,7 +50,11 @@ export default class {
   }
 
   canSendPacket() {
-    return this.packets > 0 && !this.isEnemy()
+    switch (this.type) {
+    case CAPTURED: return true
+    case BASE: return true
+    default: return false
+    }
   }
 
   canTransportPacket() {

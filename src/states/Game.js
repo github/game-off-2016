@@ -112,10 +112,14 @@ export default class extends Phaser.State {
   }
 
   handleServerDragStart(server, pointer) {
-    this.currentServer = server
+    if (server.canSendPacket()) {
+      this.currentServer = server
+    }
   }
 
   handleServerDragUpdate(origin, target) {
+    if (!this.currentServer) return
+
     this.servers.forEach((server) => { if (server !== origin) server.removeIndicators() })
     const snappedServer = this.findClosestSnappedServer(origin, target)
     if (snappedServer && this.networkGraph.hasEdge(origin.logic.uuid, snappedServer.logic.uuid)) { // DEPLOY
