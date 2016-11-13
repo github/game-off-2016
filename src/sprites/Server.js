@@ -29,8 +29,12 @@ export default class extends Phaser.Graphics {
 
     // override drag method to prevent server from actually moving
     this.input.updateDrag = (pointer) => {
-        clickSignal.dispatch(this, 'dragUpdate', pointer);
+      clickSignal.dispatch(this, 'dragUpdate', pointer);
     };
+
+    this.dataCountText = this.game.add.text(0, -SERVER_SIZE, "", textStyle);
+    this.dataCountText.anchor.set(0.5)
+    this.addChild(this.dataCountText)
 
     this.events.onInputOver.add((game, pointer) => {
       this.tint = OVER_INDICATION_COLOR
@@ -67,6 +71,10 @@ export default class extends Phaser.Graphics {
       this.packetsCountText.text = this.logic.packets
     } else {
       this.packetsCountText.text = ""
+    }
+
+    if (this.logic.data > 0 || this.logic.isEnemy()) {
+      this.dataCountText.text = this.logic.data
     }
   }
 

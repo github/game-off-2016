@@ -1,0 +1,7 @@
+{
+  # "extends": "eslint:recommended",
+  "parser": "babel-eslint",
+  "rules": {
+    "indent": [2, 2]
+  },
+}

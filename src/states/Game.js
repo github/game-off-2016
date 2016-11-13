@@ -4,6 +4,7 @@ import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
 import Server, { BASE_SERVER_SIZE } from '../sprites/Server'
+import EnemyPacket from '../sprites/EnemyPacket'
 import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
@@ -35,12 +36,12 @@ export default class extends Phaser.State {
     let clickSignal = new Phaser.Signal();
     clickSignal.add((server, eventType, pointer) => {
       switch (eventType) {
-        case 'click': return this.handleServerClick(server, pointer)
-        case 'over': return this.handleServerOver(server, pointer)
-        case 'out': return this.handleServerOut(server, pointer)
-        case 'dragStart': return this.handleServerDragStart(server, pointer)
-        case 'dragUpdate': return this.handleServerDragUpdate(server, pointer)
-        case 'dragStop': return this.handleServerDragStop(server, pointer)
+      case 'click': return this.handleServerClick(server, pointer)
+      case 'over': return this.handleServerOver(server, pointer)
+      case 'out': return this.handleServerOut(server, pointer)
+      case 'dragStart': return this.handleServerDragStart(server, pointer)
+      case 'dragUpdate': return this.handleServerDragUpdate(server, pointer)
+      case 'dragStop': return this.handleServerDragStop(server, pointer)
       }
     });
 
@@ -72,6 +73,8 @@ export default class extends Phaser.State {
         }
       });
     });
+    const enemyPacket = new EnemyPacket({game, src: enemyServers[0], grid: this.grid})
+    game.add.existing(enemyPacket);
     this.grid.render();
   }
 
@@ -182,13 +185,7 @@ export default class extends Phaser.State {
   sendPacketOnPath(originServer, path) {
     let packet = new Packet({game: this.game, src: originServer});
     this.game.add.existing(packet);
-    var pointPath = path.map((uuid) => {
-      let s = this.networkGraph.node(uuid).server;
-      return {
-        x: s.x,
-        y: s.y
-      }
-    });
+    var pointPath = this.grid.pointPath(path);
     originServer.logic.subtractPackets(1)
     return [packet, pointPath]
   }
@@ -212,7 +209,7 @@ export default class extends Phaser.State {
 
   findClosestSnappedServer(origin, target) {
     const snappedServers = this.servers.filter((server) => {
-        return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE) && (server !== origin)
+      return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE) && (server !== origin)
     })
     return _.min(snappedServers, (server) => {
       return distance(server, origin)

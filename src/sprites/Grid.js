@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import Graphlib from "graphlib"
 import { drawDahsedLine } from "../utils"
+import randomItem from 'random-item'
 
 export const SIMPLE = 'SIMPLE';
 export const CAPTURED = 'CAPTURED';
@@ -71,6 +72,25 @@ export default class extends Phaser.Graphics {
     return path;
   }
 
+  randomNode(src) {
+    const results = Graphlib.alg.dijkstra(networkGraph, src, (e) => this.weightFn(e), (v) => this.networkGraph.nodeEdges(v));
+    var keys = Object.keys(results);
+    keys.filter((key) => {
+      return results[key].distance != Number.POSITIVE_INFINITY && src != key
+    })
+    return randomItem(keys);
+  }
+
+  pointPath(path) {
+    return path.map((uuid) => {
+      let s = this.networkGraph.node(uuid).server;
+      return {
+        x: s.x,
+        y: s.y
+      }
+    });
+  }
+
   weightFn(edge) {
     let attributes = this.networkGraph.edge(edge);
     let v = this.networkGraph.node(edge.v);
@@ -79,9 +99,9 @@ export default class extends Phaser.Graphics {
     let distance = attributes.distance;
     if (v.logic.isEnemy() || w.logic.isEnemy()) distance *= 2;
     switch(attributes.type) {
-      case CAPTURED: return distance / 2;
-      case ENEMY: return distance * 5;
-      default: return distance;
+    case CAPTURED: return distance / 2;
+    case ENEMY: return distance * 5;
+    default: return distance;
     }
   }
 

@@ -1,5 +1,3 @@
-- Snap drag to servers.
-- Color intersecting edges.
 - Color same edge of exists.
 - Put number of required packets to build in middle
 - Highlight drag in red if not enough.
