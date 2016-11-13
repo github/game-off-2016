@@ -15,6 +15,7 @@ const GRID_COLS = 3
 const GRID_ROW = 4
 const SERVER_PADDING = 25
 const STAGE_PADDING = 75
+const SNAP_RANGE = 3
 
 const BASE_SERVERS = 1
 const ENEMY_SERVERS = 3
@@ -175,7 +176,7 @@ export default class extends Phaser.State {
       }, this.currentServer.logic.uuid);
       this.grid.render();
       let [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-      packet.sendAlongPath(pointPath, server);
+      packet.sendAlongPath(pointPath, this.currentTarget);
     }
     this.currentServer = this.currentTarget = null
     this.canBuild = false
@@ -209,7 +210,7 @@ export default class extends Phaser.State {
 
   findClosestSnappedServer(origin, target) {
     const snappedServers = this.servers.filter((server) => {
-      return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE) && (server !== origin)
+      return doesLineIntersectsWithCircle(origin, target, server, (BASE_SERVER_SIZE + SNAP_RANGE) / window.devicePixelRatio) && (server !== origin)
     })
     return _.min(snappedServers, (server) => {
       return distance(server, origin)
