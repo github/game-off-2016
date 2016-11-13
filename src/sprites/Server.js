@@ -23,6 +23,10 @@ export default class extends Phaser.Graphics {
     this.packetsCountText.anchor.set(0.5)
     this.addChild(this.packetsCountText)
 
+    this.dataCountText = this.game.add.text(0, -size, "", textStyle);
+    this.dataCountText.anchor.set(0.5)
+    this.addChild(this.dataCountText)
+
     this.events.onInputOver.add((game, pointer) => {
       this.tint = 0xCCCCCC;
       clickSignal.dispatch(this, 'over');
@@ -50,6 +54,10 @@ export default class extends Phaser.Graphics {
       this.packetsCountText.text = this.logic.packets
     } else {
       this.packetsCountText.text = ""
+    }
+
+    if (this.logic.data > 0 || this.logic.isEnemy()) {
+      this.dataCountText.text = this.logic.data
     }
   }
 

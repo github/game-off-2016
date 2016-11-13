@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
 import Server from '../sprites/Server'
+import EnemyPacket from '../sprites/EnemyPacket'
 import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
@@ -41,9 +42,9 @@ export default class extends Phaser.State {
     let clickSignal = new Phaser.Signal();
     clickSignal.add((server, eventType) => {
       switch (eventType) {
-        case 'click': return this.handleServerClick(server)
-        case 'over': return this.handleServerOver(server)
-        case 'out': return this.handleServerOut(server)
+      case 'click': return this.handleServerClick(server)
+      case 'over': return this.handleServerOver(server)
+      case 'out': return this.handleServerOut(server)
       }
     });
 
@@ -75,6 +76,8 @@ export default class extends Phaser.State {
         }
       });
     });
+    const enemyPacket = new EnemyPacket({game, src: enemyServers[0], grid: this.grid})
+    game.add.existing(enemyPacket);
     this.grid.render();
   }
 
@@ -164,13 +167,7 @@ export default class extends Phaser.State {
   sendPacketOnPath(originServer, path) {
     let packet = new Packet({game: this.game, src: originServer});
     this.game.add.existing(packet);
-    var pointPath = path.map((uuid) => {
-      let s = this.networkGraph.node(uuid).server;
-      return {
-        x: s.x,
-        y: s.y
-      }
-    });
+    var pointPath = this.grid.pointPath(path);
     originServer.logic.subtractPackets(1)
     return [packet, pointPath]
   }

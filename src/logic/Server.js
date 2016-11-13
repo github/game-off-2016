@@ -6,7 +6,7 @@ export const CAPTURED = "CAPTURED";
 export const ENEMY = "ENEMY";
 export const ENEMY_CAPTURED = "ENEMY_CAPTURED";
 
-export const BASE_PACKET_CREATION_RATE = 2500
+export const BASE_PACKET_CREATION_RATE = 2500;
 
 export default class {
   constructor(type) {
@@ -14,6 +14,10 @@ export default class {
     this.uuid = UUID.v4();
     this.packets = 0
     this.packetCreationTimer = 0
+    this.data = 0
+    if (this.type == ENEMY) {
+      this.data = 3;
+    }
   }
 
   updateTimers(dt) {
@@ -46,7 +50,7 @@ export default class {
   }
 
   canSendPacket() {
-    return this.packets > 0
+    return this.packets > 0 && !this.isEnemy()
   }
 
   canTransportPacket() {
@@ -61,7 +65,7 @@ export default class {
     if (this.canTransportPacket()) {
       this.addPackets(1)
     }
-    
+
     switch (this.type) {
       case NEUTRAL:
         this.type = CAPTURED;
@@ -79,7 +83,6 @@ export default class {
 
   isPacketCreator() {
     switch (this.type) {
-      case ENEMY: return true;
       case BASE: return true;
       default: return false;
     }
