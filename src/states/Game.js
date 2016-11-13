@@ -119,24 +119,30 @@ export default class extends Phaser.State {
 
   handleServerDragUpdate(origin, target) {
     if (!this.currentServer) return
-
+    let intersections
     this.servers.forEach((server) => { if (server !== origin) server.removeIndicators() })
     const snappedServer = this.findClosestSnappedServer(origin, target)
-    if (snappedServer && this.networkGraph.hasEdge(origin.logic.uuid, snappedServer.logic.uuid)) { // DEPLOY
-      this.mode = 'deploy'
-    } else { // BUILD
-      const intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
-      if (snappedServer && intersections.length === 0) {
-        this.mode = 'build'
-        this.currentTarget = target = snappedServer
-        snappedServer.snapIndication()
+    if (snappedServer) {
+      if (this.networkGraph.hasEdge(origin.logic.uuid, snappedServer.logic.uuid)) {
+        this.mode = 'deploy'
+      } else { // BUILD
+        intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
+        if (intersections.length === 0) {
+          this.mode = 'build'
+        }
       }
-      this.grid.render({
-        drag: { origin, target },
-        intersections,
-        mode: this.mode
-      })
+      snappedServer.snapIndication()
+      this.currentTarget = target = snappedServer
+    } else {
+      this.mode = null
+      this.currentTarget = null
     }
+
+    this.grid.render({
+      drag: { origin, target },
+      intersections: intersections || [],
+      mode: this.mode
+    })
   }
 
   handleServerDragStop(server, pointer) {
@@ -150,21 +156,20 @@ export default class extends Phaser.State {
         return current;
       }, this.currentServer.logic.uuid);
       this.grid.render();
-      this.sendPacketOnPath(this.currentServer, path)
-    } else if (this.mode === 'deploy' && server.canSendPacket()) {
-      path = [this.currentTarget.logic.uuid]
-      [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+      this.sendPacketOnPath(this.currentServer, path, this.mode)
+    } else if (this.mode === 'deploy' && server.canSendPacket() && this.currentTarget) {
+      this.sendPacketOnPath(this.currentServer, [this.currentTarget.logic.uuid], this.mode)
     }
     this.mode = this.currentServer = this.currentTarget = undefined
     this.grid.render()
   }
 
-  sendPacketOnPath(originServer, path) {
+  sendPacketOnPath(originServer, path, type = 'deploy') {
     let packet = new Packet({game: this.game, src: originServer});
     this.game.add.existing(packet);
     var pointPath = this.grid.pointPath(path);
     originServer.logic.subtractPackets(1)
-    packet.sendAlongPath(pointPath, this.networkGraph.node(path[0]).server);
+    packet.sendAlongPath(pointPath, this.networkGraph.node(path[0]).server, type);
   }
 
   doesEdgeIntersectWithOthers(x0, y0, x1, y1) {

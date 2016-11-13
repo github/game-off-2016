@@ -1,4 +1,3 @@
-- Color same edge of exists.
 - Put number of required packets to build in middle
 - Highlight drag in red if not enough.
 - Send multiple packets to build if needing more.

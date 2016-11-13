@@ -1,5 +1,10 @@
 import Phaser from 'phaser'
 
+const SPEEDS = {
+  build: 100,
+  deploy: 50
+}
+
 const size = 5;
 export default class extends Phaser.Graphics {
 
@@ -15,7 +20,7 @@ export default class extends Phaser.Graphics {
     this.endFill();
   }
 
-  sendAlongPath(pointPath, server) {
+  sendAlongPath(pointPath, server, type) {
     let points = pointPath.reduce((hash, point) => {
       hash.x.push(point.x);
       hash.y.push(point.y);
