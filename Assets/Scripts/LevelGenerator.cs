@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -19,6 +18,7 @@ public class LevelGenerator {
 	}
 
 	public void GenerateMap() {
+		Room.ConnectDoors (startingPoint, startingPoint.doors [1], templates [1], templates [1].doors [2]);
 	}
 
 	public static T DeepClone<T>(T obj)

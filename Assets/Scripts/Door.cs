@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,7 +7,7 @@ public class Door {
 	public int doorId;
 	public int x;
 	public int y;
-	public int connectedRoomId;
+	public Room connectedRoom;
 	public int connectedDoorId;
 
 	public Door(int id, int _x, int _y) {

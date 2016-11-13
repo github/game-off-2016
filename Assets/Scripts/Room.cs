@@ -6,8 +6,8 @@ using System.Collections.Generic;
 [Serializable]
 public class Room {
 	public int roomId;
-	int width;
-	int height;
+	public int width;
+	public int height;
 
 	public Dictionary<int, Door> doors;
 	public HashSet<Door> doorsWithConnection;
@@ -25,18 +25,18 @@ public class Room {
 
 		prefab = _prefab;
 		RoomDetails roomDetail = prefab.GetComponent<RoomDetails> ();
+		Bounds bounds = GetBounds(prefab);
+		width = (int) bounds.size.x;
+		height = (int) bounds.size.y;
 
-		width = roomDetail.HorizontalSize;//((RectTransform)prefab.transform).rect.width;
-		height = roomDetail.VerticalSize;//((RectTransform)prefab.transform).rect.height;
-
-		GameObject[] prefabDoors = roomDetail.Doors;
+		List<GameObject> prefabDoors = roomDetail.Doors;
 		doors = new Dictionary<int, Door> ();
 		int i = 1;
 		foreach(GameObject doorObject in prefabDoors) {
 			Door door = new Door(
 				i,
-				(int) doorObject.transform.localPosition.x,
-				(int) doorObject.transform.localPosition.y
+				((int) doorObject.transform.localPosition.x) + (width / 2),
+				((int) doorObject.transform.localPosition.y) + (height / 2)
 			);
 			doors[i] = door;
 			doorsWithoutConnection.Add(door);
@@ -58,20 +58,20 @@ public class Room {
 		doorsWithoutConnection.Add (door);
 	}
 
-	public int TopX() {
+	public int LeftX() {
 		return startX;
 	}
 
-	public int BottomX() {
-		return startX + height;
+	public int RightX() {
+		return startX + width;
 	}
 
-	public int LeftY() {
+	public int TopY() {
 		return startY;
 	}
 
-	public int RighyY() {
-		return startX + width;
+	public int BottomY() {
+		return startX + height;
 	}
 		
 
@@ -79,10 +79,10 @@ public class Room {
 		if (room.doorsWithConnection.Contains (door)) {
 			throw new Exception ("Door is already connected to an other room");
 		}
-		door.connectedRoomId = newRoom.roomId;
+		door.connectedRoom = newRoom;
 		door.connectedDoorId = otherDoor.doorId;
 
-		otherDoor.connectedRoomId = room.roomId;
+		otherDoor.connectedRoom = room;
 		otherDoor.connectedDoorId = door.doorId;
 
 		room.SetDoorAsConnected (door);
@@ -90,29 +90,41 @@ public class Room {
 
 		newRoom.startX = room.startX + door.x - otherDoor.x;
 		newRoom.startY = room.startY + door.y - otherDoor.y;			
+
+		if (newRoom.roomId == 0) {
+			newRoom.roomId = room.roomId + 1;
+		}
 	}
 
 	public static bool AreRoomsOverlapping(Room room1, Room room2) {
-		if (room1.TopX () <= room2.TopX () && room1.BottomX () >= room2.TopX()) {
+		if (room1.LeftX () <= room2.LeftX () && room1.RightX () >= room2.LeftX()) {
 			return true;
 		}
 
-		if (room1.TopX () <= room2.BottomX () && room1.BottomX () >= room2.BottomX()) {
+		if (room1.LeftX () <= room2.RightX () && room1.RightX () >= room2.RightX()) {
 			return true;
 		}
 
-		if (room1.LeftY () <= room2.LeftY () && room1.RighyY () >= room2.LeftY()) {
+		if (room1.TopY () <= room2.TopY () && room1.BottomY () >= room2.TopY()) {
 			return true;
 		}
 
-		if (room1.LeftY () <= room2.RighyY () && room1.RighyY () >= room2.RighyY()) {
+		if (room1.TopY () <= room2.BottomY () && room1.BottomY () >= room2.BottomY()) {
 			return true;
 		}
 
-		if (room1.TopX () >= room2.TopX () && room1.BottomX () <= room2.BottomX () && room1.LeftY () >= room2.LeftY () && room1.RighyY () <= room2.RighyY ()) {
+		if (room1.LeftX () >= room2.LeftX () && room1.RightX () <= room2.RightX () && room1.TopY () >= room2.TopY () && room1.BottomY () <= room2.BottomY ()) {
 			return true;
 		}
 
 		return false;
+	}
+
+	static Bounds GetBounds(GameObject prefab) {
+		Bounds bounds = new Bounds(prefab.transform.position, Vector3.zero);
+		foreach (Renderer renderer in prefab.GetComponentsInChildren<Renderer>()) {
+			bounds.Encapsulate(renderer.bounds);
+		}
+		return bounds;
 	}
 }
