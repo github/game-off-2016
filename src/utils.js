@@ -1,3 +1,5 @@
+import lineCircleCollision from 'line-circle-collision'
+
 export const centerGameObjects = (objects) => {
   objects.forEach(function (object) {
     object.anchor.setTo(0.5)
@@ -64,4 +66,8 @@ export function doLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     }
   }
   return true;
+}
+
+export function doesLineIntersectsWithCircle(a, b, c, r) {
+  return lineCircleCollision([a.x, a.y], [b.x, b.y], [c.x, c.y], r)
 }

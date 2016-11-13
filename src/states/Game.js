@@ -2,11 +2,11 @@
 import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
-import Server from '../sprites/Server'
+import Server, { BASE_SERVER_SIZE } from '../sprites/Server'
 import {default as Grid, SIMPLE, CAPTURED, ENEMY as ENEMY_EDGE} from '../sprites/Grid'
 import {default as ServerLogic, BASE, NEUTRAL, ENEMY} from '../logic/Server'
 import Graphlib from "graphlib"
-import { distance, doLinesIntersect } from '../utils'
+import { distance, doLinesIntersect, doesLineIntersectsWithCircle } from '../utils'
 import times from 'times-loop'
 
 const GRID_COLS = 3
@@ -142,13 +142,20 @@ export default class extends Phaser.State {
   }
 
   handleServerDragStart(server, pointer) {
+    this.currentServer = server
   }
 
   handleServerDragUpdate(origin, target) {
+    this.servers.forEach((server) => { if (server !== origin) server.removeIndicators() })
+    const snappedServer = this.findClosestSnappedServer(origin, target)
+    if (snappedServer) {
+      this.snappedServer = target = snappedServer
+      snappedServer.snapIndication()
+    }
     const intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
     this.grid.render({
-      drag: { origin, target},
-      intersections
+      drag: { origin, target },
+      intersections,
     })
   }
 
@@ -200,5 +207,12 @@ export default class extends Phaser.State {
         return false
       }
     })
+  }
+
+  findClosestSnappedServer(origin, target) {
+    const snappedServers = this.servers.filter((server) => {
+        return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE) && (server !== origin)
+    })
+    return snappedServers[0]
   }
 }

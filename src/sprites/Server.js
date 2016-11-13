@@ -1,7 +1,9 @@
 import Phaser from 'phaser'
 
+const OVER_INDICATION_COLOR = 0x444444
 const BORDER_SIZE = 5
-export const SERVER_SIZE = 35 + BORDER_SIZE
+export const BASE_SERVER_SIZE = 35
+export const SERVER_SIZE = BASE_SERVER_SIZE + BORDER_SIZE
 
 export default class extends Phaser.Graphics {
   constructor ({ game, x, y, logic, clickSignal }) {
@@ -31,12 +33,12 @@ export default class extends Phaser.Graphics {
     };
 
     this.events.onInputOver.add((game, pointer) => {
-      this.tint = 0xCCCCCC;
+      this.tint = OVER_INDICATION_COLOR
       clickSignal.dispatch(this, 'over');
     });
 
     this.events.onInputOut.add((game, pointer) => {
-      this.tint = 0xFFFFFF;
+      this.removeIndicators()
       clickSignal.dispatch(this, 'out', pointer);
     });
 
@@ -71,7 +73,14 @@ export default class extends Phaser.Graphics {
   createPackets(packets) {
     this.logic.addPackets(packets)
     var t = this.game.add.tween(this.scale).to({ x: 1.1, y: 1.1 }, 100, 'Linear', true, 0, 0, true)
+  }
 
+  snapIndication() {
+    this.tint = OVER_INDICATION_COLOR;
+  }
+
+  removeIndicators() {
+    this.tint = 0xFFFFFF;
   }
 
   hit() {
