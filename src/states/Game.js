@@ -111,27 +111,27 @@ export default class extends Phaser.State {
   }
 
   handleServerClick(server, pointer) {
-    if (this.currentServer == null) { // PICK ORIGIN
-      if (server.canSendPacket()){
-        this.currentServer = server;
-        this.currentTarget = new Target({
-          game,
-          source: server
-        });
-        game.add.existing(this.currentTarget);
-      }
-    } else {
-      if (server != this.currentServer) { // PICK TARGET (origin already selected)
-        let path = [server.logic.uuid]
-        let packet, pointPath
-        if (this.networkGraph.hasEdge(server, this.currentServer)) { // DEPLOY MODE
-          [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-          packet.sendAlongPath(pointPath, server);
-        }
-      }
-      this.currentServer = null; // DESELECT AFTER CLICK (TODO (shay): determine if this is the behavior we want)
-      this.currentTarget.kill();
-    }
+    // if (this.currentServer == null) { // PICK ORIGIN
+    //   if (server.canSendPacket()){
+    //     this.currentServer = server;
+    //     this.currentTarget = new Target({
+    //       game,
+    //       source: server
+    //     });
+    //     game.add.existing(this.currentTarget);
+    //   }
+    // } else {
+    //   if (server != this.currentServer) { // PICK TARGET (origin already selected)
+    //     let path = [server.logic.uuid]
+    //     let packet, pointPath
+    //     if (this.networkGraph.hasEdge(server, this.currentServer)) { // DEPLOY MODE
+    //       [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+    //       packet.sendAlongPath(pointPath, server);
+    //     }
+    //   }
+    //   this.currentServer = null; // DESELECT AFTER CLICK (TODO (shay): determine if this is the behavior we want)
+    //   this.currentTarget.kill();
+    // }
   }
 
   handleServerOver(server, pointer) {
@@ -149,35 +149,35 @@ export default class extends Phaser.State {
   handleServerDragUpdate(origin, target) {
     this.servers.forEach((server) => { if (server !== origin) server.removeIndicators() })
     const snappedServer = this.findClosestSnappedServer(origin, target)
-    if (snappedServer) {
-      this.snappedServer = target = snappedServer
+    const intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
+    if (snappedServer && intersections.length === 0) {
+      this.currentTarget = target = snappedServer
       snappedServer.snapIndication()
     }
-    const intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
     this.grid.render({
       drag: { origin, target },
       intersections,
     })
+    this.canBuild = !!(intersections.length === 0 && snappedServer)
   }
 
   handleServerDragStop(server, pointer) {
     this.grid.render()
-    // const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
-    // if (intersection) {
-    //   // TODO: handle
-    // } else {
-    //   // TODO: make sure there's no edge already.
-    //   path.reduce((last, current) => {
-    //     let e = this.networkGraph.edge({v: last, w: current});
-    //     this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
-    //     return current;
-    //   }, this.currentServer.logic.uuid);
-    //   this.grid.render();
-    //   [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-    // }
-    // packet.sendAlongPath(pointPath, server);
+    if (this.canBuild) {
+      let path = [this.currentTarget.logic.uuid]
+      path.reduce((last, current) => {
+        let e = this.networkGraph.edge({v: last, w: current});
+        this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
+        return current;
+      }, this.currentServer.logic.uuid);
+      this.grid.render();
+      let [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+      packet.sendAlongPath(pointPath, server);
+    }
+    this.currentServer = this.currentTarget = null
+    this.canBuild = false
+    this.grid.render()
   }
-
 
   sendPacketOnPath(originServer, path) {
     let packet = new Packet({game: this.game, src: originServer});
