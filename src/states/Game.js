@@ -29,7 +29,6 @@ export default class extends Phaser.State {
     this.game.add.existing(this.grid)
     this.currentServer = null
     this.currentTarget = null
-    this.draggingFrom = false
     window.g = this.grid;
 
     let clickSignal = new Phaser.Signal();
@@ -124,24 +123,8 @@ export default class extends Phaser.State {
       if (server != this.currentServer) { // PICK TARGET (origin already selected)
         let path = [server.logic.uuid]
         let packet, pointPath
-        if (this.draggingFrom) { // BUILD MODE
-          // COLOR EDGES AS CAPTURED
-          const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
-          if (intersection) {
-            // TODO: handle
-          } else {
-            path.reduce((last, current) => {
-              let e = this.networkGraph.edge({v: last, w: current});
-              this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
-              return current;
-            }, this.currentServer.logic.uuid);
-            this.grid.render();
-            [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-          }
-        } else if (this.networkGraph.hasEdge(server, this.currentServer)) { // DEPLOY MODE
+        if (this.networkGraph.hasEdge(server, this.currentServer)) { // DEPLOY MODE
           [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
-        }
-        if (packet) { // SEND PACKET IF POSSIBLE
           packet.sendAlongPath(pointPath, server);
         }
       }
@@ -159,17 +142,32 @@ export default class extends Phaser.State {
   }
 
   handleServerDragStart(server, pointer) {
-    this.draggingFrom = server
   }
 
-  handleServerDragUpdate(originServer, pointer) {
-    const targetServer = originServer
-    this.grid.showDrag(originServer, pointer)
+  handleServerDragUpdate(origin, target) {
+    const intersections = this.doesEdgeIntersectWithOthers(origin.x, origin.y, target.x, target.y)
+    this.grid.render({
+      drag: { origin, target},
+      intersections
+    })
   }
 
   handleServerDragStop(server, pointer) {
-    this.draggingFrom = undefined
-    this.grid.endDrag()
+    this.grid.render()
+    // const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
+    // if (intersection) {
+    //   // TODO: handle
+    // } else {
+    //   // TODO: make sure there's no edge already.
+    //   path.reduce((last, current) => {
+    //     let e = this.networkGraph.edge({v: last, w: current});
+    //     this.networkGraph.setEdge(last, current, {...e, type: CAPTURED});
+    //     return current;
+    //   }, this.currentServer.logic.uuid);
+    //   this.grid.render();
+    //   [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
+    // }
+    // packet.sendAlongPath(pointPath, server);
   }
 
 
@@ -187,12 +185,8 @@ export default class extends Phaser.State {
     return [packet, pointPath]
   }
 
-  doesEdgeIntersectWithAnother(origin, target) {
-    let x0 = origin.x
-    let y0 = origin.y
-    let x1 = target.x
-    let y1 = target.y
-    return this.networkGraph.edges().find((edge) => {
+  doesEdgeIntersectWithOthers(x0, y0, x1, y1) {
+    return this.networkGraph.edges().filter((edge) => {
       let v = this.networkGraph.node(edge.v).server
       let w = this.networkGraph.node(edge.w).server
       let edgeX0 = v.x

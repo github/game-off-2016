@@ -24,9 +24,9 @@ export default class extends Phaser.State {
   }
 
   render () {
-    if (this.fontsReady) {
+    // if (this.fontsReady) {
       this.state.start('Splash')
-    }
+    // }
   }
 
   fontsLoaded () {

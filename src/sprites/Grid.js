@@ -8,12 +8,19 @@ export const ENEMY = 'ENEMY';
 
 const EDGE_WIDTH = 3;
 const EDGE_COLOR = 0x555555;
-const EDGE_ALPHA = 0.8;
+const EDGE_ALPHA = 0.6;
 
-const DRAG_DASH_INTERVALS = [5,10]
+const BAD_EDGE_WIDTH = 6;
+const BAD_EDGE_COLOR = 0x990033;
+const BAD_EDGE_ALPHA = 0.7;
+
+const DRAG_DASH_INTERVALS = [4, 4]
 const DRAG_WIDTH = 4;
 const DRAG_COLOR = 0x333333;
-const DRAG_ALPHA = 0.5;
+const DRAG_ALPHA = 1;
+
+const BAD_DRAG_ALPHA = 0.8;
+const BAD_DRAG_COLOR = 0xff0000;
 
 export default class extends Phaser.Graphics {
 
@@ -25,26 +32,29 @@ export default class extends Phaser.Graphics {
     this.render();
   }
 
-  render () {
+  render (options = {}) {
     this.clear();
     this.networkGraph.edges().forEach((edge) => {
       let attributes = this.networkGraph.edge(edge);
-      this.lineStyle(EDGE_WIDTH, EDGE_COLOR, EDGE_ALPHA);
+      if (options.intersections && options.intersections.includes(edge)) {
+        this.lineStyle(BAD_EDGE_WIDTH, BAD_EDGE_COLOR, BAD_EDGE_ALPHA);
+      } else {
+        this.lineStyle(EDGE_WIDTH, EDGE_COLOR, EDGE_ALPHA);
+      }
       let v = this.networkGraph.node(edge.v).server;
       this.moveTo(v.x, v.y);
       let w = this.networkGraph.node(edge.w).server;
       this.lineTo(w.x, w.y);
     })
-  }
 
-  showDrag(server, pointer) {
-    this.render()
-    this.lineStyle(DRAG_WIDTH, DRAG_COLOR, DRAG_ALPHA);
-    drawDahsedLine(this, server.x, server.y, pointer.x, pointer.y, DRAG_DASH_INTERVALS)
-  }
-
-  endDrag() {
-    this.render()
+    if (options.drag) {
+      if (options.intersections&& options.intersections.length > 0) {
+        this.lineStyle(DRAG_WIDTH, BAD_DRAG_COLOR, BAD_DRAG_ALPHA);
+      } else {
+        this.lineStyle(DRAG_WIDTH, DRAG_COLOR, DRAG_ALPHA);
+      }
+      drawDahsedLine(this, options.drag.origin.x, options.drag.origin.y, options.drag.target.x, options.drag.target.y, DRAG_DASH_INTERVALS)
+    }
   }
 
   shortestPath(src, target) {

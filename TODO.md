@@ -1,3 +1,10 @@
-- Better UI for selection / indications with paths.
-- Don't allow cross-edges (highlight blocker).
+- Snap drag to servers.
+- Color intersecting edges.
+- Color same edge of exists.
+- Put number of required packets to build in middle
+- Highlight drag in red if not enough.
+- Send multiple packets to build if needing more.
 - Build edges as packet is moving.
+- Building takes more time.
+- Better UI for current server and targets.
+- Marching ants lines.
