@@ -1,0 +1,6 @@
+- Put number of required packets to build in middle
+- Highlight drag in red if not enough.
+- Send multiple packets to build if needing more.
+- Build edges as packet is moving.
+- Building takes more time.
+- Put arrows in paths -> Drag them to remove.
