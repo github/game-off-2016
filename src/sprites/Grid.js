@@ -34,7 +34,7 @@ export default class extends Phaser.Graphics {
 
   shortestPath(src, target) {
     console.debug("Finding shortest path from ", src, target);
-    let results = Graphlib.alg.dijkstra(networkGraph, src, (e) => this.weightFn(e), (v) => this.networkGraph.nodeEdges(v));
+    let results = Graphlib.alg.dijkstra(this.networkGraph, src, (e) => this.weightFn(e), (v) => this.networkGraph.nodeEdges(v));
     if (results[target].distance == Number.POSITIVE_INFINITY) {
       return null;
     }
@@ -49,12 +49,17 @@ export default class extends Phaser.Graphics {
   }
 
   randomNode(src) {
-    const results = Graphlib.alg.dijkstra(networkGraph, src, (e) => this.weightFn(e), (v) => this.networkGraph.nodeEdges(v));
+    const results = Graphlib.alg.dijkstra(this.networkGraph, src, (e) => this.weightFn(e), (v) => this.networkGraph.nodeEdges(v));
     var keys = Object.keys(results);
-    keys.filter((key) => {
-      return results[key].distance != Number.POSITIVE_INFINITY && src != key
+    keys = keys.filter((key) => {
+      const distance = results[key].distance;
+      return distance != Number.POSITIVE_INFINITY && distance > 0;
     })
     return randomItem(keys);
+  }
+
+  node(uuid) {
+    return this.networkGraph.node(uuid).server;
   }
 
   pointPath(path) {

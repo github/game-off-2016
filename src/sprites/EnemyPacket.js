@@ -20,19 +20,17 @@ export default class extends Phaser.Graphics {
   }
 
   chooseTarget() {
-    this.target = this.grid.randomNode(this.currentlyAt.logic.uuid);
+    const uuid = this.grid.randomNode(this.currentlyAt.logic.uuid);
+    this.target = this.grid.node(uuid);
   }
 
   patrol() {
     this.chooseTarget();
-    console.log(this.target);
-    const path = this.grid.shortestPath(this.currentlyAt.logic.uuid, this.target);
-    console.log(path);
-    pointPath = this.grid.pointPath(path);
+    const path = this.grid.shortestPath(this.currentlyAt.logic.uuid, this.target.logic.uuid);
+    const pointPath = this.grid.pointPath(path);
 
-    sendAlongPath(pointPath).onComplete.add(() => {
+    this.sendAlongPath(pointPath).onComplete.add(() => {
       this.currentlyAt = this.target;
-      this.target = null;
       this.patrol();
     });
   }
@@ -43,7 +41,7 @@ export default class extends Phaser.Graphics {
       hash.y.push(point.y);
       return hash;
     }, {x: [], y: []});
-    let t = this.game.add.tween(this).to(points, 500 * pointPath.length ,Phaser.Easing.Linear.None,true);
+    let t = this.game.add.tween(this).to(points, 2000 * pointPath.length ,Phaser.Easing.Linear.None,true);
     return t;
   }
 
