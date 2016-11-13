@@ -1,36 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using GamepadInput;
 
 namespace RiverQuest.InputSystem
 {
-    public class InputCodeGenerator : MonoBehaviour
+    public static class InputCodeGenerator
     {
-        public class CodeSquence
+        public static InputCodeManager.CodeSquence GetCodeSequence(int length, bool arrowsOnly)
         {
-            public AbstractInput Current;
-            public List<AbstractInput> Sequence = new List<AbstractInput>();
-
-            public bool Check(AbstractInput input)
-            {
-                return input == Current;
-            }
-        }
-
-        public void CheckInput(AbstractInput input)
-        {
-
-        }
-
-        public static CodeSquence GetCodeSequence(int length, bool arrowsOnly)
-        {
-            var seq = new CodeSquence();
-            for(var i = 0; i < length; i++)
+            var seq = new InputCodeManager.CodeSquence();
+            for (var i = 0; i < length; i++)
             {
                 AbstractInput entry = new Button();
-                var rand = arrowsOnly ? 2 : Random.Range(0, 2);
-                switch(rand)
+                var rand = arrowsOnly ? 2 : UnityEngine.Random.Range(0, 2);
+                switch (rand)
                 {
                     case 0:
                         entry = new Button();
@@ -53,13 +36,6 @@ namespace RiverQuest.InputSystem
             return seq;
         }
 
-        private void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.J))
-            {
-                GetCodeSequence(15, false);
-            }
-        }
     }
 }
 

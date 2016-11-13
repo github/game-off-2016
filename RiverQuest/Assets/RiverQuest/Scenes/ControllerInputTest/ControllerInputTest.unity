@@ -98,6 +98,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 511645873}
+  - 114: {fileID: 511645874}
   - 114: {fileID: 511645872}
   m_Layer: 0
   m_Name: InputCodeGenerator
@@ -114,7 +115,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 511645871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbbf834dd0094b64880dac0f965ca2fd, type: 3}
+  m_Script: {fileID: 11500000, guid: dadbd94f5824e004b98f3ef643ac92ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &511645873
@@ -130,6 +131,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!114 &511645874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 511645871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d16292ee0a36a74fb57ff210063256b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Manager: {fileID: 511645872}
 --- !u!1 &1279710193
 GameObject:
   m_ObjectHideFlags: 0
