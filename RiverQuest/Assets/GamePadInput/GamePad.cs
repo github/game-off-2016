@@ -91,7 +91,7 @@ namespace GamepadInput
         public enum Trigger { LeftTrigger, RightTrigger }
         public enum Axis { LeftStick, RightStick, Dpad }
         public enum Index { Any, One, Two, Three, Four }
-        public enum Direction { Left, Right, Up, Down, Any }
+        public enum Direction { Left, Right, Up, Down }
 
         public static bool GetButtonDown(Button button, Index controlIndex)
         {

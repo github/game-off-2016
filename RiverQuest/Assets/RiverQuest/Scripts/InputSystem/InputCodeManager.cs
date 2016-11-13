@@ -15,14 +15,18 @@ namespace RiverQuest.InputSystem
             public GamePad.Index PlayerIndex;
             public Action<AbstractInput> OnStepCompleted;
             public Action<CodeSquence> OnSequenceCompleted;
+            public Action<CodeSquence> OnSequenceFailed;
             public CodeSquence Sequence;
+            public bool PunishFail;
 
-            public PlayerInputTask(GamePad.Index index, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, CodeSquence sequence)
+            public PlayerInputTask(GamePad.Index index, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, Action<CodeSquence> sequenceFailed, bool punish, CodeSquence sequence)
             {
                 PlayerIndex = index;
                 OnStepCompleted = stepCompleted;
                 OnSequenceCompleted = sequenceCompleted;
                 Sequence = sequence;
+                OnSequenceFailed = sequenceFailed;
+                PunishFail = punish;
             }
 
             public bool Next()
@@ -39,6 +43,11 @@ namespace RiverQuest.InputSystem
                 }
 
                 return next;
+            }
+
+            public void Fail()
+            {
+                OnSequenceFailed(Sequence);
             }
         }
 
@@ -109,9 +118,15 @@ namespace RiverQuest.InputSystem
             }
         }
 
-        public void StartInputSequence(GamePad.Index player, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, int length)
+        public void StartInputSequence(GamePad.Index player, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, 
+            Action<CodeSquence> inputFail, bool punishFail, int length, bool useButtons = true, bool useDirections = true, bool useTriggers = false, CodeSquence sequence = null)
         {
-            var seq = new PlayerInputTask(player, stepCompleted, sequenceCompleted, InputCodeGenerator.GetCodeSequence(length, false));
+            if (sequence == null)
+            {
+                sequence = InputCodeGenerator.GetCodeSequence(length, useTriggers, useButtons, useDirections);
+            }
+
+            var seq = new PlayerInputTask(player, stepCompleted, sequenceCompleted, inputFail, punishFail, sequence);
             _activeInputSequences.Add(player, seq);
         }
 
