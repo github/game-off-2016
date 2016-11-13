@@ -17,13 +17,7 @@ const STAGE_PADDING = 75
 const BASE_SERVERS = 1
 const ENEMY_SERVERS = 3
 
-const MODES = {
-  build: 'BUILD',
-  deploy: 'DEPLOY'
-}
-
 export default class extends Phaser.State {
-  init () {}
   preload () {
     this.networkGraph = new Graphlib.Graph({directed: false});
     window.networkGraph = this.networkGraph;
@@ -31,22 +25,22 @@ export default class extends Phaser.State {
   }
 
   create () {
-    this.mode = MODES.build
     this.grid = new Grid({ game, networkGraph: this.networkGraph })
     this.game.add.existing(this.grid)
     this.currentServer = null
     this.currentTarget = null
+    this.draggingFrom = false
     window.g = this.grid;
 
     let clickSignal = new Phaser.Signal();
-    clickSignal.add((server, eventType) => {
+    clickSignal.add((server, eventType, pointer) => {
       switch (eventType) {
-        case 'click': return this.handleServerClick(server)
-        case 'over': return this.handleServerOver(server)
-        case 'out': return this.handleServerOut(server)
-        case 'dragStart': return this.handleServerDragStart(server)
-        case 'dragUpdate': return this.handleServerDragUpdate(server)
-        case 'dragStop': return this.handleServerDragStop(server)
+        case 'click': return this.handleServerClick(server, pointer)
+        case 'over': return this.handleServerOver(server, pointer)
+        case 'out': return this.handleServerOut(server, pointer)
+        case 'dragStart': return this.handleServerDragStart(server, pointer)
+        case 'dragUpdate': return this.handleServerDragUpdate(server, pointer)
+        case 'dragStop': return this.handleServerDragStop(server, pointer)
       }
     });
 
@@ -116,7 +110,7 @@ export default class extends Phaser.State {
     })
   }
 
-  handleServerClick(server) {
+  handleServerClick(server, pointer) {
     if (this.currentServer == null) { // PICK ORIGIN
       if (server.canSendPacket()){
         this.currentServer = server;
@@ -130,7 +124,7 @@ export default class extends Phaser.State {
       if (server != this.currentServer) { // PICK TARGET (origin already selected)
         let path = [server.logic.uuid]
         let packet, pointPath
-        if (this.mode === MODES.build) { // BUILD MODE
+        if (this.draggingFrom) { // BUILD MODE
           // COLOR EDGES AS CAPTURED
           const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
           if (intersection) {
@@ -144,7 +138,7 @@ export default class extends Phaser.State {
             this.grid.render();
             [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
           }
-        } else if ((this.mode === MODES.deploy) && (this.networkGraph.hasEdge(server, this.currentServer))) { // DEPLOY MODE
+        } else if (this.networkGraph.hasEdge(server, this.currentServer)) { // DEPLOY MODE
           [packet, pointPath] = this.sendPacketOnPath(this.currentServer, path)
         }
         if (packet) { // SEND PACKET IF POSSIBLE
@@ -156,24 +150,26 @@ export default class extends Phaser.State {
     }
   }
 
-  handleServerOver(server) {
+  handleServerOver(server, pointer) {
 
   }
 
-  handleServerOut(server) {
+  handleServerOut(server, pointer) {
 
   }
 
-  handleServerDragStart(server) {
-    console.log('start')
+  handleServerDragStart(server, pointer) {
+    this.draggingFrom = server
   }
 
-  handleServerDragUpdate(server) {
-    console.log('update')
+  handleServerDragUpdate(originServer, pointer) {
+    const targetServer = originServer
+    this.grid.showDrag(originServer, pointer)
   }
 
-  handleServerDragStop(server) {
-    console.log('end')
+  handleServerDragStop(server, pointer) {
+    this.draggingFrom = undefined
+    this.grid.endDrag()
   }
 
 
@@ -210,8 +206,5 @@ export default class extends Phaser.State {
         return false
       }
     })
-  }
-
-  render () {
   }
 }
