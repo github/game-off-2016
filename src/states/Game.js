@@ -1,4 +1,5 @@
 /* globals __DEV__ */
+import _ from 'lodash'
 import Phaser from 'phaser'
 import Target from '../sprites/Target'
 import Packet from '../sprites/Packet'
@@ -211,8 +212,10 @@ export default class extends Phaser.State {
 
   findClosestSnappedServer(origin, target) {
     const snappedServers = this.servers.filter((server) => {
-        return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE / window.devicePixelRatio) && (server !== origin)
+        return doesLineIntersectsWithCircle(origin, target, server, BASE_SERVER_SIZE) && (server !== origin)
     })
-    return snappedServers[0]
+    return _.min(snappedServers, (server) => {
+      return distance(server, origin)
+    })
   }
 }
