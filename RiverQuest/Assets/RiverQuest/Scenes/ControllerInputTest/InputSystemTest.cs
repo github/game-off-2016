@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using GamepadInput;
+using System;
 
 namespace RiverQuest.InputSystem
 {
@@ -18,7 +19,8 @@ namespace RiverQuest.InputSystem
 
         private void StartSequence(InputCodeManager.CodeSquence seq = null)
         {
-            Manager.StartInputSequence(GamePad.Index.One, OnStepComplete, OnSequenceComplete, OnSequenceFailed, true, 10, true, true, false, seq);
+            var time = new TimeSpan(0, 0, 5);
+            Manager.StartInputSequence(GamePad.Index.One, time, OnStepComplete, OnSequenceComplete, OnSequenceFailed, true, 10, true, true, false, seq);
         }
 
         private void OnStepComplete(AbstractInput nextStep)
@@ -33,6 +35,7 @@ namespace RiverQuest.InputSystem
 
         private void OnSequenceFailed(InputCodeManager.CodeSquence seq)
         {
+            Debug.Log("SEQUENCE FAILED, RESTARTING");
             StartSequence(seq);
         }
     }

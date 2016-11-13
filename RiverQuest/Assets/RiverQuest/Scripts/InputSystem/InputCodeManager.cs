@@ -18,8 +18,11 @@ namespace RiverQuest.InputSystem
             public Action<CodeSquence> OnSequenceFailed;
             public CodeSquence Sequence;
             public bool PunishFail;
+            public TimeSpan Time;
+            public DateTime StartTime;
+            public bool Done = false;
 
-            public PlayerInputTask(GamePad.Index index, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, Action<CodeSquence> sequenceFailed, bool punish, CodeSquence sequence)
+            public PlayerInputTask(GamePad.Index index, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, Action<CodeSquence> sequenceFailed, bool punish, CodeSquence sequence, TimeSpan time)
             {
                 PlayerIndex = index;
                 OnStepCompleted = stepCompleted;
@@ -27,6 +30,14 @@ namespace RiverQuest.InputSystem
                 Sequence = sequence;
                 OnSequenceFailed = sequenceFailed;
                 PunishFail = punish;
+                Time = time;
+
+                Start();
+            }
+
+            public void Start()
+            {
+                StartTime = DateTime.Now;
             }
 
             public bool Next()
@@ -48,6 +59,15 @@ namespace RiverQuest.InputSystem
             public void Fail()
             {
                 OnSequenceFailed(Sequence);
+            }
+
+            public TimeSpan GetRemainingTime()
+            {
+                var end = StartTime + Time;
+                var delta = end - DateTime.Now;
+                var remaining = Time - delta;
+
+                return delta;
             }
         }
 
@@ -75,11 +95,13 @@ namespace RiverQuest.InputSystem
         }
 
         public void CheckInput()
-        {
+        { 
             var remove = new List<KeyValuePair<GamePad.Index, PlayerInputTask>>();
 
             foreach (var kvp in _activeInputSequences)
             {
+                //Debug.Log("REMAINING TIME " + kvp.Value.GetRemainingTime());
+
                 var task = kvp.Value;
                 var inputAction = task.Sequence.Current;
                 var index = task.PlayerIndex;
@@ -93,8 +115,8 @@ namespace RiverQuest.InputSystem
                         break;
                     case InputAction.Direction:
                         var direction = (GamePad.Direction)Enum.Parse(typeof(GamePad.Direction), inputAction.Name);
-                        var Axis = ((Direction)inputAction).Axis;
-                        check = GamePad.GetDirection(GamePad.Axis.LeftStick, direction, index);
+                        var axis = ((Direction)inputAction).Axis;
+                        check = GamePad.GetDirection(axis, direction, index);
                         break;
                     case InputAction.Trigger:
                         var trigger = (GamePad.Trigger)Enum.Parse(typeof(GamePad.Trigger), inputAction.Name);
@@ -118,16 +140,37 @@ namespace RiverQuest.InputSystem
             }
         }
 
-        public void StartInputSequence(GamePad.Index player, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, 
-            Action<CodeSquence> inputFail, bool punishFail, int length, bool useButtons = true, bool useDirections = true, bool useTriggers = false, CodeSquence sequence = null)
+        public void StartInputSequence(GamePad.Index player, TimeSpan time, Action<AbstractInput> stepCompleted, Action<CodeSquence> sequenceCompleted, Action<CodeSquence> inputFail, 
+            bool punishFail, int length, bool useButtons = true, bool useDirections = true, bool useTriggers = false, 
+            CodeSquence sequence = null)
         {
             if (sequence == null)
             {
                 sequence = InputCodeGenerator.GetCodeSequence(length, useTriggers, useButtons, useDirections);
             }
 
-            var seq = new PlayerInputTask(player, stepCompleted, sequenceCompleted, inputFail, punishFail, sequence);
+            var seq = new PlayerInputTask(player, stepCompleted, sequenceCompleted, inputFail, punishFail, sequence, time);
             _activeInputSequences.Add(player, seq);
+
+            if(time.Seconds > 0)
+            {
+                StartCoroutine(CheckEndTime(player, (float)time.Seconds));
+            }            
+        }
+
+        private IEnumerator CheckEndTime(GamePad.Index player, float time)
+        {
+            yield return new WaitForSeconds(time);
+            
+            if(_activeInputSequences.ContainsKey(player))
+            {
+                var task = _activeInputSequences[player];
+                if(!task.Done)
+                {
+                    _activeInputSequences.Remove(player);
+                    task.Fail();
+                }
+            }
         }
 
         private void Update()
