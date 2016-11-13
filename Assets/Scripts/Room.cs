@@ -29,7 +29,7 @@ public class Room {
 		width = (int) bounds.size.x;
 		height = (int) bounds.size.y;
 
-		List<GameObject> prefabDoors = roomDetail.Doors;
+		List<GameObject> prefabDoors = roomDetail.GetDoors();
 		doors = new Dictionary<int, Door> ();
 		int i = 1;
 		foreach(GameObject doorObject in prefabDoors) {
