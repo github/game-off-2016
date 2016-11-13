@@ -44,6 +44,9 @@ export default class extends Phaser.State {
         case 'click': return this.handleServerClick(server)
         case 'over': return this.handleServerOver(server)
         case 'out': return this.handleServerOut(server)
+        case 'dragStart': return this.handleServerDragStart(server)
+        case 'dragUpdate': return this.handleServerDragUpdate(server)
+        case 'dragStop': return this.handleServerDragStop(server)
       }
     });
 
@@ -131,7 +134,7 @@ export default class extends Phaser.State {
           // COLOR EDGES AS CAPTURED
           const intersection = this.doesEdgeIntersectWithAnother(this.currentServer, server)
           if (intersection) {
-            console.log(intersection)
+            // TODO: handle
           } else {
             path.reduce((last, current) => {
               let e = this.networkGraph.edge({v: last, w: current});
@@ -160,6 +163,19 @@ export default class extends Phaser.State {
   handleServerOut(server) {
 
   }
+
+  handleServerDragStart(server) {
+    console.log('start')
+  }
+
+  handleServerDragUpdate(server) {
+    console.log('update')
+  }
+
+  handleServerDragStop(server) {
+    console.log('end')
+  }
+
 
   sendPacketOnPath(originServer, path) {
     let packet = new Packet({game: this.game, src: originServer});

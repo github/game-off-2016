@@ -16,6 +16,7 @@ export default class extends Phaser.Graphics {
     this.endFill();
     this.color();
     this.inputEnabled = true;
+    this.input.enableDrag();
     this.input.useHandCursor = true;
 
     const textStyle = { font: "16px Arial", fill: "#000000", align: "center" }
@@ -35,6 +36,18 @@ export default class extends Phaser.Graphics {
 
     this.events.onInputDown.add(() => {
       clickSignal.dispatch(this, 'click');
+    });
+
+    this.events.onDragStart.add(() => {
+      clickSignal.dispatch(this, 'dragStart');
+    });
+
+    this.events.onDragUpdate.add(() => {
+      clickSignal.dispatch(this, 'dragUpdate');
+    });
+
+    this.events.onDragStop.add(() => {
+      clickSignal.dispatch(this, 'dragStop');
     });
   }
 
