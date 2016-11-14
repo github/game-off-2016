@@ -13,7 +13,7 @@ Found a bug? [create an issue][hvs-issues] we will be glad about it :).
 
 ## How to contribute
 
-Fork this repo and run `yarn install` or `npm install` at the root of the project to install all dependencies, then run `npm run start` and you will have the game running locally 🎉.
+Fork this repo and run `yarn install` or `npm install` at the root of the project to install all dependencies, then run `npm start` and you will have the game running locally 🎉.
 
 <!-- links -->
 [ggo16]:        http://gameoff.github.com/
