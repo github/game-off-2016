@@ -6,6 +6,7 @@
 	var current_word 
 	var current_letter = 0
 	var typed_word = ""
+    var timer = 1000
 	document.addEventListener('DOMContentLoaded', init, false);
   
     function init(){
@@ -44,18 +45,31 @@
 			nextWord()
 		}
 		draw()
+        timer--;
 	}
 	
 	function draw(){
-		context.clearRect(0,0,width,height)
-		context.fillStyle = "#555555"
-		context.font = "40px Arial"
-		context.fillText(current_word,50,height - 70)
+        context.beginPath();
+        context.fillStyle= "#000000";
+		context.clearRect(0,0,width,height);
+		context.fillStyle = "#555555";
+        context.closePath();
+        
+        context.beginPath();
+        context.strokeStyle = "blue";
+        context.fillRect(10,10,timer,40);
+        context.closePath();
+        
+        context.beginPath();
+		context.font = "40px Arial";
+		context.fillText(current_word,50,height - 70);
 		for (var i = 1; i < 10; i += 1){
-			context.fillText(upcoming_words[i],50,height - 20 - (50*(i+1)))
+			context.fillText(upcoming_words[i],50,height - 20 - (50*(i+1)));
+        context.closePath();
 		}
-		context.fillStyle = "#ffffff"
-		context.fillText(typed_word,50,height - 70)
+		context.fillStyle = "#ffffff";
+		context.fillText(typed_word,50,height - 70);
+        
 	}
 	
 	function controls(event){
@@ -64,6 +78,7 @@
 		if (letter == current_word.substring(current_letter,current_letter+1)){
 			current_letter += 1
 			typed_word += letter
+			timer += 20;
 		}
 	}
 	
