@@ -80,7 +80,7 @@
 			typed_word += letter
 			timer += 20;
         }
-        else{aoe
+        else{
             timer -= 20;
 		}
 	}
