@@ -252,7 +252,6 @@ GameObject:
   - 4: {fileID: 1806905809}
   - 114: {fileID: 1806905811}
   - 114: {fileID: 1806905810}
-  - 114: {fileID: 1806905812}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -299,15 +298,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79cfa81f1e8cf8449af524bde3addad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1806905812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1806905808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a14eacdbe48c64c3f82c2bf0279cdfa7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomCount: 10

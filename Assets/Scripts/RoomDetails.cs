@@ -1,25 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class RoomDetails : MonoBehaviour {
+    public int Id;
     public int HorizontalSize;
     public int VerticalSize;
-    private List<GameObject> Doors;
-
-    void Start() {
-        int doorIndex = 0;
-
-        for(int i = 0; i < transform.childCount; i++) {
-            GameObject child = transform.GetChild(i).gameObject;
-            if (child.tag == "door") {
-                Doors.Add(child);
-                child.GetComponent<DoorDetails>().ID = doorIndex;
-                doorIndex++;
-            }
-        }
-    }
-
-    public List<GameObject> GetDoors() {
-        return Doors;
-    }
+    public GameObject[] Doors;
 }
