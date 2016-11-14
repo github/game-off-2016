@@ -1,0 +1,14 @@
+language: objective-c
+osx_image: xcode61
+rvm:
+- 2.1.2
+before_install:
+- chmod a+x ./Assets/.scripts/install.sh
+- chmod a+x ./Assets/.scripts/build.sh
+install:
+- ./Assets/.scripts/install.sh
+script:
+- ./Assets/.scripts/build.sh
+cache:
+  directories:
+    - MacEditorInstaller
