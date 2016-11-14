@@ -50,17 +50,17 @@
 	
 	function draw(){
         context.beginPath();
-        context.fillStyle= "#000000";
+        context.fillStyle= "#555555";
 		context.clearRect(0,0,width,height);
-		context.fillStyle = "#555555";
         context.closePath();
         
         context.beginPath();
-        context.strokeStyle = "blue";
+        context.fillStyle = "red";
         context.fillRect(10,10,timer,40);
         context.closePath();
         
         context.beginPath();
+        context.fillStyle= "#555555";
 		context.font = "40px Arial";
 		context.fillText(current_word,50,height - 70);
 		for (var i = 1; i < 10; i += 1){
@@ -79,6 +79,9 @@
 			current_letter += 1
 			typed_word += letter
 			timer += 20;
+        }
+        else{aoe
+            timer -= 20;
 		}
 	}
 	
