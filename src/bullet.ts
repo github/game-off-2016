@@ -19,5 +19,6 @@ class Bullet extends Phaser.Sprite {
         super(game, x, y, "bullet");
         game.add.existing(this);
         game.physics.arcade.enable(this);
+        this.sendToBack();
     }
 }

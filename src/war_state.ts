@@ -39,7 +39,9 @@ export class HerController {
             this.her.moveUp();
         } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             this.her.moveDown();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
             this.her.fire();
         }
     }
