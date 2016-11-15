@@ -47,3 +47,6 @@ Made with [Gliffy | Online Diagram and Flowchart Software](https://www.gliffy.co
 # Tutorials
 - [Procedural Cave Generation tutorial
 ](https://unity3d.com/learn/tutorials/projects/procedural-cave-generation-tutorial)
+
+# More Info
+Check out our [wiki](https://github.com/whoa-algebraic/game-off-2016/wiki).
