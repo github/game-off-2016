@@ -11,10 +11,10 @@
 
 Download location: [https://unity3d.com/get-unity/download/archive](https://unity3d.com/get-unity/download/archive)
 
-## Tiled Map Editor
+## Tiled Map Editor 0.17.1
 [Your free, easy to use and flexible tile map editor.](http://www.mapeditor.org/)
 
-Download location: [https://github.com/bjorn/tiled/releases](https://github.com/bjorn/tiled/releases)
+Download location: [https://github.com/bjorn/tiled/releases/tag/v0.17.1](https://github.com/bjorn/tiled/releases/tag/v0.17.1)
 
 ## License
 
