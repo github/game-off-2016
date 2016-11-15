@@ -30,8 +30,4 @@ install() {
 install "MacEditorInstaller/Unity-$VERSION.pkg"
 install "MacStandardAssetsInstaller/StandardAssets.pkg"
 #install "MacEditorTargetInstaller/UnitySetup-Windows-Support-for-Editor-$VERSION.pkg"
-install "MacEditorTargetInstaller/UnitySetup-Mac-Support-for-Editor-$VERSION.pkg"
 #install "MacEditorTargetInstaller/UnitySetup-Linux-Support-for-Editor-$VERSION.pkg"
-
-
-# Standard assets? http://netstorage.unity3d.com/unity/b7e030c65c9b/MacStandardAssetsInstaller/StandardAssets-5.4.2f2.pkg
