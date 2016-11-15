@@ -6,6 +6,7 @@ Awoken from her slumber, Ursula rubs her eyes in an attempt to get her bearings.
 
 # Concept
 ## Art
+![monsters and environment](monsters and environment stuff.jpg)
 ![more bear stuff for putting into a sprite sheet](just_bear_stuff_sprite_sheet_draft_1.jpg)
 ![first page of bear parts](bear cells.jpg)
 ![this thing that mimics some kind of health bubble or something](IMG_20161112_000341.jpg)
