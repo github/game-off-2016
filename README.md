@@ -1,12 +1,6 @@
 # Dependencies
 
 ## Unity 5.4.2
-Download location: https://unity3d.com/get-unity/download/archive
-
-## License
-
-The artistic content of this project is copyright 2016 Zac Zemantic, and is licensed under the [Creative Commons Attribution 3.0 license](http://creativecommons.org/licenses/by/3.0/us/deed.en_US). The underlying source code for the game is licensed under the [MIT license](http://opensource.org/licenses/mit-license.php).
-
 ### Windows
 - [Unity Editor 64-bit](http://netstorage.unity3d.com/unity/b7e030c65c9b/Windows64EditorInstaller/UnitySetup64-5.4.2f2.exe)
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/WindowsStandardAssetsInstaller/UnityStandardAssetsSetup-5.4.2f2.exe)
@@ -16,3 +10,12 @@ The artistic content of this project is copyright 2016 Zac Zemantic, and is lice
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/MacStandardAssetsInstaller/StandardAssets-5.4.2f2.pkg)
 
 Download location: [https://unity3d.com/get-unity/download/archive](https://unity3d.com/get-unity/download/archive)
+
+## Tiled Map Editor
+[Your free, easy to use and flexible tile map editor.](http://www.mapeditor.org/)
+
+Download location: [https://github.com/bjorn/tiled/releases](https://github.com/bjorn/tiled/releases)
+
+## License
+
+The artistic content of this project is copyright 2016 Zac Zemantic, and is licensed under the [Creative Commons Attribution 3.0 license](http://creativecommons.org/licenses/by/3.0/us/deed.en_US). The underlying source code for the game is licensed under the [MIT license](http://opensource.org/licenses/mit-license.php).
