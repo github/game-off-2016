@@ -1,13 +1,12 @@
 # whoa-algebraic / game-off-2016 [![Build Status](https://travis-ci.org/whoa-algebraic/game-off-2016.svg?branch=master)](https://travis-ci.org/whoa-algebraic/game-off-2016)
 
-# Dependencies
-
-## Unity 5.4.2
-### Windows
+## Dependencies
+### Unity 5.4.2
+#### Windows
 - [Unity Editor 64-bit](http://netstorage.unity3d.com/unity/b7e030c65c9b/Windows64EditorInstaller/UnitySetup64-5.4.2f2.exe)
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/WindowsStandardAssetsInstaller/UnityStandardAssetsSetup-5.4.2f2.exe)
 
-### Mac OS X
+#### Mac OS X
 - [Unity Editor 64-bit](http://netstorage.unity3d.com/unity/b7e030c65c9b/MacEditorInstaller/Unity-5.4.2f2.pkg)
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/MacStandardAssetsInstaller/StandardAssets-5.4.2f2.pkg)
 
