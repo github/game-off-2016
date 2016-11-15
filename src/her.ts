@@ -1,8 +1,12 @@
 import * as Phaser from "phaser";
+import * as bullet from "./bullet";
 
 const VELOCITY = 10;
 
 export class Her {
+
+    private fireRate = 200;
+    private nextFire: number;
 
     constructor(private sprite: Phaser.Sprite) { }
 
@@ -20,6 +24,17 @@ export class Her {
 
     moveDown() {
         this.sprite.y += VELOCITY;
+    }
+
+    fire() {
+        if (this.sprite.game.time.time < this.nextFire) {
+            return;
+        }
+
+        const bullets = bullet.createDualBullets(this.sprite.game, this.sprite.x, this.sprite.y);
+        bullet.moveBullets(bullets);
+
+        this.nextFire = this.sprite.game.time.time + this.fireRate;
     }
 
     static create(game: Phaser.Game): Her {
