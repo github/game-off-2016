@@ -25,7 +25,7 @@ echo "Attempting to build $project for OS X"
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 echo 'Logs from OS X build'
-  cat $(pwd)/unity.log
+cat $(pwd)/unity.log
 
 echo "Attempting to build $project for Linux"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
