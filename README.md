@@ -1,11 +1,12 @@
-# Dependencies
+# whoa-algebraic / game-off-2016 [![Build Status](https://travis-ci.org/whoa-algebraic/game-off-2016.svg?branch=master)](https://travis-ci.org/whoa-algebraic/game-off-2016)
 
-## Unity 5.4.2
-### Windows
+## Dependencies
+### Unity 5.4.2
+#### Windows
 - [Unity Editor 64-bit](http://netstorage.unity3d.com/unity/b7e030c65c9b/Windows64EditorInstaller/UnitySetup64-5.4.2f2.exe)
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/WindowsStandardAssetsInstaller/UnityStandardAssetsSetup-5.4.2f2.exe)
 
-### Mac OS X
+#### Mac OS X
 - [Unity Editor 64-bit](http://netstorage.unity3d.com/unity/b7e030c65c9b/MacEditorInstaller/Unity-5.4.2f2.pkg)
 - [Standard Assets](http://netstorage.unity3d.com/unity/b7e030c65c9b/MacStandardAssetsInstaller/StandardAssets-5.4.2f2.pkg)
 
@@ -16,9 +17,9 @@ Download location: [https://unity3d.com/get-unity/download/archive](https://unit
 
 Download location: [https://github.com/bjorn/tiled/releases/tag/v0.17.1](https://github.com/bjorn/tiled/releases/tag/v0.17.1)
 
-# More Info
+## More Info
 Check out our [wiki](https://github.com/whoa-algebraic/game-off-2016/wiki).
 
-# License
+## License
 
 The artistic content of this project is copyright 2016 [Zac Zemantic](http://www.zetarayzac.com/), and is licensed under the [Creative Commons Attribution 3.0 license](http://creativecommons.org/licenses/by/3.0/us/deed.en_US). The underlying source code for the game is licensed under the [MIT license](http://opensource.org/licenses/mit-license.php).
