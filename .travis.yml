@@ -1,0 +1,11 @@
+language: objective-c
+before_install:
+- chmod a+x ./Assets/.scripts/install.sh
+- chmod a+x ./Assets/.scripts/build.sh
+install:
+- "./Assets/.scripts/install.sh"
+script:
+- "./Assets/.scripts/build.sh"
+notifications:
+  slack:
+    secure: vmgSq+Ks/Ma2R/oayFI55t9B4O3wB4f2NOo2YyfhPGfE8QtOe6YbGjjBREIkJfvdjd2TztRWn+IM58IExy7cPauVzVV4/3M4rretV93X/GD0QP41lPGH1P7PENA7eC/8cSJQCVx3QwX1IFUl+xsCTzL6CuyujbwiP+Trs1+fPRKi5ymJQHyA/7DvCThawxNZhS1m0n9bKExWyDp14LODHwDVrH0zVetghwZOLSNPHQJh/Ylp8d+cN7hb82hAsCwkuEyzgpm4iAs3NXy5OQFSpm8OaTYk2yTDFFQUfxLUT0I+FJ2AvgEw2lhArc3ODKNg5l4ZTuJGtbmJjF95lE8R8MG3yKDLEHYm9WiDQqmXPkHvI+mw0UYGhOLhI89a8kVcl655zSXIM6jWnyi8dIWjIukVrUSq5xZjYhviIzk9aQ4O9EVzXcBNK+88evDD9KOgAckSnfv9HMYzo/p+4I/QwC7Sdv+jtf53ojVJdom/Xu5neJulxK7Xi2ZLCwyippES2X/kGIWTvY/GiVpJx7jR8IqKGDFOxqGh3qJFZWIRn45wnMBakbxDk9RwMJ7ibDKcVlCNJ+r4fZYwZjyZOT4gJd4TJIVwmJFW5439B2/lMnv8MHUcfb0n9lE1+Hnh8I23GXdkLIKRJHEoLKZCxxP+hHPOjbQSBNJKEmVYJeNXrcU=
