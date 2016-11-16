@@ -60,7 +60,7 @@ transform/pos = Vector2( 510.098, 263.695 )
 input/pickable = false
 shapes/0/shape = SubResource( 1 )
 shapes/0/transform = Matrix32( 1.21952, 0, 0, 1.19268, -4.92982, 2.0366 )
-shapes/0/trigger = true
+shapes/0/trigger = false
 collision/layers = 1
 collision/mask = 1
 collision/margin = 0.08
@@ -78,7 +78,7 @@ playing = true
 transform/pos = Vector2( -4.92982, 2.0366 )
 transform/scale = Vector2( 1.21952, 1.19268 )
 shape = SubResource( 1 )
-trigger = true
+trigger = false
 _update_shape_index = 0
 
 [node name="Camera2D" type="Camera2D" parent="."]

@@ -23,6 +23,7 @@ func initialize():
 	if (!isInitialized):
 		set_opacity(1);
 		set_text('');
+		grab_focus();
 		response_node.set_text('');
 		isInitialized = true;
 
