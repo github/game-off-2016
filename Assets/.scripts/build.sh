@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# Modified from: https://jonathan.porta.codes/2015/04/17/automatically-build-your-unity3d-project-in-the-cloud-using-travisci-for-free/
+
+# Example install script for Unity3D project. See the entire example: https://github.com/JonathanPorta/ci-build
+
 project="ci-build"
 
 LOGDATE=$(date +%Y-%m-%dT%H:%M:%S%z)
