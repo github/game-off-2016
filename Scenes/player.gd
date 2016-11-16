@@ -6,14 +6,26 @@ const DASH_SPEED = 10;
 
 var isRunning = false;
 var isDashing = false;
-var zoomMultiplier = 0;
+var isHacking = false;
+var isZoomedOut = false;
 
 func _ready():
 	# Set up animation
 	var sprite = get_node("AnimatedSprite");
 	sprite.get_sprite_frames().set_animation_speed("run", 10.0);
+	sprite.get_sprite_frames().set_animation_speed("hack", 10.0);
+	
+	get_node("CollisionShape2D").set("trigger", false);
 	set_process(true);
+	set_process_input(true);
 	set_fixed_process(true);
+func _input(event):
+	if (event.is_action_pressed("ui_terminal")):
+		isHacking = !isHacking;
+		if (isHacking):
+			get_node("Camera2D/CanvasLayer/Terminal").initialize();
+		else:
+			get_node("Camera2D/CanvasLayer/Terminal").close();
 
 func _process(delta):
 	var sprite = get_node("AnimatedSprite");
@@ -31,10 +43,15 @@ func _process(delta):
 	else:
 		isRunning = false;
 		
+	isRunning = isRunning && !isHacking;
+		
 	if (isRunning):
 		sprite.play("run");
-	else: 
+	elif (isHacking):
+		sprite.play("hack");
+	else:
 		sprite.play("idle");
+		zoomIn();
 
 func _fixed_process(delta):
 	var motion = Vector2();
@@ -49,16 +66,26 @@ func _fixed_process(delta):
 	if (Input.is_action_pressed("ui_dash")):
 		isDashing = true;
 	
+	if (isHacking):
+		return;
+	
 	motion = motion.normalized()*MOTION_SPEED*delta;
 	if (isDashing):
 		motion = motion*DASH_SPEED;
+		if (isDashing):
+			zoomOut();
 		isDashing = false;
-		zoomMultiplier = 1;
 	motion = move(motion);
-	
-	if (zoomMultiplier > 0):
-		get_node("Camera2D").set_zoom(Vector2(1, 1));
-	
+
+func zoomOut():
+	if (!isZoomedOut):
+		get_node("AnimationPlayer").play("Dash_Zoom_Out");
+		isZoomedOut = true;
+		
+func zoomIn():
+	if (isZoomedOut):
+		get_node("AnimationPlayer").play("Dash_Zoom_In");
+		isZoomedOut = false;
 	# TODO:
 		# Set limits to dash
 		# Add dash "after - image"
