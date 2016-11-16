@@ -11,6 +11,7 @@ echo "Attempting to build $project for Windows"
   -projectPath $(pwd) \
   -buildWindowsPlayer "$(pwd)/Build/windows/$project.exe" \
   -quit
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 echo "Attempting to build $project for OS X"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
@@ -21,6 +22,7 @@ echo "Attempting to build $project for OS X"
   -projectPath $(pwd) \
   -buildOSXUniversalPlayer "$(pwd)/Build/osx/$project.app" \
   -quit
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 echo 'Logs from OS X build'
   cat $(pwd)/unity.log
@@ -34,6 +36,7 @@ echo "Attempting to build $project for Linux"
   -projectPath $(pwd) \
   -buildLinuxUniversalPlayer "$(pwd)/Build/linux/$project.exe" \
   -quit
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 echo 'Logs from build'
 cat $(pwd)/unity.log
