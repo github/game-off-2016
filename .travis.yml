@@ -7,8 +7,6 @@ install:
 script:
 - "./Assets/.scripts/build.sh"
 notifications:
-  slack:
-    rooms:
-      secure: RTkAXXyI0gQyLU5QgICWIBk+vbP5Xodiht73P4BEa2pOM5Fd2e7O46JOAw0xrib8gxcXAMyLcOgBbxzKiiufNL51wRUBrM+x/CaQMQDQC5HA1EdCq2wAZ4rSelFWKFPYKkpHlZM98UK5ZQbFO+Omn/EJQ4lp8C/hTSA7VyxzuauMdWvnvGDhH3N/8+5mOJPTDv/VhvgwKeUCPu4GphhvP56po2I2D0ZEDdqTcs5axBs9laOrl+EN17Cwtzmq4bNRcOb+BQ4NxwWet5oIn0GroKv51vOQapr1ZWLRG+1Umw3yRfFO/Vqslxo5JJQlWeDPFuylhc156jcklRzIA6rSJXdpzjffN08jy14G6m6obQE6V4VbV1D48jt8uDcpY7GM7yBmdLfrFWHtrJjE530utieVclCBjQ34KbQdpSQoFBhTg4+YMJVJ/s/MyBRt23079r+EQvzBN1bHiC0dYdCyWxgGKFGm9gCPaxTD7vPQzwxZEg/MaQCGSNigIZ8KngsDG74brSMJ9GVmSuaubdNaw7cHNOiyqTk4VQyFA6ahd9LT7aok+FUQOr7AMGE+cJvVz1NfsxwFDVBt7cTXtIm/zqRP5GCHqqbgyS4PRvJKpMOUPPDPMVVeI2FzSfG4E8rFfSrq2NKkI5QptvLyItw02cdMvbrJaonBxF/TLREZlPg=
+  slack: whoa-algebraic:tLEAtVerwFc3QVb13Skv5ZL6
     on_success: always
     on_failure: always
