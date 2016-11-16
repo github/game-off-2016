@@ -14,7 +14,7 @@
 [ext_resource path="res://Assets/ode_player/ode_player_Run_4.png" type="Texture" id=12]
 [ext_resource path="res://Assets/ode_player/ode_player_Run_5.png" type="Texture" id=13]
 
-[sub_resource type="ConvexPolygonShape2D" id=3]
+[sub_resource type="ConvexPolygonShape2D" id=1]
 
 custom_solver_bias = 0.0
 points = Vector2Array( -14, 16, -4, 6, 6, 16, -4, 26, -14, 16 )
@@ -26,7 +26,7 @@ animations = [ { "frames":[ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 )
 [node name="Player" type="KinematicBody2D"]
 
 input/pickable = false
-shapes/0/shape = SubResource( 3 )
+shapes/0/shape = SubResource( 1 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 24, 4 )
 shapes/0/trigger = false
 collision/layers = 1
