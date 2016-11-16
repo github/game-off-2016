@@ -49,6 +49,3 @@ rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 echo 'Logs after Linux build'
 cat $LOGFILE
-
-echo 'Logs from build'
-cat $LOGFILE
