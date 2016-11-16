@@ -2,22 +2,22 @@
 
 [ext_resource path="res://Assets/tileset.png" type="Texture" id=1]
 
-[sub_resource type="ConvexPolygonShape2D" id=2]
+[sub_resource type="ConvexPolygonShape2D" id=1]
 
 custom_solver_bias = 0.0
 points = Vector2Array( -25, -25, 25, -25, 25, -15, -25, -15 )
 
-[sub_resource type="ConvexPolygonShape2D" id=3]
+[sub_resource type="ConvexPolygonShape2D" id=2]
 
 custom_solver_bias = 0.0
 points = Vector2Array( 25, 15, 25, 25, -25, 25, -25, 15 )
 
-[sub_resource type="ConvexPolygonShape2D" id=4]
+[sub_resource type="ConvexPolygonShape2D" id=3]
 
 custom_solver_bias = 0.0
 points = Vector2Array( 15, -25, 25, -25, 25, 25, 15, 25, 15, -25 )
 
-[sub_resource type="ConvexPolygonShape2D" id=5]
+[sub_resource type="ConvexPolygonShape2D" id=4]
 
 custom_solver_bias = 0.0
 points = Vector2Array( -25, -25, -15, -25, -15, 25, -25, 25, -25, -25 )
@@ -41,7 +41,7 @@ region_rect = Rect2( 50, 0, 50, 50 )
 [node name="StaticBody2D" type="StaticBody2D" parent="NorthWall"]
 
 input/pickable = false
-shapes/0/shape = SubResource( 2 )
+shapes/0/shape = SubResource( 1 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
@@ -74,7 +74,7 @@ region_rect = Rect2( 350, 0, 50, 50 )
 [node name="StaticBody2D" type="StaticBody2D" parent="SouthWall"]
 
 input/pickable = false
-shapes/0/shape = SubResource( 3 )
+shapes/0/shape = SubResource( 2 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
@@ -101,7 +101,7 @@ region_rect = Rect2( 250, 0, 50, 50 )
 [node name="StaticBody2D" type="StaticBody2D" parent="EastWall"]
 
 input/pickable = false
-shapes/0/shape = SubResource( 4 )
+shapes/0/shape = SubResource( 3 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
@@ -128,7 +128,7 @@ region_rect = Rect2( 300, 0, 50, 50 )
 [node name="StaticBody2D" type="StaticBody2D" parent="WestWall"]
 
 input/pickable = false
-shapes/0/shape = SubResource( 5 )
+shapes/0/shape = SubResource( 4 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1

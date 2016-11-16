@@ -14,6 +14,8 @@ func _ready():
 	var sprite = get_node("AnimatedSprite");
 	sprite.get_sprite_frames().set_animation_speed("run", 10.0);
 	sprite.get_sprite_frames().set_animation_speed("hack", 10.0);
+	
+	get_node("CollisionShape2D").set("trigger", false);
 	set_process(true);
 	set_process_input(true);
 	set_fixed_process(true);
