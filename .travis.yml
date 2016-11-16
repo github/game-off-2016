@@ -8,5 +8,3 @@ script:
 - "./Assets/.scripts/build.sh"
 notifications:
   slack: whoa-algebraic:tLEAtVerwFc3QVb13Skv5ZL6
-    on_success: always
-    on_failure: always
