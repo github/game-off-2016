@@ -1,12 +1,7 @@
-[gd_scene load_steps=4 format=1]
+[gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://Scenes/player.tscn" type="PackedScene" id=1]
-<<<<<<< HEAD
-[ext_resource path="res://icon.png" type="Texture" id=2]
-[ext_resource path="res://Assets/map.res" type="TileSet" id=3]
-=======
 [ext_resource path="res://Scenes/Glitch.tscn" type="PackedScene" id=2]
->>>>>>> Added badguy and some GUI
 
 [node name="Node" type="Node"]
 
@@ -45,24 +40,5 @@ transform/pos = Vector2( 506.809, 209.293 )
 [node name="RigidBody6" parent="DELETE-WHENEVER-TEST" instance=ExtResource( 2 )]
 
 transform/pos = Vector2( 205.34, 256.021 )
-
-[node name="TileMap" type="TileMap" parent="."]
-
-z/z = -1
-mode = 0
-tile_set = ExtResource( 3 )
-cell/size = Vector2( 50, 50 )
-cell/quadrant_size = 16
-cell/custom_transform = Matrix32( 1, 0, 0, 1, 0, 0 )
-cell/half_offset = 2
-cell/tile_origin = 0
-cell/y_sort = false
-collision/use_kinematic = false
-collision/friction = 1.0
-collision/bounce = 0.0
-collision/layers = 1
-collision/mask = 1
-occluder/light_mask = 1
-tile_data = IntArray( -327675, 2, -327674, 2, -327673, 2, -327672, 2, -327671, 2, -327670, 2, -327669, 2, -327668, 2, -262139, 2, -262138, 2, -262137, 2, -262136, 2, -262135, 2, -262134, 2, -262133, 2, -262132, 2, -196603, 2, -196602, 2, -196601, 2, -196600, 2, -196599, 2, -196598, 2, -196597, 2, -196596, 2, -131067, 2, -131066, 2, -131065, 2, -131064, 2, -131063, 2, -131062, 2, -131061, 2, -131060, 2, -65531, 2, -65530, 2, -65529, 2, -65528, 2, -65527, 2, -65526, 2, -65525, 2, -65524, 2, 7, 4, 8, 2, 9, 2, 10, 5, 65543, 4, 65544, 0, 65545, 0, 65546, 5, 131077, 7, 131079, 4, 131080, 0, 131081, 0, 131082, 5, 131084, 6, 196613, 1, 196614, 1, 196615, 1, 196616, 0, 196617, 0, 196618, 1, 196619, 1, 196620, 1, 262148, 5, 262149, 0, 262150, 0, 262151, 0, 262152, 0, 262153, 0, 262154, 0, 262155, 0, 262156, 0, 262157, 4, 327684, 5, 327685, 0, 327686, 0, 327687, 0, 327688, 0, 327689, 0, 327690, 0, 327691, 0, 327692, 0, 327693, 4, 393220, 5, 393221, 0, 393222, 0, 393223, 0, 393224, 0, 393225, 0, 393226, 0, 393227, 0, 393228, 0, 393229, 4, 458756, 5, 458757, 0, 458758, 0, 458759, 0, 458760, 0, 458761, 0, 458762, 0, 458763, 0, 458764, 0, 458765, 4, 524293, 3, 524294, 3, 524295, 3, 524296, 3, 524297, 3, 524298, 3, 524299, 3, 524300, 3 )
 
 
