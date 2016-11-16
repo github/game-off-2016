@@ -285,8 +285,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerGameObject: {fileID: 416732600}
   RoomPrefabs:
-  - {fileID: 1000013858821328, guid: bb5288757b4253145afaade64109e894, type: 2}
-  - {fileID: 1000011460953792, guid: 466a2fd24d287154aa47d9092d0fb92a, type: 2}
+  - {fileID: 1000013395496384, guid: 759c3234c75ae4340a433b114d734f2b, type: 2}
+  - {fileID: 1000010639839464, guid: 606f3bbf79fb7604bb4c0c47b951f586, type: 2}
+  - {fileID: 1000013781302996, guid: 6c36bd6f18849f04ab54975155d8acea, type: 2}
+  - {fileID: 1000012117799064, guid: 2a12d8f23841d804aa217f2d081bf51f, type: 2}
 --- !u!114 &1806905811
 MonoBehaviour:
   m_ObjectHideFlags: 0
