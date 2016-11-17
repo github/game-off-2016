@@ -3,86 +3,66 @@ import {
   Point,
   Rectangle,
   Graphics,
-  Circle,
-  Container
+  Circle
 } from 'pixi.js';
-import {Game} from '../game';
-import {IEntity, IRobot, teamType} from '../types';
+import {IEntity, teamType} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
   inRange,
   lineOfSight,
-  rectToPoint,
-  tileToRect,
-  tileToCircle
+  pointToCircle
 } from '../functional';
-import {HackMeter} from '../ui';
 
-export class Ranged implements IRobot {
+import {Robot} from './robot';
+
+export class Ranged extends Robot {
   get type() { return 'ranged'; }
+  get team(): teamType { return this._team; }
 
-  private _view: Container;
   private _config: any;
-  private _body: Rectangle;
   private _fov: Circle;
   private _state: 'searching' | 'shooting' | 'cooldown';
   private _timer: number;
   private _target: IEntity;
-  private _hackMeter: number;
-  private _hackMeterView: HackMeter;
   private _team: teamType;
   private _graphics: Graphics;
 
-  get view() { return this._view; }
-  get body() { return this._body; }
-  get team(): teamType { return this._team; }
+  _hackResistence() { return this._config.hackMeter; }
+
+  _changeTeam() {
+    this._team = 'hacker';
+    this._state = 'searching';
+    this._graphics.clear();
+    this._graphics.beginFill(0x63DAE6);
+    this._graphics.drawCircle( 0, 0, this._config.size / 2 );
+  }
+
   get fov() { return this._fov; }
   get target() { return this._target; }
-  get position() { return rectToPoint(this._body); }
 
-  set tile(pos: Point) {
-    this._body = tileToRect(pos, this._config.size, this._config.size);
-    this._fov = tileToCircle(pos, this._config.radius);
-    this._updateView();
-  }
-
-  constructor(
-    private _game: Game
-  ) {
-    this._config = Object.assign(config.entities.ranged);
+  _preInit() {
+    this._config = Object.assign({}, config.entities.ranged);
     this._state = 'searching';
     this._team = 'robot';
-    this._hackMeter = 0;
+    this._fov = pointToCircle(new Point(0, 0), this._config.radius);
+  }
 
+  _initBody() {
+    return new Rectangle(0, 0, this._config.size, this._config.size);
+  }
+
+  _initView() {
     this._graphics = new Graphics();
     this._graphics.beginFill(0xA2A0E5);
-    this._graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
-    this._view = new Container();
-    this._view.addChild(this._graphics);
-    this._hackMeterView = new HackMeter();
-    this._view.addChild(this._hackMeterView.view);
-
-    this.tile = new Point();
-    this._updateView();
-
-    _game.gameLoop$.subscribe(e => this.update(e));
+    this._graphics.drawCircle( 0, 0, this._config.size / 2 );
+    return this._addView(this._graphics);
   }
 
-  hack(value: number) {
-    this._hackMeter += value;
-    if (this._hackMeter >= this._config.hackMeter) {
-      this._hackMeter = 0;
-      this._team = 'hacker';
-      this._state = 'searching';
-      this._graphics.clear();
-      this._graphics.beginFill(0x63DAE6);
-      this._graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
-    }
-    this._hackMeterView.setProgress(this._hackMeter / this._config.hackMeter);
+  _setPosition(pos: Point) {
+    this._fov = pointToCircle(pos, this._config.radius);
+    super._setPosition(pos);
   }
-
-  hit() {}
 
   update(time: ITimeEvent) {
     if (this._team !== 'hacker' && this._playerInRange()) {
@@ -103,11 +83,6 @@ export class Ranged implements IRobot {
         this._state = 'searching';
     }
     this._timer -= time.delta;
-  }
-
-  private _updateView() {
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
   }
 
   private _shoot() {

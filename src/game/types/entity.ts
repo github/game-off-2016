@@ -1,6 +1,5 @@
 import {
-  Circle,
-  Rectangle,
+  IHitArea,
   DisplayObject,
   Point
 } from 'pixi.js';
@@ -15,8 +14,8 @@ export interface IEntity {
   team: teamType;
   tile: Point;
   position: Point;
-  update: (time: ITimeEvent) => void;
+  update(time: ITimeEvent): void;
   readonly type: string;
-  readonly body: Rectangle | Circle;
+  readonly body: IHitArea;
   readonly view: DisplayObject;
 }

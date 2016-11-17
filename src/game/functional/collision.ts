@@ -116,3 +116,36 @@ export function lineOfSight(map: Map, x0: number, y0: number, x1: number, y1: nu
   }
   return los;
 }
+
+
+// class Rect {
+//   private _x: number;
+//   private _y: number;
+//
+//   constructor(x: number, y: number) {
+//     this._x = x;
+//     this._y = y;
+//   }
+// }
+
+
+class Rect {
+  constructor(
+    private _x = 0,
+    private _y = 0
+  ) {}
+
+  get x() { return this._x; }
+  get y() { return this._y; }
+
+  set(values: {x?: number, y?: number}) {
+    return new Rect(
+      values.x || this._x,
+      values.y || this._y
+    );
+  }
+}
+
+let a = new Rect();
+
+a = a.set({x: 5});

@@ -1,60 +1,44 @@
 import {Graphics, Rectangle, Point} from 'pixi.js';
-import {Game} from '../game';
-import {IEntity, IUnit, teamType} from '../types';
+import {IEntity, teamType} from '../types';
 import {ITimeEvent} from '../game-loop';
 import {config} from '../../config';
 import {
   normalizeVector,
   isOutOfBOunds,
   wallCollision,
-  enemyCollision,
-  rectToPoint,
-  pointToRect
+  enemyCollision
 } from '../functional';
-import {Subscription} from 'rxjs/Rx';
 
-export class EnergyBall implements IUnit {
+
+import {Unit} from './unit';
+
+export class EnergyBall extends Unit {
   get type() { return 'energyBall'; }
+  get team(): teamType { return 'robot'; }
 
   private _speed: Point;
-  private _body: Rectangle;
-  private _view: Graphics;
   private _config: any;
-  private _subscription: Subscription;
+  get hitbox() { return this.body; }
 
-  get view() { return this._view; }
-  get body() { return this._body; }
-  get hitbox() { return this._body; }
-  get team(): teamType { return 'robot'; }
-  get position() { return rectToPoint(this._body); }
-
-  set tile(pos: Point) { }
-  set position(pos: Point) {
-    this._body = pointToRect(pos, this._config.size, this._config.size);
-    this._updateView();
+  _initBody() {
+    return new Rectangle(0, 0, this._config.size, this._config.size);
   }
 
-  constructor(private _game: Game) {
+  _initView() {
+    return new Graphics()
+      .beginFill(0xFFFFFF)
+      .drawCircle( 0, 0, this._config.size / 2);
+  }
+
+  _preInit() {
     this._config = Object.assign(config.entities.energyBall);
-
-    const graphics = new Graphics();
-    graphics.beginFill(0xFFFFFF);
-    graphics.drawCircle( this._config.size / 2, this._config.size / 2, this._config.size / 2 );
-    this._view = graphics;
-
-    this.position = new Point();
-    this._updateView();
-
-    this._subscription = _game.gameLoop$.subscribe(e => this.update(e));
   }
-
-  hit() {}
 
   update(time: ITimeEvent) {
     let enemy = enemyCollision(this._game.currentMap, this);
     if (
-      isOutOfBOunds(this._game.currentMap, this._body) ||
-      wallCollision(this._game.currentMap, this._body) ||
+      isOutOfBOunds(this._game.currentMap, this.body) ||
+      wallCollision(this._game.currentMap, this.body) ||
       enemy !== null
     ) {
       if (enemy) {
@@ -78,16 +62,5 @@ export class EnergyBall implements IUnit {
     );
     this._speed.x = this._speed.x * this._config.speed;
     this._speed.y = this._speed.y * this._config.speed;
-  }
-
-  destroy() {
-    this._game.currentMap.removeEntity(this);
-    this._view.destroy();
-    this._subscription.unsubscribe();
-  }
-
-  private _updateView() {
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
   }
 }

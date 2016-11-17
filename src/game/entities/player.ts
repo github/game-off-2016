@@ -12,73 +12,66 @@ import {ITimeEvent} from '../game-loop';
 import {
   moveBody,
   rectToPoint,
-  tileToRect,
+  pointToRect,
   reverseKeys
 } from '../functional';
 import {IRobot, IUnit, teamType} from '../types';
 
-export class Player implements IUnit {
+import {Unit} from './unit';
+
+export class Player extends Unit {
   get type() { return 'hacker'; }
+  get team(): teamType { return 'hacker'; }
 
   private _xSpeed: number;
   private _ySpeed: number;
+  private _config: any;
   private _keyState: {[key: string]: boolean};
   private _keyMap: {[key: number]: string};
-  private _view: Container;
-  private _config: any;
-  private _body: Rectangle;
   private _hackingPoint: Point;
   private _hackingPointX: number;
   private _hackingPointY: number;
 
-  get view() { return this._view; }
-  get body() { return this._body; }
   get hitbox() { return new Circle(this._hackingPoint.x, this._hackingPoint.y, 3); }
-  get team(): teamType { return 'hacker'; }
-  get position() { return rectToPoint(this._body); }
 
-  set tile(pos: Point) {
-    this._body = tileToRect(pos, this._config.size, this._config.size);
-    this._hackingPoint = new Point(pos.x + this._hackingPointX, pos.y + this._hackingPointY);
-    this._updateView();
-  }
-
-  constructor(
-    private _game: Game
-  ) {
-    this._config = Object.assign(config.entities.player);
+  _preInit(game: Game) {
     this._xSpeed = 0;
     this._ySpeed = 0;
     this._keyState = {};
-    this._view = new Container();
-    const sprite = new Sprite(Texture.fromImage('assets/basics/nin.png'));
-    this._view.addChild(sprite);
     this._keyMap = reverseKeys(config.keys);
-
-    this.tile = new Point();
-
-    _game.keyPress$.subscribe(e => this._updateStateFromKeyboard(e));
-    _game.gameLoop$.subscribe(e => this.update(e));
+    this._config = Object.assign({}, config.entities.player);
   }
 
-  hit(damage: number) {
-    console.log(damage);
+  _postInit(game: Game) {
+    game.keyPress$.subscribe(e => this._updateStateFromKeyboard(e));
+  }
+
+  _initBody() {
+    return new Rectangle(0, 0, this._config.size, this._config.size);
+  }
+
+  _initView() {
+    let container = new Container();
+    const sprite = new Sprite(Texture.fromImage('assets/basics/nin.png'));
+    sprite.anchor.x = 0.5;
+    sprite.anchor.y = 0.5;
+    container.addChild(sprite);
+    return container;
+  }
+
+  _setPosition(pos: Point) {
+    this._hackingPoint = new Point(pos.x + this._hackingPointX, pos.y + this._hackingPointY);
+    super._setPosition(pos);
   }
 
   update(time: ITimeEvent) {
-    this._body = this._moveBody(this._body, this._xSpeed * this._config.speed, this._ySpeed * this._config.speed);
-    let point = this.position;
-    this._hackingPoint = new Point(point.x + this._hackingPointX, point.y + this._hackingPointY);
-    this._updateView();
+    let position = this._moveBody(this.body, this._xSpeed * this._config.speed, this._ySpeed * this._config.speed);
+    this.position = rectToPoint(position);
     let robot = this._game.currentMap.unitAt(this._hackingPoint, 'robot');
-    if (robot && robot.type === 'ranged') {
+    if (robot && (robot.type === 'ranged' || robot.type === 'melee')) {
+      debugger;
       (<IRobot>robot).hack(this._config.hackSpeed * time.delta / 1000);
     }
-  }
-
-  private _updateView() {
-    this._view.position.x = this._body.x;
-    this._view.position.y = this._body.y;
   }
 
   private _moveBody(body: Rectangle, dx: number, dy: number): Rectangle {

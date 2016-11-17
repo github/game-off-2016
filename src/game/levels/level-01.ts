@@ -12,7 +12,7 @@ export default {
     '         XP  X      ',
     '         TX         ',
     '                    ',
-    '     T              ',
+    '     T    M         ',
     '                    ',
     '                    ',
   ]

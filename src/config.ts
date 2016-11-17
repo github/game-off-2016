@@ -24,9 +24,13 @@ export const config = {
     ranged: {
       radius: 32 * 4,
       size: 32,
-      shootDelay: 1000,
-      shootCooldown: 2000,
+      shootDelay: 100,
+      shootCooldown: 200,
       hackMeter: 50
+    },
+    melee: {
+      size: 30,
+      maxWalkDistance: 32 * 4,
     },
     energyBall: {
       size: 20,

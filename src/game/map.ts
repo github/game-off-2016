@@ -6,6 +6,7 @@ import {
 import {
   Player,
   Ranged,
+  Melee,
   Wall
 } from './entities';
 import {Game} from './game';
@@ -14,12 +15,14 @@ import {
   IEntity,
   IUnit
 } from './types';
+import {Robot} from './entities/robot';
 
 export class Map {
   private _mapConfig: string[];
   private _map: IEntity[][];
   private _player: Player;
   private _entities: IEntity[];
+  private _robots: Robot[];
 
   private _stage: Container;
   private _viewLayer: Container;
@@ -39,9 +42,9 @@ export class Map {
   get player() { return this._player; }
 
   unitAt(point: Point, team?: string): IEntity {
-    for (let entity of this._entities) {
-      if (entity.body.contains(point.x, point.y) && (!team || entity.team === team)) {
-        return entity;
+    for (let unit of this._robots) {
+      if (unit.body.contains(point.x, point.y) && (!team || unit.team === team)) {
+        return unit;
       }
     }
     return null;
@@ -95,6 +98,9 @@ export class Map {
     if (config.drawView) {
       this._viewLayer.addChild(entity.view);
     }
+    if (entity instanceof Robot) {
+      this._robots.push(entity);
+    }
   }
 
   removeEntity(entity: IEntity) {
@@ -111,6 +117,7 @@ export class Map {
     this._mapConfig = level.map;
     this._map = Array.apply(null, Array(config.gridHeight)).map(() => []);
     this._entities = [];
+    this._robots = [];
 
     this._stage = new Container();
     if (config.drawView) {
@@ -129,21 +136,18 @@ export class Map {
         if (this._mapConfig[row][tile] === 'X') {
           entity = new Wall(this._game);
           this._map[row][tile] = entity;
-        }
-
-        if (this._mapConfig[row][tile] === 'T') {
+        } else if (this._mapConfig[row][tile] === 'T') {
           entity = new Ranged(this._game);
           this._map[row][tile] = entity;
         } else if (this._mapConfig[row][tile] === 'P') {
           entity = new Player(this._game);
           this._player = <Player>entity;
+        } else if (this._mapConfig[row][tile] === 'M') {
+          entity = new Melee(this._game);
         }
         if (entity) {
           entity.tile = new Point(tile, row);
-          this._entities.push(entity);
-          if (config.drawView) {
-            this._viewLayer.addChild(entity.view);
-          }
+          this.addEntity(entity);
         }
       }
     }
