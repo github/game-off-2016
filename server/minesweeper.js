@@ -3,11 +3,11 @@ function ms(size, bombP) {
     this.map = [];
     this.getMap = [];
     for (var i=0;i<this.size;i++) {
-        getMap.push([])
+        this.getMap.push([])
         for (var j=0;j<this.size;i++) {
-            getMap[i].push({sel:this.map[i][j].sel});
+            this.getMap[i].push({sel:this.map[i][j].sel});
             if (this.map[i][j].sel) {
-                getMap[i][j].numOfAdj = this.map[i][j].numOfAdj;
+                this.getMap[i][j].numOfAdj = this.map[i][j].numOfAdj;
             }
         }
     }
