@@ -128,7 +128,8 @@ function loadModel(modelName){
     // scene.add(helper); 
     
     mesh = vmesh;
-    vmesh.parent = anchor;        
+    vmesh.parent = anchor;
+    vmesh.position.x += 4;
     window.mesh = mesh;
     camera.lookAt(vmesh.position);
     //cameraFollow();
@@ -173,14 +174,9 @@ var update = function(dt, elapsed){
   if(mesh){
     anchor.translateZ(dt * zVelocity * 18);
     anchor.translateX(dt * xVelocity * 18);
-    //    mesh.position.z += dt * zVelocity * 18;
-    //    mesh.position.x += dt * xVelocity * 18;
-   cameraFollow()
+    cameraFollow();
   }
-  
-  // camera.position.x = Math.cos(ticks * 0.004) * 100;
-  // camera.position.y = 50;
-  // camera.position.z = Math.sin(ticks * 0.004) * 100;
+
 };
 
 var render = function() {
