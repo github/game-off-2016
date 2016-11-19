@@ -26,6 +26,8 @@
     "json-loader": "^0.5.4",
     "keydrown": "^1.2.3",
     "lodash": "^4.16.6",
+    "pouchdb": "^6.0.7",
+    "pouchdb-server": "^1.2.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "three": "^0.82.1",

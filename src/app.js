@@ -1,4 +1,5 @@
 const THREE = require("three");
+window.THREE = THREE;
 const VoxLoader = require('./VoxLoader/Vox.js');
 const GameLoop = require('fixed-game-loop');
 const KeyDrown = require('keydrown');
@@ -18,7 +19,7 @@ modelNames.forEach(function(modelName) {
 });
 
 sel.addEventListener('change', function(event){
-  loadModel(event.target.value);
+  loadModel(event.target.value, worldCenterMesh);
 });
 
 sel.appendChild(fragment);
@@ -117,7 +118,7 @@ renderer.setClearColor( 0x7ccaff, 1);
 renderer.render( scene, camera );
 
 var helper,mesh;
-function loadModel(modelName){
+function loadModel(modelName, callback){
   const vl = new VoxLoader({
     filename: `./assets/mmmm/vox/${modelName}`,
     blockSize: 1
@@ -133,16 +134,41 @@ function loadModel(modelName){
     var vmesh = vox.getMesh();
     vmesh.voxel = true;
     scene.add(vmesh);
+    scene.updateMatrixWorld(true);
 
     mesh = vmesh;
     vmesh.parent = anchor;
-    vmesh.position.x += 4;
     window.mesh = mesh;
 
+
+    // helper = new THREE.BoundingBoxHelper(vmesh, 0xff0000);
+    // helper.voxel = true;
+    // helper.update();
+    // mesh.helper = helper;
+    // // If you want a visible bounding anchor
+    // scene.add(helper);
+    
     camera.lookAt(vmesh.position);
     //cameraFollow();
+    if(callback){callback()}
   });
 }
+
+
+function worldCenterMesh(){
+  //Center the vmesh in world space once imported  
+  mesh.geometry.computeBoundingBox();
+  var boundingBox = mesh.geometry.boundingBox;
+  var position = new THREE.Vector3();
+  position.subVectors( boundingBox.max, boundingBox.min );
+  position.multiplyScalar( 0.5 );
+  position.add( boundingBox.min );
+  position.applyMatrix4( mesh.matrixWorld );
+
+  mesh.position.x += -1 * position.x;
+  mesh.position.z += -1 * position.z;  
+}
+window.worldCenterMesh = worldCenterMesh;
 
 var zVelocity = 0;
 var xVelocity = 0;
@@ -159,10 +185,10 @@ window.addEventListener( 'resize', onWindowResize, false );
 var ticks = 0;
 var update = function(dt, elapsed){
   ticks++;
-  if(mesh){
-    anchor.translateZ(dt * zVelocity * 18);
-    anchor.translateX(dt * xVelocity * 18);
-  }
+  // if(mesh){
+  //   anchor.translateZ(dt * zVelocity * 18);
+  //   anchor.translateX(dt * xVelocity * 18);
+  // }
 
 };
 
@@ -170,5 +196,5 @@ var render = function() {
   renderer.render(scene, camera);
 };
 
-loadModel('chr_fatkid.vox');
+loadModel('chr_fatkid.vox', worldCenterMesh);
 const loop = new GameLoop({ update, render });
