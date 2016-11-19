@@ -28,7 +28,7 @@ var connections = [];
 
 var cmds = {
     getMap:function(req){
-        return map.getMap;
+        return map.getMap();
     },
     clickBox:function(req){
         return map.clickBox(req);

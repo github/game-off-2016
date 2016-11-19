@@ -1,7 +1,6 @@
 function ms(size, bombP) {
     this.size = size;
     this.map = [];
-    this.getMap = [];
 
     for (var i=0;i<size;i++){
         this.map.push([]);
@@ -12,16 +11,6 @@ function ms(size, bombP) {
                 numOfAdj:0,
             };
             this.map[i].push(ret);
-        }
-    }
-
-    for (var i=0;i<this.size;i++) {
-        this.getMap.push([]);
-        for (var j=0;j<this.size;j++) {
-            this.getMap[i].push({sel:this.map[i][j].sel});
-            if (this.map[i][j].sel) {
-                this.getMap[i][j].numOfAdj = this.map[i][j].numOfAdj;
-            }
         }
     }
 
@@ -52,6 +41,19 @@ function ms(size, bombP) {
         }
     }
 }
+ms.prototype.getMap = function (req) {
+    var map = [];
+    for (var i=0;i<this.size;i++) {
+        map.push([]);
+        for (var j=0;j<this.size;j++) {
+            map[i].push({sel:this.map[i][j].sel});
+            if (this.map[i][j].sel) {
+                map[i][j].numOfAdj = this.map[i][j].numOfAdj;
+            }
+        }
+    }
+    return map;
+};
 ms.prototype.clickBox = function (req) {
     console.log("clickbox called at "+JSON.stringify(req));
     var ret = {hit:false,act:[{x:req.x,y:req.y,numOfAdj:this.map[req.y][req.x].numOfAdj}]};
