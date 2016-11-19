@@ -6,22 +6,6 @@ const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
 const modelNames = require('./modelNames.json');
 
-var sel = document.getElementById('modelSelector');
-var fragment = document.createDocumentFragment();
-
-modelNames.forEach(function(modelName) {
-    var opt = document.createElement('option');
-    opt.innerHTML = modelName;
-    opt.value = modelName;
-    fragment.appendChild(opt);
-});
-
-sel.addEventListener('change', function(event){
-  loadModel(event.target.value);
-});
-
-sel.appendChild(fragment);
-
 const renderer = new THREE.WebGLRenderer( {antialias: true} );
     renderer.setSize( viewWidth, viewHeight );
     document.body.appendChild( renderer.domElement );
@@ -79,14 +63,15 @@ camera.position.set( 0, 50, 100 );
 camera.lookAt(scene.position);
 
 var textureLoader = new THREE.TextureLoader();
-var texture2 = textureLoader.load( "./assets/textures/crate.gif" );
+var texture2 = textureLoader.load( "./assets/textures/grass.png" );
 var material2 = new THREE.MeshPhongMaterial( {
   color: 0xffffff,
   map: texture2,
 } );
 texture2.anisotropy = 1;
 texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
-texture2.repeat.set( 512, 512 );
+texture2.repeat.set( 512*3, 512*3 );
+window.texture2 = texture2;
 
 var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
 var mesh1 = new THREE.Mesh( geometry, material2 );
