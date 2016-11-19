@@ -80,11 +80,21 @@ camera.lookAt(scene.position);
 
 var controls = new OrbitControls(camera, document.getElementById('mount'));
 
+var textureLoader = new THREE.TextureLoader();
+var texture2 = textureLoader.load( "./assets/textures/grass.png" );
+var material2 = new THREE.MeshPhongMaterial( {
+  color: 0xffffff,
+  map: texture2,
+} );
+texture2.anisotropy = 1;
+texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
+texture2.repeat.set( 512*3, 512*3 );
+
 var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-var mesh1 = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x949799 } ) );
-mesh1.rotation.x = - Math.PI / 2;
-mesh1.scale.set( 1000, 1000, 1000 );
-scene.add(mesh1);
+var ground = new THREE.Mesh( geometry, material2 );
+ground.rotation.x = - Math.PI / 2;
+ground.scale.set( 1000, 1000, 1000 );
+scene.add(ground);
 
 
 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -182,14 +192,35 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
+
+var raycaster = new THREE.Raycaster();
+window.raycaster = raycaster;
+var mouse = new THREE.Vector2();
+
+
+
+
+function onMouseMove( event ) {
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
+
+}
+window.addEventListener( 'mousemove', onMouseMove, false );
+
 var ticks = 0;
 var update = function(dt, elapsed){
   ticks++;
-  // if(mesh){
-  //   anchor.translateZ(dt * zVelocity * 18);
-  //   anchor.translateX(dt * xVelocity * 18);
-  // }
-
+  // update the picking ray with the camera and mouse position	
+  raycaster.setFromCamera( mouse, camera );	
+  // calculate objects intersecting the picking ray
+  var intersects = raycaster.intersectObjects( [ground] );
+  if(intersects.length && mesh){
+    console.log(intersects[0].point.x);
+    mesh.parent.position.x = intersects[0].point.x;
+    mesh.parent.position.z = intersects[0].point.z;
+  }
 };
 
 var render = function() {
