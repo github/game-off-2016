@@ -1,7 +1,7 @@
 #!/usr/bin/env nodejs
 var http = require('http');
 var ms = require('./minesweeper.js');
-var map = new ms(10,0.1);
+var map = new ms(10,10);
 var WebSocketServer = require('websocket').server;
 
 var server = http.createServer(function(request, response) {

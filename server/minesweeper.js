@@ -1,16 +1,30 @@
-function ms(size, bombP) {
+function ms(size, numbombs) {
     this.size = size;
     this.map = [];
+
 
     for (var i=0;i<size;i++){
         this.map.push([]);
         for (var j=0;j<size;j++){
             var ret = {
-                isB:Math.random()<bombP,
+                isB:false,
                 sel:false,
                 numOfAdj:0,
             };
             this.map[i].push(ret);
+        }
+    }
+
+    for (var i=0;i<numbombs;i++) {
+        var bomb = {
+            x:Math.floor(Math.random()*(size-1)),
+            y:Math.floor(Math.random()*(size-1))
+        };
+        if (this.map[bomb.y][bomb.x].isB) {
+            i--;
+            continue;
+        } else {
+            this.map[bomb.y][bomb.x].isB = true;
         }
     }
 
