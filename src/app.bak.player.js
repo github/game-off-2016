@@ -5,29 +5,10 @@ const KeyDrown = require('keydrown');
 const viewWidth =  document.documentElement.clientWidth;
 const viewHeight =  document.documentElement.clientHeight;
 const modelNames = require('./modelNames.json');
-const OrbitControls = require('three-orbit-controls')(THREE);
-
-var sel = document.createElement('select');
-var fragment = document.createDocumentFragment();
-
-modelNames.forEach(function(modelName) {
-  var opt = document.createElement('option');
-  opt.innerHTML = modelName;
-  opt.value = modelName;
-  fragment.appendChild(opt);
-});
-
-sel.addEventListener('change', function(event){
-  loadModel(event.target.value);
-});
-
-sel.appendChild(fragment);
-document.body.appendChild(sel);
-
 
 const renderer = new THREE.WebGLRenderer( {antialias: true} );
-renderer.setSize( viewWidth, viewHeight );
-document.getElementById('mount').appendChild( renderer.domElement );
+    renderer.setSize( viewWidth, viewHeight );
+    document.body.appendChild( renderer.domElement );
 
 const setLights = function(scene) {
   console.log("Initiate lights...");
@@ -48,21 +29,25 @@ const setLights = function(scene) {
 
   dirLight.castShadow = true;
 
-  dirLight.shadow.mapSize.width = 2048;
-  dirLight.shadow.mapSize.height = 2048;
+  dirLight.shadowMapWidth = 2048;
+  dirLight.shadowMapHeight = 2048;
 
   var d = 150;
 
-  dirLight.shadow.camera.left = -d;
-  dirLight.shadow.camera.right = d;
-  dirLight.shadow.camera.top = d;
-  dirLight.shadow.camera.bottom = -d;
+  dirLight.shadowCameraLeft = -d;
+  dirLight.shadowCameraRight = d;
+  dirLight.shadowCamefraTop = d;
+  dirLight.shadowCameraBottom = -d;
 
-  dirLight.shadow.camera.far = 3500;
-  dirLight.shadow.bias = -0.0001;
+  dirLight.shadowCameraFar = 3500;
+  dirLight.shadowBias = -0.0001;
+  dirLight.shadowDarkness = 0.45;
 };
 
+let focus;
+window.focus = focus;
 const scene = new THREE.Scene();
+window.scene = scene;
 setLights(scene);
 
 const camera = new THREE.PerspectiveCamera(
@@ -74,44 +59,32 @@ const camera = new THREE.PerspectiveCamera(
 
 
 window.camera = camera;
-camera.position.set( 0, 25, 50 );
+camera.position.set( 0, 50, 100 );
 camera.lookAt(scene.position);
 
-var controls = new OrbitControls(camera, document.getElementById('mount'));
+var textureLoader = new THREE.TextureLoader();
+var texture2 = textureLoader.load( "./assets/textures/grass.png" );
+var material2 = new THREE.MeshPhongMaterial( {
+  color: 0xffffff,
+  map: texture2,
+} );
+texture2.anisotropy = 1;
+texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
+texture2.repeat.set( 512*3, 512*3 );
+window.texture2 = texture2;
 
 var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-var mesh1 = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x949799 } ) );
+var mesh1 = new THREE.Mesh( geometry, material2 );
 mesh1.rotation.x = - Math.PI / 2;
 mesh1.scale.set( 1000, 1000, 1000 );
 scene.add(mesh1);
 
 
-var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+var geometry = new THREE.BoxGeometry( 5, 5, 5 );
 var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
 var anchor = new THREE.Mesh( geometry, material );
 window.anchor = anchor;
 scene.add( anchor );
-
-var from = new THREE.Vector3( 0, 0, 0 );
-var to = new THREE.Vector3( 0, 20, 0 );
-var direction = to.clone().sub(from);
-var length = direction.length();
-var YarrowHelper = new THREE.ArrowHelper(direction.normalize(), from, length, 0x42f448 );
-scene.add( YarrowHelper );
-
-from = new THREE.Vector3( 0, 0, 0 );
-to = new THREE.Vector3( 20, 0, 0 );
-direction = to.clone().sub(from);
-length = direction.length();
-var XarrowHelper = new THREE.ArrowHelper(direction.normalize(), from, length, 0xea0e53 );
-scene.add( XarrowHelper );
-
-from = new THREE.Vector3( 0, 0, 0 );
-to = new THREE.Vector3( 0, 0, 20 );
-direction = to.clone().sub(from);
-length = direction.length();
-var ZarrowHelper = new THREE.ArrowHelper(direction.normalize(), from, length, 0x150eea );
-scene.add( ZarrowHelper );
 
 renderer.setClearColor( 0x7ccaff, 1);
 renderer.render( scene, camera );
@@ -139,6 +112,15 @@ function loadModel(modelName){
     vmesh.position.x += 4;
     window.mesh = mesh;
 
+    // helper = new THREE.BoundingBoxHelper(vmesh, 0xff0000);
+    // helper.update();
+    // mesh.helper = helper;
+    // // If you want a visible bounding anchor
+    // scene.add(helper);
+    
+    
+
+    
     camera.lookAt(vmesh.position);
     //cameraFollow();
   });
@@ -146,6 +128,16 @@ function loadModel(modelName){
 
 var zVelocity = 0;
 var xVelocity = 0;
+
+KeyDrown.W.down(() => {zVelocity = -1;});
+KeyDrown.S.down(() => { zVelocity = 1; });
+KeyDrown.A.down(() => { xVelocity = -1; });
+KeyDrown.D.down(() => { xVelocity = 1; });
+
+KeyDrown.W.up(() => { zVelocity = 0; });
+KeyDrown.S.up(() => { zVelocity = 0; });
+KeyDrown.A.up(() => { xVelocity = 0; });
+KeyDrown.D.up(() => { xVelocity = 0; });
 
 
 function onWindowResize(){
@@ -156,12 +148,23 @@ function onWindowResize(){
 }
 window.addEventListener( 'resize', onWindowResize, false );
 
+function cameraFollow(){
+  var relativeCameraOffset = new THREE.Vector3(0, 40, 40);
+  var cameraOffset = relativeCameraOffset.applyMatrix4( anchor.matrixWorld );
+  camera.position.x = cameraOffset.x;
+  camera.position.y = cameraOffset.y;
+  camera.position.z = cameraOffset.z;
+}
+window.cameraFollow = cameraFollow;
+
 var ticks = 0;
 var update = function(dt, elapsed){
   ticks++;
+  KeyDrown.tick();
   if(mesh){
     anchor.translateZ(dt * zVelocity * 18);
     anchor.translateX(dt * xVelocity * 18);
+    cameraFollow();
   }
 
 };

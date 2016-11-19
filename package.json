@@ -28,7 +28,8 @@
     "lodash": "^4.16.6",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "three": "^0.82.1"
+    "three": "^0.82.1",
+    "three-orbit-controls": "^72.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
