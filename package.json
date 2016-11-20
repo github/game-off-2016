@@ -28,9 +28,10 @@
     "lodash": "^4.16.6",
     "pouchdb": "^6.0.7",
     "pouchdb-server": "^1.2.1",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
-    "three": "^0.82.1",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-three-renderer": "^2.3.3",
+    "three": "^0.79.0",
     "three-orbit-controls": "^72.0.0"
   },
   "devDependencies": {
