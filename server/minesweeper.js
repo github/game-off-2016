@@ -1,6 +1,7 @@
 function ms(size, numbombs) {
     this.size = size;
     this.map = [];
+    this.flags = 0;
 
 
     for (var i=0;i<size;i++){
@@ -10,6 +11,7 @@ function ms(size, numbombs) {
                 isB:false,
                 sel:false,
                 numOfAdj:0,
+                flagged:false,
             };
             this.map[i].push(ret);
         }
@@ -63,10 +65,22 @@ ms.prototype.getMap = function (req) {
             map[i].push({sel:this.map[i][j].sel});
             if (this.map[i][j].sel) {
                 map[i][j].numOfAdj = this.map[i][j].numOfAdj;
+            } else {
+                map[i][j].flagged = this.map[i][j].flagged;
             }
         }
     }
     return map;
+};
+ms.prototype.flag = function (req) {
+    if (this.map[req.y][req.x].flagged) {
+        this.flags--;
+        this.map[req.y][req.x].flagged = false;
+        return {status:0};
+    }
+    this.flags++;
+    this.map[req.y][req.x].flagged = true;
+    return {status:0};
 };
 ms.prototype.clickBox = function (req) {
     console.log("clickbox called at "+JSON.stringify(req));
@@ -87,7 +101,8 @@ ms.prototype.clickBox = function (req) {
                     this.map[req.y-1][req.x-1].sel = true;
                     ret.act = ret.act.concat(this.clickBox({y:req.y-1, x:req.x-1}).act);
                 }
-            } if (req.x<this.size-1) {
+            }
+            if (req.x<this.size-1) {
                 if (!this.map[req.y-1][req.x+1].sel) {
                     this.map[req.y-1][req.x+1].sel = true;
                     ret.act = ret.act.concat(this.clickBox({y:req.y-1, x:req.x+1}).act);
@@ -103,7 +118,8 @@ ms.prototype.clickBox = function (req) {
                     this.map[req.y+1][req.x-1].sel = true;
                     ret.act = ret.act.concat(this.clickBox({y:req.y+1, x:req.x-1}).act);
                 }
-            } if (req.x<this.size-1) {
+            }
+            if (req.x<this.size-1) {
                 if (!this.map[req.y+1][req.x+1].sel) {
                     this.map[req.y+1][req.x+1].sel = true;
                     ret.act = ret.act.concat(this.clickBox({y:req.y+1, x:req.x+1}).act);
@@ -115,7 +131,8 @@ ms.prototype.clickBox = function (req) {
                 this.map[req.y][req.x-1].sel = true;
                 ret.act = ret.act.concat(this.clickBox({y:req.y, x:req.x-1}).act);
             }
-        } if (req.x<this.size-1) {
+        }
+        if (req.x<this.size-1) {
             if (!this.map[req.y][req.x+1].sel) {
                 this.map[req.y][req.x+1].sel = true;
                 ret.act = ret.act.concat(this.clickBox({y:req.y, x:req.x+1}).act);
