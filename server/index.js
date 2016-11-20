@@ -33,6 +33,9 @@ var cmds = {
     clickBox:function(req){
         return map.clickBox(req);
     },
+    flag:function(req){
+        return map.flag(req);
+    }
 };
 
 wsServer.on('request', function(request) {
