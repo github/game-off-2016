@@ -5,7 +5,8 @@
 <div align="right">
   <sup>
     <a href="#the-challenge">English</a> ·
-    <a href="#お題">日本語</a>
+    <a href="#お題">日本語</a> ·
+    <a href="#tantangan">Indonesia</a>
   </sup>
 </div>
 
@@ -80,6 +81,42 @@ GLHF! <3
 * GitHub Game Offに関する質問については、[ここにIssueを作って聞いてください。（英語でお願いします）][game-off-repo-issues]. これが公式のFAQになっていく予定です。
 
 このGame OffのためのTwitterの公式ハッシュタグは`#ggo16`です。皆さんのゲームで遊べるのを楽しみにしています。
+
+GLHF! <3
+
+## Tantangan
+
+Sepanjang bulan November, Anda dapat membuat sebuah permainan *bebas* dengan bertemakan **peretasan, modifikasi dan/atau penggandaan**.
+
+Apa yang kami maksud dengan **bebas** berdasarkan pada peretasan, modifikasi dan/atau penggandaan? Maksud kami, benar-benar bebas, secara harfiah tidak ada syarat dan ketentuan. Contohnya seperti:
+
+* Permainan berlari tanpa ujung di mana anda menebang (*hack*) pohon biner di sepanjang jalur anda dengan kapak piksel,
+* Permainan versi modern dari permainan klasik, misalnya sebuah *roguelike* yang diatur di dalam dunia 3D atau dunia VR, atau
+* Sebuah permainan realitas tertambah (*augmented reality*) yang membawa gurita dan kucing ke dalam dunia nyata.
+
+Tunjukan kreativitas anda. Anda dapat bekerja sendiri atau dengan tim dan membangun untuk berbagai padanan ataupun perangkat. Anda dianjurkan, tetapi tidak diharuskan untuk menggunakan mesin permainan dari sumber terbuka dan berbagai pustaka.
+
+Kami akan tetap memantau beberapa blog GitHub favorit kami, dan dunia dapat menikmati (dan bahkan mungkin berkontribusi dan/atau untuk belajar) dengan kreasi anda.
+
+## Bagaimana cara berpartisipasi
+
+* [Daftarkan akun][github-signup] jika anda belum punya.
+* *Fork* [repositori ini][game-off-repo] untuk akun pribadi (atau untuk sebuah [akun organisasi gratis][github-signup-org]).
+* *Clone* repositori pada komputer anda dan buat permainan anda.
+* *Push* kode sumber(*source code*) permainan anda untuk repositori hasil *fork* anda sebelum tanggal 1 Desember.
+* Perbaharui berkas `README.md` untuk memasukkan penjelasan dari permainan anda, bagaimana/dimana untuk memainkan/mengunduhnya, bagaimana cara *build/compile* permainan anda, ketergantungan apa yang dimiliki, dan lain-lain.
+* Ajukan versi terakhir permainan anda menggunakan [formulir][wufoo-form] ini.
+
+## Berbahaya jika anda bekerja sendirian <img src="https://octodex.github.com/images/linktocat.jpg" height="40">
+
+Jika anda masih **pemula dalam menggunakan Git, GitHub, atau manajemen revisi**…
+
+* [Dokumentasi Git](https://git-scm.com/documentation) - semua yang perlu anda ketahui tentang manajemen revisi, dan bagaimana cara menggunakan Git.
+* [Bantuan GitHub](https://help.github.com/) - semua yang perlu anda ketahui tentang GitHub.
+* Ada pertanyaan tentang GitHub? Mohon [hubungi tim pendukung kami][github-support] dan dengan senang hati mereka akan membantu anda.
+* Punya pertanyaan spesifik mengenai GitHub Game Off? Mohon [buat sebuah issue][game-off-repo-issues]. ini akan menjadi pertanyaan umum resmi.
+
+Tagar Twitter resmi untuk Game Off adalah `#ggo16`. Kami berharap *kami* dapat memainkan kreasi anda.
 
 GLHF! <3
 
