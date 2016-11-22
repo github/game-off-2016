@@ -1,21 +1,23 @@
-/*.tingtilsenere{
-    /*td{
+
+    td{
     	margin: auto;
     	text-align: center;
     	min-width: 25px;
-    	height: 25px;
+    	min-height: 25px;
+        height:25px;
     	-webkit-touch-callout: none;
     	-webkit-user-select: none;
     	-khtml-user-select: none;
     	-moz-user-select: none;
     	-ms-user-select: none;
     	user-select: none;
-        //background-image: url("Bilder/default.png");
-        padding: 0;
+        background-repeat: no-repeat;
+
     }
     table{
         border-collapse: collapse;
     }
+    /*
     a{
         color: #5A5A99;
     }
@@ -85,10 +87,7 @@
         display: flex;
     }
     */
-    *{
-        padding: 0px;
-        margin: 0px;
-    }
+
 #gameContainer{
     display: flex;
     max-height: 380px;

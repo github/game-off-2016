@@ -1,5 +1,7 @@
+var minesweeper = new ms(100, 15);
 var text = "";
 numOfFields = 0;
+drawMap();
 
 function drawMap() {
     text += "<table>";
