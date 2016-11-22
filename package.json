@@ -1,0 +1,30 @@
+{
+  "name": "game-off-2016",
+  "version": "1.0.0",
+  "description": "![GitHub Game Off 2016 Theme is Hacking, Modding, or Augmenting](https://cloud.githubusercontent.com/assets/121322/19498019/d8827370-9543-11e6-82d8-6da822b6147b.png)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clockupstudio/game-off-2016.git"
+  },
+  "author": "Clockup Studio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clockupstudio/game-off-2016/issues"
+  },
+  "homepage": "https://github.com/clockupstudio/game-off-2016#readme",
+  "dependencies": {
+    "phaser": "^2.6.2"
+  },
+  "devDependencies": {
+    "ts-loader": "^1.0.0",
+    "tslint": "^3.15.1",
+    "typescript": "1.8.10",
+    "typings": "^1.5.0",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
