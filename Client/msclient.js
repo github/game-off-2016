@@ -12,6 +12,8 @@ function drawMap(){
             var tdEl = document.createElement("td");
             tdEl.className="game-item";
             tdEl.style["background-image"] = "url('bilder/default.png')";
+            tdEl.setAttribute("data-x",""+x);
+            tdEl.setAttribute("data-y",""+y);
             tdEl.addEventListener("click",send);
             trEl.appendChild(tdEl);
             msmap[y].push(tdEl);
@@ -22,11 +24,13 @@ function drawMap(){
 
 }
 function send(e){
-    var Coords = e.target.id.replace(/^(ms)/,"").split("_");
+    var xCoord = Number(e.target.getAttribute("data-x"));
+    var yCoord = Number(e.target.getAttribute("data-y"));
 
+    var result = minesweeper.clickBoxVerbose({x:xCoord, y:yCoord})
     console.log("updating map...");
-    updateMap(minesweeper.clickBox({x:Number(Coords[0]), y:Number(Coords[1])}));//flyttes til connection.onmessage eller hva det nå enn heter
-    console.log("done.");
+    updateMap(result);//flyttes til connection.onmessage eller hva det nå enn heter
+    console.log("Map udated.");
 }
 function updateMap(theResultOfClickBox) {
     if(theResultOfClickBox.hit===true){
