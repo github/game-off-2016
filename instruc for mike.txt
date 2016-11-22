@@ -1,0 +1,43 @@
+make a folder wherever you 
+
+move to the directory using cd/ls
+
+git clone https://github.com/Schweig/game-off-2016
+
+
+cd game-off-2016
+
+either 
+
+checkout working
+
+or 
+
+branch "your branch name"
+
+checkout "your branch name"
+
+
+
+
+
+to add
+
+git add .
+
+git commit -a
+
+press s to begin typing
+
+enter commit message 
+
+to exit vim escape key then type:wq enter
+
+
+git push https://github.com/Schweig/game-off-2016
+
+enter user and pass
+
+
+
+
