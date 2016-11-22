@@ -6,42 +6,29 @@
     <link rel="stylesheet" href="stilarkMal.css">
     <link rel="stylesheet" href="skjemastil.css">
     <link rel="stylesheet" href="gameStyle.css">
-    <link rel = "script" type="text/script" src="https://raw.githubusercontent.com/PabloDons/game-off-2016/master/server/minesweeper.js">
+    <script src="https://dev.pablodons.tk/game-off-2016/server/minesweeper.js"></script>
 </head>
 <body>
-<div class="innpakning">
-<div class="topptekst">
-    <h1>hilmar er kul</h1>
-</div>
-<div class="meny">
-    <ul class="liste1">
-        <li> <a href="index.html">Hjem</a></li>
-        <li> <a href="oversikt.html">Oversikt</a></li>
-        <li> <a href="#">Partier</a></li>
-        <li class="dropdown"> <a href="#">Javascript-Prosjekt</a>
-            <ul class="dropdown-content">
-                <li> <a href="#">Her er ingen ting</a></li>
-                <li> <a href="Miniprosjekt.html">Miniproskjekt</a></li>
-            </ul>
-        </li>
-    </ul>
-</div>
-<div class="innhold">
-    <div id = "gameContainer">
-        <div id = "gamePanel">
-
+    <div class="innpakning">
+        <div class="topptekst">
+            <h1>hilmar er kul</h1>
         </div>
-        <div id = "game">
+        <div class="innhold">
+            <div id = "gameContainer">
+                <div id = "gamePanel">
 
-        </div>
-        <div id = "gameChat">
-            <div id = "chatLog">
+                </div>
+                <div id = "game">
+
+                </div>
+                <div id = "gameChat">
+                    <div id = "chatLog">
+                    </div>
+                    <input placeholder="skriv litt artig">
+                </div>
             </div>
-            <input alt="skriv litt artig"></input>
+            <script src="msclient.js"></script>
         </div>
     </div>
-    <script src="https://dev.pablodons.tk/game-off-2016/server/minesweeper.js"></script>
-<script src="msclient.js"></script>
-</div>
 </body>
 </html>
