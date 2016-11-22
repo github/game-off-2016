@@ -43,7 +43,7 @@ function updateMap(theResultOfClickBox) {
         var x = theResultOfClickBox.act[i].x;
         var y = theResultOfClickBox.act[i].y;
         var t = theResultOfClickBox.act[i].numOfAdj;
-        minesweeper.map[y][x].style.backgroundImage="url('bilder/"+t+".png')";
+        msmap[y][x].style.backgroundImage="url('bilder/"+t+".png')";
     }
 }
 function theGameHasEnded(){
