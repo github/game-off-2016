@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=1]
+
+[ext_resource path="res://Scenes/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+
+[node name="Node" type="Node"]
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 449.188, 299.961 )
+
+[node name="DELETE-WHENEVER-TEST" type="Node2D" parent="."]
+
+transform/pos = Vector2( 109.695, 137.396 )
+transform/scale = Vector2( 1, 1 )
+
+[node name="Sprite2" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+transform/pos = Vector2( 9.97229, 361.219 )
+texture = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+texture = ExtResource( 2 )
+
+[node name="Sprite5" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+transform/pos = Vector2( 347.923, -55.4017 )
+texture = ExtResource( 2 )
+
+[node name="Sprite4" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+transform/pos = Vector2( 813.297, -59.8338 )
+texture = ExtResource( 2 )
+
+[node name="Sprite3" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+transform/pos = Vector2( 686.981, 425.485 )
+texture = ExtResource( 2 )
+
+[node name="Sprite1" type="Sprite" parent="DELETE-WHENEVER-TEST"]
+
+transform/pos = Vector2( 624.931, 185.042 )
+texture = ExtResource( 2 )
+
+
