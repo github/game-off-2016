@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\enity">
+      <UniqueIdentifier>{74f10748-e57d-4689-8ddb-fe120e7fdd10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{6393842f-07f7-41d0-a94b-2097e71f4f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx">
+      <UniqueIdentifier>{7bdef10d-19b1-4fc2-a916-58cb07b1fba6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics">
+      <UniqueIdentifier>{db93b69f-524c-42f2-8b79-77f2a935600b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sfx">
+      <UniqueIdentifier>{604ebab0-d2f3-46e0-8897-930ace964a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{47356943-a7a6-4036-9fb1-1a7540028d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\enity\enemies">
+      <UniqueIdentifier>{5b43b815-2ace-4d0c-82ef-16c77f0e77ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils\gui">
+      <UniqueIdentifier>{f2ca678d-ac10-457e-b406-94f8571aeecd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entity">
+      <UniqueIdentifier>{21885bd9-834e-4ac2-8346-13b63e0a4966}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{5c7cc703-0e95-49e2-9bae-fc20b81c56cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gfx">
+      <UniqueIdentifier>{d66ef144-03c6-4c40-b647-2cf007c64b70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics">
+      <UniqueIdentifier>{caf5202c-dc73-4634-bd53-ad96018ef449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sfx">
+      <UniqueIdentifier>{01fa4c17-0b1d-443f-87d3-0c7fb8f354d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{7cb691dd-e928-43c6-926e-7004d67c3d9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils\gui">
+      <UniqueIdentifier>{1e533711-b793-4146-b5f0-377502f1fdff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\entity\boss.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\enemy.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\entity.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\player.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\projectile.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\weapon.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity\gun.h">
+      <Filter>Header Files\enity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\application.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\camera.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\editorstate.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\gamestate.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\level.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\map.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\menu.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\selectionstate.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gfx\spritesheet.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gfx\texture.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gfx\texutils.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\AABB.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\physics.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sfx\music.h">
+      <Filter>Header Files\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\dirent.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\general.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\singleton.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\timer.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\vector2f.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\gui\button.h">
+      <Filter>Header Files\utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\gui\selectionitem.h">
+      <Filter>Header Files\utils\gui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\gun.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\player.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\projectile.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\weapon.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\application.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\editorstate.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\level.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\map.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\menu.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\selectionstate.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\spritesheet.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\texture.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\texutils.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\physics.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sfx\music.cpp">
+      <Filter>Source Files\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\timer.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\gui\button.cpp">
+      <Filter>Source Files\utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\gui\selectionitem.cpp">
+      <Filter>Source Files\utils\gui</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
