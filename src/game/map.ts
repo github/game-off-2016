@@ -40,6 +40,7 @@ export class Map {
   get width() { return config.tileSize * config.gridWidth; }
   get height() { return config.tileSize * config.gridHeight; }
   get player() { return this._player; }
+  get robots() { return this._robots; }
 
   unitAt(point: Point, team?: string): IEntity {
     for (let unit of this._robots) {

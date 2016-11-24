@@ -9,8 +9,9 @@ import {IEntity, teamType} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
-  inRange,
-  lineOfSight,
+  collide,
+  isInLOS,
+  getDistance,
   pointToCircle
 } from '../functional';
 
@@ -25,6 +26,7 @@ export class Ranged extends Robot {
   private _state: 'searching' | 'shooting' | 'cooldown';
   private _timer: number;
   private _target: IEntity;
+  private _targetPosition: Point;
   private _team: teamType;
   private _graphics: Graphics;
 
@@ -65,12 +67,10 @@ export class Ranged extends Robot {
   }
 
   update(time: ITimeEvent) {
-    if (this._team !== 'hacker' && this._playerInRange()) {
-      this._target = this._game.currentMap.player;
-    } else {
-      this._target = null;
-    }
+    this._target = this._getClosestEnemy();
+
     if (this._state === 'searching' && this._target) {
+      this._targetPosition = this._target.position;
       this._state = 'shooting';
       this._timer = this._config.shootDelay;
     }
@@ -88,16 +88,25 @@ export class Ranged extends Robot {
   private _shoot() {
     let shoot = new EnergyBall(this._game);
     shoot.position = this.position;
-    shoot.setTarget(this._game.currentMap.player);
+    shoot.setTarget(this._targetPosition);
     this._game.currentMap.addEntity(shoot);
   }
 
-  private _playerInRange(): boolean {
-    return inRange(this._fov, this._game.currentMap.player.body) &&
-           lineOfSight(this._game.currentMap,
-             this._fov.x, this._fov.y,
-             this._game.currentMap.player.position.x,
-             this._game.currentMap.player.position.y
-           );
+  private _getClosestEnemy(): IEntity {
+      let target = <IEntity> this._game.currentMap.robots
+             .filter(rob => this.team !== rob.team && collide(this._fov, rob.body))
+             .sort(rob => getDistance(this, rob))
+             .find(rob => isInLOS(this._game.currentMap, this._fov.x, this._fov.y ,rob.position.x, rob.position.y))
+
+      if(target === undefined) {
+        let player = this._game.currentMap.player;
+        if( this.team !== player.team &&
+            collide(this._fov, player.body) &&
+            isInLOS(this._game.currentMap, this._fov.x, this._fov.y , player.position.x, player.position.y)) {
+          target = player;
+        }
+      }
+
+      return target;
   }
 }

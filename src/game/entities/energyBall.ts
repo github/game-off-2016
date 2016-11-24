@@ -53,9 +53,8 @@ export class EnergyBall extends Unit {
     }
   }
 
-  setTarget(entity: IEntity) {
+  setTarget(targetPosition: Point) {
     let position = this.position;
-    let targetPosition = entity.position;
     this._speed = normalizeVector(
       targetPosition.x - position.x,
       targetPosition.y - position.y

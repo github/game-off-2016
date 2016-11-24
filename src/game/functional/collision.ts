@@ -3,7 +3,7 @@ import {
   IUnit
 } from '../types';
 import {Map} from '../map';
-import {Rectangle, Circle} from 'pixi.js';
+import {Rectangle, Circle, Ellipse, Polygon, IHitArea, SHAPES} from 'pixi.js';
 
 export function isOutOfBOunds(map: Map, body: Rectangle): boolean {
   return body.x < 0 || body.y < 0 || body.right > map.width || body.bottom > map.height;
@@ -31,16 +31,6 @@ export function wallCollision(map: Map, body: Rectangle, rangedAsWalls = false):
          wallAt(map, body.left, body.bottom, rangedAsWalls) ||
          wallAt(map, body.right, body.top, rangedAsWalls) ||
          wallAt(map, body.left, body.top, rangedAsWalls);
-}
-
-function _rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
-  return rect1.contains(rect2.left, rect2.top) ||
-         rect1.contains(rect2.left, rect2.bottom) ||
-         rect1.contains(rect2.right, rect2.top) ||
-         rect1.contains(rect2.right, rect2.bottom);
-}
-export function rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
-  return _rectsCollide(rect1, rect2) || _rectsCollide(rect2, rect1);
 }
 
 export function enemyCollision(map: Map, entity: IEntity): IUnit {
@@ -77,14 +67,80 @@ export function moveBody(map: Map, body: Rectangle, dx: number, dy: number): Rec
   return fixOutOfBOunds(map, newBody);
 }
 
-export function inRange(range: Circle, body: Rectangle): boolean {
-  return range.contains(body.left, body.bottom) ||
-         range.contains(body.right, body.bottom) ||
-         range.contains(body.left, body.top) ||
-         range.contains(body.right, body.top);
+function _rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
+  return rect1.contains(rect2.left, rect2.top) ||
+         rect1.contains(rect2.left, rect2.bottom) ||
+         rect1.contains(rect2.right, rect2.top) ||
+         rect1.contains(rect2.right, rect2.bottom);
 }
 
-export function lineOfSight(map: Map, x0: number, y0: number, x1: number, y1: number): boolean {
+export function rectsCollide(rect1: Rectangle, rect2: Rectangle): boolean {
+  return _rectsCollide(rect1, rect2) || _rectsCollide(rect2, rect1);
+}
+
+export function rectCircCollide(rect: Rectangle, circ: Circle): boolean {
+  return circ.contains(rect.left, rect.bottom) ||
+         circ.contains(rect.right, rect.bottom) ||
+         circ.contains(rect.left, rect.top) ||
+         circ.contains(rect.right, rect.top);
+}
+
+export function rectPolyCollide(rect: Rectangle, poly: Polygon): boolean {
+  return poly.contains(rect.left, rect.top) ||
+         poly.contains(rect.left, rect.bottom) ||
+         poly.contains(rect.right, rect.top) ||
+         poly.contains(rect.right, rect.bottom);
+}
+
+export function circsCollide(circ1: Circle, circ2: Circle): boolean {
+  return true;
+}
+
+export function circPolyCollide(circ: Circle, poly: Polygon): boolean {
+  return true;
+}
+
+export function polysCollide(poly1: Polygon, poly2: Polygon): boolean {
+  return true;
+}
+
+export function getDistance(e1: IEntity, e2: IEntity): number {
+  return Math.sqrt((e1.position.x-e2.position.x)^2 + (e1.position.y-e2.position.y)^2);
+}
+
+export function collide(a: IHitArea, b: IHitArea): boolean {
+  switch(a.type){
+    case SHAPES.RECT : return rectCollide(<Rectangle> a, b)
+    case SHAPES.CIRC : return circCollide(<Circle> a, b)
+    case SHAPES.POLY : return polyCollide(<Polygon> a, b)
+  }
+}
+
+export function rectCollide(rect: Rectangle, b: IHitArea): boolean {
+  switch(b.type) {
+    case SHAPES.RECT : return rectsCollide(rect, <Rectangle> b)
+    case SHAPES.CIRC : return rectCircCollide(rect, <Circle> b)
+    case SHAPES.POLY : return rectPolyCollide(rect, <Polygon> b)
+  }
+}
+
+export function circCollide(circ: Circle, b: IHitArea): boolean {
+  switch(b.type){
+    case SHAPES.RECT : return rectCircCollide(<Rectangle> b, circ)
+    case SHAPES.CIRC : return circsCollide(circ, <Circle> b)
+    case SHAPES.POLY : return circPolyCollide(circ, <Polygon> b)
+  }
+}
+
+export function polyCollide(poly: Polygon, b: IHitArea): boolean {
+  switch(b.type){
+    case SHAPES.RECT : return rectPolyCollide(<Rectangle> b, poly)
+    case SHAPES.CIRC : return circPolyCollide(<Circle> b, poly)
+    case SHAPES.POLY : return polysCollide(poly, <Polygon> b)
+  }
+}
+
+export function isInLOS(map: Map, x0: number, y0: number, x1: number, y1: number): boolean {
   let los = true;
   let dx = Math.abs(x1 - x0);
   let dy = Math.abs(y1 - y0);
@@ -116,18 +172,6 @@ export function lineOfSight(map: Map, x0: number, y0: number, x1: number, y1: nu
   }
   return los;
 }
-
-
-// class Rect {
-//   private _x: number;
-//   private _y: number;
-//
-//   constructor(x: number, y: number) {
-//     this._x = x;
-//     this._y = y;
-//   }
-// }
-
 
 class Rect {
   constructor(

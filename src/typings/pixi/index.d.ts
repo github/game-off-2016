@@ -653,7 +653,7 @@ declare namespace PIXI {
     export interface IHitArea extends IShape {
 
         contains(x: number, y: number): boolean;
-
+        type: number;
     }
     export class Circle {
 
