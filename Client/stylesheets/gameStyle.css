@@ -124,15 +124,14 @@
 }
 input[name ="chatField"]{
     width:80%;
-    height:10%;
     background-color: #333333;
 }
 input[name ="chatButton"]{
     width: 15%;
-    background-color: magenta;
-    height: 10%;
+    background-color: #333333;
     flex-grow: 1;
 }
-form{
-    display: inline;
+input{
+    height: 30px;
+    color: #eee;
 }
