@@ -9,9 +9,6 @@ import {IEntity, teamType} from '../types';
 import {EnergyBall} from './energyBall';
 import {ITimeEvent} from '../game-loop';
 import {
-  collide,
-  isInLOS,
-  getDistance,
   pointToCircle
 } from '../functional';
 
@@ -21,11 +18,11 @@ export class Ranged extends Robot {
   get type() { return 'ranged'; }
   get team(): teamType { return this._team; }
 
+  protected _fov: Circle;
+
   private _config: any;
-  private _fov: Circle;
   private _state: 'searching' | 'shooting' | 'cooldown';
   private _timer: number;
-  private _target: IEntity;
   private _targetPosition: Point;
   private _team: teamType;
   private _graphics: Graphics;
@@ -39,9 +36,6 @@ export class Ranged extends Robot {
     this._graphics.beginFill(0x63DAE6);
     this._graphics.drawCircle( 0, 0, this._config.size / 2 );
   }
-
-  get fov() { return this._fov; }
-  get target() { return this._target; }
 
   _preInit() {
     this._config = Object.assign({}, config.entities.ranged);
@@ -90,23 +84,5 @@ export class Ranged extends Robot {
     shoot.position = this.position;
     shoot.setTarget(this._targetPosition);
     this._game.currentMap.addEntity(shoot);
-  }
-
-  private _getClosestEnemy(): IEntity {
-      let target = <IEntity> this._game.currentMap.robots
-             .filter(rob => this.team !== rob.team && collide(this._fov, rob.body))
-             .sort(rob => getDistance(this, rob))
-             .find(rob => isInLOS(this._game.currentMap, this._fov.x, this._fov.y ,rob.position.x, rob.position.y))
-
-      if(target === undefined) {
-        let player = this._game.currentMap.player;
-        if( this.team !== player.team &&
-            collide(this._fov, player.body) &&
-            isInLOS(this._game.currentMap, this._fov.x, this._fov.y , player.position.x, player.position.y)) {
-          target = player;
-        }
-      }
-
-      return target;
   }
 }

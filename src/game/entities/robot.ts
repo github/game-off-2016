@@ -1,15 +1,28 @@
 import {
   DisplayObject,
-  Container
+  Container,
+  IHitArea,
+  Point
 } from 'pixi.js';
+
+import {
+  collide,
+  isInLOS,
+  getDistance,
+  pointToCircle
+} from '../functional';
 
 import {Unit} from './unit';
 import {HackMeter} from '../ui';
 import {config} from '../../config';
+import {IEntity} from '../types';
 
 export abstract class Robot extends Unit {
   protected abstract _hackResistence(): number;
   protected abstract _changeTeam(): void;
+
+  protected _fov: IHitArea;
+  protected _target: IEntity;
 
   private _hackMeter: number;
   private _hackMeterView: HackMeter;
@@ -37,4 +50,25 @@ export abstract class Robot extends Unit {
     }
     this._hackMeterView.setProgress(this._hackMeter / this._hackResistence());
   }
+
+  get fov() { return this._fov; }
+  get target() { return this._target; }
+
+  protected _getClosestEnemy(): IEntity {
+    let target = <IEntity> this._game.currentMap.robots
+    .filter(rob => this.team !== rob.team && collide(this._fov, rob.body))
+    .sort(rob => getDistance(this, rob))
+    .find(rob => isInLOS(this._game.currentMap, this._fov.x, this._fov.y ,rob.position.x, rob.position.y))
+
+    if(target === undefined) {
+      let player = this._game.currentMap.player;
+      if( this.team !== player.team &&
+        collide(this._fov, player.body) &&
+        isInLOS(this._game.currentMap, this._fov.x, this._fov.y , player.position.x, player.position.y)) {
+          target = player;
+        }
+      }
+
+      return target;
+    }
 }

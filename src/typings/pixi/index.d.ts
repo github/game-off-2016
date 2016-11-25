@@ -1,4 +1,4 @@
-// type definitions for Pixi.js
+  // type definitions for Pixi.js
 // project: https://github.com/pixijs/pixi.js/tree/dev
 // definitions by: clark-stevenson <https://github.com/pixijs/pixi-typescript>
 // definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -654,6 +654,8 @@ declare namespace PIXI {
 
         contains(x: number, y: number): boolean;
         type: number;
+        x: number;
+        y: number;
     }
     export class Circle {
 

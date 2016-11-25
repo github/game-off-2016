@@ -30,7 +30,9 @@ export const config = {
     },
     melee: {
       size: 30,
-      maxWalkDistance: 32 * 4,
+      maxWalkDistance: 64 * 4,
+      minWalkDistance: 32,
+      speed: 1,
     },
     energyBall: {
       size: 20,
