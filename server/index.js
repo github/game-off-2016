@@ -3,6 +3,9 @@ var http = require('http');
 var ms = require('./minesweeper.js');
 var map = new ms(10,10);
 var WebSocketServer = require('websocket').server;
+var clients = [];
+
+process.title = 'multisweep-server';
 
 var server = http.createServer(function(request, response) {
     console.log((new Date()) + ' Received request for ' + request.url);
@@ -14,7 +17,7 @@ server.listen(9501, function() {
     console.log((new Date()) + ' Server is listening on port 9501');
 });
 
-wsServer = new WebSocketServer({
+var wsServer = new WebSocketServer({
     httpServer: server,
     autoAcceptConnections: false
 });
@@ -23,8 +26,6 @@ function originIsAllowed(origin) {
   // put logic here to detect whether the specified origin is allowed.
   return true;
 }
-
-var connections = [];
 
 var cmds = {
     getMap:function(req){
@@ -37,6 +38,7 @@ var cmds = {
         return map.flag(req);
     }
 };
+var broadcasts = ["clickBox","flag"];
 
 wsServer.on('request', function(request) {
     if (!originIsAllowed(request.origin)) {
@@ -47,21 +49,31 @@ wsServer.on('request', function(request) {
     }
 
     var connection = request.accept('echo-protocol', request.origin);
-    connections.push(connection);
+    var index = clients.push(connection) - 1;
+
     console.log((new Date()) + ' Connection accepted.');
+
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
             console.log('Received Message: ' + message.utf8Data);
             //connection.sendUTF(message.utf8Data);
-            var messageData = message.utf8Data.split(' ');
-            var command = [messageData.shift(), messageData.join('')];
-            console.log(command);
+            var tmp = message.utf8Data.indexOf(' ');
+            var command = [message.utf8Data.slice(0,tmp), JSON.parse(message.utf8Data.slice(tmp+1))];
+            // console.log(command);
             if (command[0] in cmds) {
-                console.log((new Date()) + ' '+command[0]+' ran');
-                console.log(JSON.parse(command[1]));
-                var sending = JSON.stringify(cmds[command[0]](JSON.parse(command[1])));
-                console.log('Server sent: '+ sending);
-                connection.send(sending);
+                console.log((new Date()) + ' '+command[0]+' ran by '+connection.remoteAddress);
+                // console.log(command[1]);
+                var sending = command[0] + ' ' + JSON.stringify(cmds[command[0]](command[1]));
+                // console.log('Server sent: '+ sending);
+                if (broadcasts.indexOf(command[0])!==-1) {
+                    console.log('announcing '+command[0]);
+                    for (var i=0;i<clients.length;i++) {
+                        clients[i].send(sending);
+                    }
+                } else {
+                    console.log('sending '+command[0]);
+                    connection.send(sending);
+                }
             }
         }
         else if (message.type === 'binary') {
@@ -69,7 +81,9 @@ wsServer.on('request', function(request) {
             //connection.sendBytes(message.binaryData);
         }
     });
+
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        clients.splite(index,1);
     });
 });

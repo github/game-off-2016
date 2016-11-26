@@ -80,10 +80,10 @@ ms.prototype.flag = function (req) {
     }
     this.flags++;
     this.map[req.y][req.x].flagged = true;
-    return {status:0};
+    return {x:req.x,y:req.y};
 };
 ms.prototype.clickBox = function (req) {
-    console.log("clickbox called at "+JSON.stringify(req));
+    // console.log("clickbox called at "+JSON.stringify(req));
     var ret = {hit:false,act:[{x:req.x,y:req.y,numOfAdj:this.map[req.y][req.x].numOfAdj}]};
     if (this.map[req.y][req.x].isB) {
         ret.hit = true;
