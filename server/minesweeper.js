@@ -5,7 +5,7 @@ function ms(size, numbombs) {
 
 
     for (var i=0;i<this.size.y;i++){
-        this.map.push([]);
+        this.map[i]=[];
         for (var j=0;j<this.size.x;j++){
             var ret = {
                 isB:false,
@@ -13,7 +13,7 @@ function ms(size, numbombs) {
                 numOfAdj:0,
                 flagged:false,
             };
-            this.map[i].push(ret);
+            this.map[i][j] = ret;
         }
     }
 
@@ -60,9 +60,9 @@ function ms(size, numbombs) {
 ms.prototype.getMap = function (req) {
     var map = [];
     for (var i=0;i<this.size.y;i++) {
-        map.push([]);
+        map[i] = [];
         for (var j=0;j<this.size.x;j++) {
-            map[i].push({sel:this.map[i][j].sel});
+            map[i][j] = {sel:this.map[i][j].sel};
             if (this.map[i][j].sel) {
                 map[i][j].numOfAdj = this.map[i][j].numOfAdj;
             } else {
@@ -76,11 +76,11 @@ ms.prototype.flag = function (req) {
     if (this.map[req.y][req.x].flagged) {
         this.flags--;
         this.map[req.y][req.x].flagged = false;
-        return {status:0};
+        return {flag:false, x:req.x, y:req.y};
     }
     this.flags++;
     this.map[req.y][req.x].flagged = true;
-    return {x:req.x,y:req.y};
+    return {flag:true, x:req.x,y:req.y};
 };
 ms.prototype.clickBox = function (req) {
     // console.log("clickbox called at "+JSON.stringify(req));
