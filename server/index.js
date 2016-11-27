@@ -1,4 +1,4 @@
-#!/usr/bin/env nodejs
+#!/usr/bin/env node
 var http = require('http');
 var ms = require('./minesweeper.js');
 var map = new ms(14,60);

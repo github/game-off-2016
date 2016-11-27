@@ -1,4 +1,4 @@
-var minesweeper = new ms('ws://localhost:9501', {
+var minesweeper = new ms('ws://pablodons.tk:9501', {
     open:function(e){
 
     },
