@@ -1,30 +1,53 @@
-var size = 100;
-var numBombs = 1500;
-var minesweeper = new ms(size, numBombs);
-var msmap = drawMap();
-/*connection.onmessage = function {
-    updateMap()
-}*/
+var minesweeper = new ms('ws://localhost:9501', {
+    open:function(e){
 
+    },
+    close:function(e){
+
+    },
+    command:function(e,cmd,data){
+        var cmds = {
+            getMap:function(req){
+                drawMap(req);
+            },
+            clickBox:updateMap,
+            flag:function(req){
+                // Nothing yet
+            }
+        };
+        console.log("command "+cmd+" called");
+        cmds[cmd](data);
+    },
+});
+var msmap = [];
 function drawMap(getMapResult) {
-    var msmap = [];
-    var tableEl = document.createElement("table");
-    for (var y = 0; y < size; y++) {
+    var gameEl = document.getElementById("game");
+    var tableEl = document.querySelector("#game table");
+    if (tableEl===null) {
+        tableEl = document.createElement("table");
+    }
+    tableEl.textContent = "";
+    for (var y = 0; y < getMapResult.length; y++) {
         var trEl = document.createElement("tr");
+        tableEl.appendChild(trEl);
         msmap.push([]);
-        for (var x = 0; x < size; x++) {
+        for (var x = 0; x < getMapResult[y].length; x++) {
             var tdEl = document.createElement("td");
+            trEl.appendChild(tdEl);
+
+            msmap[y].push(tdEl);
             tdEl.className = "game-item";
-            tdEl.style["background-image"] = "url('bilder/default.png')";
+            if (getMapResult[y][x].sel) {
+                tdEl.style['background-image'] = "url('bilder/"+getMapResult[y][x].numOfAdj+".png')";
+            } else {
+                tdEl.style["background-image"] = "url('bilder/default.png')";
+                tdEl.addEventListener("click", send);
+            }
             tdEl.setAttribute("data-x", "" + x);
             tdEl.setAttribute("data-y", "" + y);
-            tdEl.addEventListener("click", send);
-            trEl.appendChild(tdEl);
-            msmap[y].push(tdEl);
         }
-        tableEl.appendChild(trEl);
     }
-    document.getElementById("game").appendChild(tableEl);
+    gameEl.appendChild(tableEl);
     return msmap;
 }
 
@@ -34,14 +57,10 @@ function send(e) {
     var xCoord = Number(e.target.getAttribute("data-x"));
     var yCoord = Number(e.target.getAttribute("data-y"));
 
-    var result = minesweeper.clickBox({
+    minesweeper.send("clickBox",{
         x: xCoord,
-        y: yCoord
+        y: yCoord,
     });
-    console.log("updating map...");
-    updateMap(result); //flyttes til connection.onmessage eller hva det nå enn heter
-    console.log("Map udated.");
-    //connection.send(result)
 }
 
 function updateMap(theResultOfClickBox) {
@@ -50,18 +69,18 @@ function updateMap(theResultOfClickBox) {
         return;
     }
     for (var i = 0; i < theResultOfClickBox.act.length; i++) {
-        var x = theResultOfClickBox.act[i].x;
-        var y = theResultOfClickBox.act[i].y;
-        var t = theResultOfClickBox.act[i].numOfAdj;
-        msmap[y][x].style.backgroundImage = "url('bilder/" + t + ".png')";
+        selectBox(theResultOfClickBox.act[i]);
     }
+}
+
+function selectBox(act) {
+    var x = act.x;
+    var y = act.y;
+    var t = act.numOfAdj;
+    msmap[y][x].style["background-image"] = "url('bilder/" + t + ".png')";
+    msmap[y][x].removeEventListener("click", send);
 }
 
 function theGameHasEnded() {
     console.log("ya lost");
 }
-//connection.onmessage
-function getMap() {
-    ms
-}
-//}

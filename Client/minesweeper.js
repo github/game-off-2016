@@ -19,31 +19,35 @@ function ms(ip, callbacks) {
         "flag",
     ];
 
-    var ws = new WebSocket(ip,"echo-protocol");
+    this.ws = new WebSocket(ip,"echo-protocol");
 
-    ws.addEventListener("open", function(e) {
-        ws.send("getMap {}");
+    this.ws.addEventListener("open", function(e) {
+        this.send("getMap {}");
         callbacks.open(e);
     });
-    ws.addEventListener("message", function(e) {
+    this.ws.addEventListener("message", function(e) {
+        console.log("message from server:");
+        console.log(e.data);
         var i = e.data.indexOf(' ');
         var msg = [e.data.slice(0,i), JSON.parse(e.data.slice(i+1))];
-
-        if (cmds[msg[0]]) {
+        if (cmds.indexOf(msg[0])!==-1) {
             callbacks.command(e,msg[0],msg[1]);
         }
     });
-    ws.addEventListener("error", function(e) {
+    this.ws.addEventListener("error", function(e) {
         console.error(e);
     });
-    ws.addEventListener("close", function(e) {
+    this.ws.addEventListener("close", function(e) {
         callbacks.close(e);
     });
 }
+ms.prototype.send = function(cmd,data){
+    this.ws.send(cmd + ' ' + JSON.stringify(data));
+};
 ms.prototype.end = function(){
-    ws.close();
+    this.ws.close();
 };
 ms.prototype.restart = function(){
-    ws.close();
+    this.ws.close();
     return new ms(ip, callbacks);
 };

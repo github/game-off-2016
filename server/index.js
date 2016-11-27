@@ -1,7 +1,7 @@
 #!/usr/bin/env nodejs
 var http = require('http');
 var ms = require('./minesweeper.js');
-var map = new ms(10,10);
+var map = new ms(14,60);
 var WebSocketServer = require('websocket').server;
 var clients = [];
 
@@ -84,6 +84,6 @@ wsServer.on('request', function(request) {
 
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-        clients.splite(index,1);
+        clients.splice(index,1);
     });
 });
