@@ -90,6 +90,7 @@ ms.prototype.clickBox = function (req) {
         return ret;
     }
 
+    this.map[req.y][req.x].sel = true;
     if (this.map[req.y][req.x].numOfAdj===0) {
         if (req.y>0) {
             if (!this.map[req.y-1][req.x].sel) {
