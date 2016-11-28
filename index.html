@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hacking horse</title>
+  <link rel="stylesheet" href="hacking.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Lobster+Two" rel="stylesheet">
+ <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+
+    <div id="menu" class="main">
+      <div id="main">
+        <span id="name">Hacking horse</span>
+          <div><a href="#" class="button play">Start Game</a></div>
+          <div><a href="#" class="button credits">Credits</a></div>
+      </div>
+    </div>
+
+    <div id = "layer">
+      <canvas id="canvas" width="1023" height="653">
+        <p>You're browser does not support the required functionality to play this game.</p>
+        <p>Please update to a modern browser such as <a href="www.google.com/chrome/‎">Google Chrome</a> to play.</p>
+      </canvas>
+    </div>
+
+    <div id="game-over">
+      <h2>You ran <span id="score"></span> meters!</h2>
+      <h2>Try again?</h2>
+      <div><a href="#" class="button yes">Yes</a></div>
+      <div><a href="#" class="button no">No</a></div>
+    </div>
+
+
+    <div id = "credits">
+      <div>Our fabulous team</div>
+      <div></div>
+      <div>
+        <a href="https://www.facebook.com/alexander.korzhenevski1">
+          <h1 class = "role">Developer:</h1>
+          <h1 class = "actor">Oleksandr Korzhenevskyi</h1>
+        </a>
+      </div>
+      <div></div>
+      <div>
+        <a href="https://www.facebook.com/lazuka.o">
+          <h1 class = "role">Co-developer:</h1>
+          <h1 class = "actor">Vitalii Lazuka</h1>
+        </a>
+      </div>
+      <a href="#" class="button back"><span>Back</span></a>
+    </div>
+
+	<div id = "strange">
+	</div>
+
+  </div>
+  <script type="text/javascript" src="hacking.js"></script>
+</body>
+</html>
