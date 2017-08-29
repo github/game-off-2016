@@ -1,0 +1,27 @@
+#canv{
+    height: 500px;
+    width: 500px;
+    margin: 0px;
+    padding: 0px;
+    /*-webkit-filter: blur(1px);
+    filter: blur(1px);*/
+}
+body{
+    background-color: #111111;
+}
+.center{
+    text-align: center;
+    padding: 0px;
+}
+@media screen and (min-height:550px) {
+    .center{
+        margin: 50px 0px;
+    }
+}
+#foot{
+    color: #191919;
+    text-align: center;
+}
+#foot a {
+    color: #191919;
+}
